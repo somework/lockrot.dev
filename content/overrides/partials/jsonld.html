@@ -1,0 +1,62 @@
+{#-
+  Structured data, included from main.html's extrahead. The home page describes the tool
+  (WebSite + SoftwareApplication); every other page gets a two-step BreadcrumbList. `tojson`
+  escapes <, > and & itself, so a page title cannot break out of the script element.
+
+  No aggregateRating and no review: there are none, and schema for content that is not on the page
+  is worse than no schema. softwareVersion is set only for a release tag, not for a
+  LOCKROT_REF=main preview.
+-#}
+{%- set author = {
+  "@type": "Person",
+  "name": config.site_author,
+  "url": "https://github.com/somework"
+} -%}
+{%- if page and page.is_homepage -%}
+  {%- set app = {
+    "@type": "SoftwareApplication",
+    "@id": config.site_url ~ "#software",
+    "name": config.site_name,
+    "description": config.site_description,
+    "url": config.site_url,
+    "image": config.site_url ~ "assets/og.png",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Cross-platform (PHP)",
+    "softwareRequirements": "PHP 7.4 or newer, Composer 2.2 or newer",
+    "downloadUrl": config.site_url ~ "lockrot.phar",
+    "license": "https://opensource.org/licenses/MIT",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+    "author": author,
+    "sameAs": [config.repo_url, "https://packagist.org/packages/somework/lockrot"]
+  } -%}
+  {%- set ref = config.extra.lockrot_ref -%}
+  {%- if ref.startswith("v") -%}
+    {%- set app = dict(app, softwareVersion=ref[1:]) -%}
+  {%- endif -%}
+  {%- set ld = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": config.site_url ~ "#website",
+        "name": config.site_name,
+        "url": config.site_url,
+        "description": config.site_description,
+        "inLanguage": "en",
+        "about": {"@id": config.site_url ~ "#software"}
+      },
+      app
+    ]
+  } -%}
+  <script type="application/ld+json">{{ ld | tojson }}</script>
+{%- elif page and page.title and page.canonical_url -%}
+  {%- set ld = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": config.site_name, "item": config.site_url},
+      {"@type": "ListItem", "position": 2, "name": page.title | striptags, "item": page.canonical_url}
+    ]
+  } -%}
+  <script type="application/ld+json">{{ ld | tojson }}</script>
+{%- endif -%}

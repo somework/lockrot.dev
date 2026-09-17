@@ -44,6 +44,7 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
   assets/              # extra.css (the coloured terminal sample, link colours), og.png
   overrides/main.html  # <title> rule and OpenGraph tags (Material's social plugin needs Cairo)
   overrides/partials/copyright.html  # footer: Material's partial plus "built from lockrot <ref>"
+  overrides/partials/jsonld.html     # JSON-LD: SoftwareApplication on the home page, breadcrumbs elsewhere
   _redirects           # /lockrot.phar -> GitHub latest release, 302 on purpose (see the file)
   _headers             # CSP and security headers; a new external origin must be added to the CSP
   robots.txt
@@ -62,7 +63,8 @@ plugin has `enabled: false`, the rss plugin is commented out, and the nav entry,
 `extra.social` and the "Read on" row in `content/index.md` are removed. The files under
 `content/blog/` stay. To bring it back, revert the hiding commit
 (`git log --grep='hide the blog'`), then finish the draft. While hidden, `scripts/build.sh serve`
-does not render posts either.
+does not render posts either. When it comes back, add a `BlogPosting` branch to
+`overrides/partials/jsonld.html` (posts already get `og:type: article`).
 
 ## Writing a post
 
