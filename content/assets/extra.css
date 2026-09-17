@@ -1,3 +1,7 @@
+:root {
+  --lockrot-duration-fast: 150ms;
+}
+
 /* The report is colour-coded and a fenced code block throws that away.
    These rules exist so the landing page can show the real thing.
    `.md-typeset pre` is (0,2,1), so the selector has to match it and win on
@@ -29,6 +33,16 @@
   color: var(--md-default-fg-color--light);
 }
 
+/* The recorded run under the sample. At the full column width it is a second wall of black right
+   after the first; held to 40rem it reads as an illustration. width/height stay on the element so
+   the box is reserved before the file arrives (no layout shift). */
+.md-typeset img.lockrot-demo {
+  display: block;
+  max-width: min(100%, 40rem);
+  height: auto;
+  border-radius: 0.2rem;
+}
+
 /* Material derives the body link colour from `primary`, and `primary: black`
    falls back to its indigo — so the palette's teal accent would only ever show
    on hover. These pin the link colour to the accent family, one value per
@@ -42,4 +56,19 @@ body[data-md-color-primary="black"] {
 body[data-md-color-scheme="slate"][data-md-color-primary="black"],
 body[data-md-color-scheme="slate"] {
   --md-typeset-a-color: #26c6b8;
+}
+
+/* Colour alone does not mark a link: teal against body text is 1.2:1 on slate, far under the 3:1
+   WCAG 1.4.1 asks for when nothing else distinguishes it. A thin underline does; it thickens on
+   hover and focus so those states stay distinct. Heading permalinks keep Material's treatment. */
+.md-typeset a:not(.headerlink):not(.md-button) {
+  text-decoration: underline;
+  text-decoration-thickness: 0.05em;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, currentcolor 45%, transparent);
+  transition: text-decoration-color var(--lockrot-duration-fast) ease-out;
+}
+
+.md-typeset a:not(.headerlink):not(.md-button):is(:hover, :focus-visible) {
+  text-decoration-color: currentcolor;
 }

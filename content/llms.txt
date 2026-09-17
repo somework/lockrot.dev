@@ -1,0 +1,28 @@
+# lockrot
+
+> lockrot finds abandoned, unmaintained and branch-pinned packages in a PHP project's composer.lock, and releases that promise a PHP version they were never tested against. It is a Composer plugin and a standalone PHAR, MIT-licensed, for PHP 7.4+ and Composer 2.2+. It reads composer.json and composer.lock and writes to neither.
+
+`composer audit --abandoned` reads one field, the `abandoned` marker a maintainer sets by hand on Packagist. lockrot reads that field too, then checks when the last stable release landed, when the repository was last pushed to, whether the lock file holds a branch snapshot instead of a version, and whether a release's open-ended `require.php` constraint predates the PHP version the project targets. Every finding carries its evidence, a priority and the chain of requirements that pulled the package in.
+
+Install: `composer require --dev somework/lockrot`, or download https://lockrot.dev/lockrot.phar. Run: `composer lockrot --target-php=8.4`. In CI: `--fail-on=<verdict or priority>`; exit 0 is clean, 1 means a finding reached the threshold, 2 is lockrot's own error.
+
+## Reference
+
+- [Verdicts and priority](https://lockrot.dev/verdicts/): the eight verdicts (abandoned, silent, pinned, old-promise, stale, unknown, finished, ok), the signals behind them, how priority is assigned
+- [Configuration](https://lockrot.dev/configuration/): every `extra.lockrot` key, environment overrides, CLI options, caching, the allowlist
+- [In CI](https://lockrot.dev/ci/): the GitHub Action, exit codes, and the github, sarif, gitlab, markdown and json formats
+- [Baseline](https://lockrot.dev/baseline/): accept today's findings, fail only on new and worsened ones
+- [Install-time summary](https://lockrot.dev/install-time/): what the plugin prints during composer require, update and install
+- [PHAR and self-update](https://lockrot.dev/phar/): verified download, GPG signature, build provenance, PHIVE, Docker image, self-update
+- [How it fetches metadata](https://lockrot.dev/internals/): Composer repositories, the GitHub, GitLab and Bitbucket APIs, rate caps, credentials, caching, --offline
+
+## Examples
+
+- [Example run](https://lockrot.dev/example-run/): a complete report on a public 200-package composer.lock, as a table and as JSON
+
+## Optional
+
+- [Changelog](https://lockrot.dev/changelog/): what changed, release by release
+- [Source code and issues](https://github.com/somework/lockrot)
+- [GitHub Action and Docker image](https://github.com/somework/lockrot-action)
+- [Package on Packagist](https://packagist.org/packages/somework/lockrot)

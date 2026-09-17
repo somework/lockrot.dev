@@ -1,5 +1,5 @@
 ---
-title: lockrot — find abandoned and unmaintained packages in composer.lock
+title: lockrot — find abandoned and unmaintained Composer packages
 og_description: Composer warns about packages whose maintainers said they stopped. lockrot finds the ones that just stopped.
 hide:
   - toc
@@ -75,6 +75,10 @@ The first 21 lines of a real run against wallabag's 200-package lock file, at 10
 its 75 findings — [read the whole report](example-run.md).
 { .lockrot-caption }
 
+A whole run on a smaller project, 52 packages, from the command to the summary block and the footer:
+
+![lockrot in a terminal: two critical and five high findings with their evidence, then the summary counts by verdict and priority and the "Data as of" footer](assets/lockrot-demo.gif){ .lockrot-demo width="1228" height="884" loading="lazy" }
+
 ## What it looks for
 
 - **`abandoned`** — the package's own repository says so: Packagist carries the `abandoned` marker a
@@ -111,6 +115,52 @@ reached the threshold you chose, and exit `2` is reserved for lockrot's own erro
 Actions, `uses: somework/lockrot-action@v1` is the whole step. Recipes for that, GitLab CI and PR
 comments are in [In CI](ci.md); a [baseline](baseline.md) lets you accept what you have today and
 fail only on what arrives tomorrow.
+
+## Questions
+
+### Does it change `composer.json` or `composer.lock`?
+
+No. It reads both and writes to neither. The only file it ever writes is the
+[baseline](baseline.md), and only when you pass `--generate-baseline`.
+
+### Can it break `composer install`?
+
+Not unless you ask it to. The [install-time summary](install-time.md) prints at most 10 lines
+within a 5-second budget and never stops the transaction; a failed lookup is reported, not raised.
+`install-time-strict` is the opt-in that lets it stop one, `"install-time": "off"` turns the summary
+off for a project, and `LOCKROT_DISABLE=1` silences lockrot for one command.
+
+### Do I need a GitHub token?
+
+No, but it sees more with one. Anonymously GitHub allows 60 requests an hour, so lockrot checks
+repository activity only for packages whose releases already look stale, at most 50 per host per
+run, and reports how many the cap affected. With `GITHUB_TOKEN` set, or Composer's own
+`github-oauth`, every package is checked.
+[How it fetches metadata](internals.md#repository-hosts-and-credentials) has the GitLab and
+Bitbucket rules.
+
+### Does it work with Private Packagist, Satis or a mirror?
+
+Yes, with nothing to configure. lockrot reads the repositories already in your `composer.json`
+through Composer's own repository layer, with Composer's authentication and proxy settings.
+
+### Does it work offline, and what happens when the network fails?
+
+`--offline` serves everything from Composer's cache and lockrot's own. A network failure never
+turns into a non-zero exit code on its own: the check that could not run is reported as a note.
+`--strict-network` makes it exit `1` instead.
+
+### The project already has dozens of findings. Where do I start?
+
+With a [baseline](baseline.md): `--generate-baseline` records what is there today, and CI then
+fails only on findings that are new or have got worse.
+
+### A package is finished, not abandoned. How do I say so?
+
+Interface packages, frozen polyfills and metapackages are not rot. `psr/*`, `fig/*`,
+`symfony/polyfill-*` and a few more are on the built-in allowlist and report `finished`; for
+anything else, add an entry with a reason to `extra.lockrot.ignore` —
+[the allowlist](configuration.md#the-allowlist).
 
 ## Read on
 

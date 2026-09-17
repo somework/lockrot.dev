@@ -29,6 +29,10 @@ Dependencies: `requirements.in` names the three packages the site asks for; `req
 the pip-compile lock with every transitive package pinned and hashed. Edit the first, regenerate the
 second, never hand-edit it. Dependabot updates both.
 
+The `privacy` plugin downloads Google Fonts at build time (cached in `.cache/`) and serves them from
+the site's own origin, so a build needs network access to fonts.googleapis.com, and
+`content/_headers` lists no font origin.
+
 `--strict` turns every MkDocs warning into a failure: a broken relative link, a page outside the
 nav that another page links to, an unknown `!ENV`. Fix the cause, never drop the flag.
 
@@ -40,14 +44,16 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
   blog/index.md        # blog landing; the Material blog plugin renders the list
   blog/.authors.yml    # author ids used in post front matter
   blog/posts/          # one file per post, see "Writing a post"
-  assets/              # extra.css (the coloured terminal sample, link colours), og.png
+  assets/              # extra.css (terminal sample, demo GIF box, link colour and underline), og.png
   overrides/main.html  # <title> rule and OpenGraph tags (Material's social plugin needs Cairo)
   overrides/partials/copyright.html  # footer: Material's partial plus "built from lockrot <ref>"
   overrides/partials/jsonld.html     # JSON-LD: SoftwareApplication on the home page, breadcrumbs elsewhere
   _redirects           # /lockrot.phar -> GitHub latest release, 302 on purpose (see the file)
   _headers             # CSP and security headers; a new external origin must be added to the CSP
+                       # (Cloudflare Web Analytics is injected at the edge and is already listed)
+  llms.txt             # page map for AI search; check-nav.sh fails if a reference page is missing
   robots.txt
-mkdocs.yml             # theme, nav, plugins (blog, rss, include-markdown); docs_dir is build/docs
+mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
 scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh
 wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
@@ -95,6 +101,11 @@ they go in — the reference pages there are the source of truth, not memory.
   unreachable.
 - The landing page `content/index.md` started as a copy of lockrot's `docs/index.md` and now lives
   here; its "Read on" table names the reference pages, keep it in step with the nav.
+- The landing page also states facts of its own — the "Questions" section (rate caps, the 10-line
+  and 5-second install-time limits, exit codes, the allowlist patterns) and the 52-package demo GIF,
+  which is lockrot's `docs/assets/lockrot-demo.gif`, not a file here. Re-check them against
+  `.lockrot/docs/` when a release changes those pages; `content/llms.txt` repeats the verdict
+  names, the formats and the exit codes and needs the same pass.
 - The changelog page is lockrot's `docs/changelog.md`, which includes `../CHANGELOG.md`;
   `scripts/build.sh` copies `.lockrot/CHANGELOG.md` to `build/CHANGELOG.md` so that path resolves.
   The `[Unreleased]` section of a tagged checkout is usually empty, which is correct for a site

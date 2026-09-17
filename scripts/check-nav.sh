@@ -13,5 +13,11 @@ for page in .lockrot/docs/*.md; do
     echo "check-nav: .lockrot/docs/$name is not in mkdocs.yml nav" >&2
     missing=1
   fi
+  # content/llms.txt is a second, hand-kept list of the same pages (the landing page is its header).
+  slug="${name%.md}"
+  if [ "$slug" != index ] && ! grep -Fq "https://lockrot.dev/$slug/" content/llms.txt; then
+    echo "check-nav: .lockrot/docs/$name is not in content/llms.txt" >&2
+    missing=1
+  fi
 done
 exit $missing
