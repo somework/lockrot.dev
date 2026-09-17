@@ -1,0 +1,14 @@
+// Cloudflare Workers configuration for https://lockrot.dev. The site is static: scripts/build.sh
+// writes it to ./site, and the Worker serves that directory as assets, with content/_redirects
+// applied for the PHAR download URLs. No Worker script. The Worker is named "lockrot" because that
+// is the existing Worker the custom domains (lockrot.dev, www.lockrot.dev) are attached to.
+{
+    "$schema": "https://developers.cloudflare.com/schemas/wrangler.json",
+    "name": "lockrot",
+    "compatibility_date": "2026-09-16",
+    "assets": {
+        "directory": "./site",
+        "html_handling": "auto-trailing-slash",
+        "not_found_handling": "404-page"
+    }
+}

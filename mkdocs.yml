@@ -1,0 +1,121 @@
+# The lockrot.dev site. Reference pages come from the lockrot repository at build time
+# (scripts/fetch-lockrot.sh checks out the latest tag into .lockrot/, scripts/build.sh assembles
+# build/docs from .lockrot/docs plus content/); this file owns the theme, the navigation and the blog.
+site_name: lockrot
+site_url: https://lockrot.dev/
+site_description: >-
+  Find abandoned, unmaintained and branch-pinned packages in composer.lock. Composer plugin and PHAR with evidence, priority, baseline and CI exit codes.
+site_author: Igor Pinchuk
+copyright: Released under the MIT licence. Copyright Igor Pinchuk.
+
+repo_url: https://github.com/somework/lockrot
+repo_name: somework/lockrot
+edit_uri: edit/main/docs/
+
+docs_dir: build/docs
+site_dir: site
+
+exclude_docs: |
+  overrides/
+
+theme:
+  name: material
+  custom_dir: build/docs/overrides
+  language: en
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.tabs.link
+    - search.suggest
+    - toc.follow
+
+# Every page under .lockrot/docs must be listed here (scripts/check-nav.sh enforces it), so a page
+# added to lockrot's docs/ shows up as a build failure here rather than as a page nobody can reach.
+nav:
+  - Home: index.md
+  - What it reports: verdicts.md
+  - Configuration: configuration.md
+  - In CI: ci.md
+  - Baseline: baseline.md
+  - Install-time summary: install-time.md
+  - PHAR and self-update: phar.md
+  - Example run: example-run.md
+  - How it fetches metadata: internals.md
+  - Changelog: changelog.md
+  - Blog:
+      - blog/index.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - include-markdown:
+      comments: false
+  - blog:
+      blog_dir: blog
+      post_url_format: "{date}/{slug}"
+      post_date_format: long
+      post_excerpt: required
+      authors_file: "{blog}/.authors.yml"
+      archive: true
+      categories: true
+      categories_allowed:
+        - Releases
+        - Composer
+        - Dependency rot
+        - Engineering
+      draft_if_future_date: true
+  - rss:
+      match_path: "blog/posts/.*"
+      date_from_meta:
+        as_creation: date
+      categories:
+        - categories
+      use_git: false
+
+extra_css:
+  - assets/extra.css
+
+extra:
+  # The lockrot ref the reference pages were built from; scripts/build.sh exports it.
+  lockrot_ref: !ENV [LOCKROT_REF, "main"]
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/somework/lockrot
+      name: lockrot on GitHub
+    - icon: fontawesome/solid/box-open
+      link: https://packagist.org/packages/somework/lockrot
+      name: somework/lockrot on Packagist
+    - icon: fontawesome/solid/rss
+      link: https://lockrot.dev/feed_rss_created.xml
+      name: Blog feed
