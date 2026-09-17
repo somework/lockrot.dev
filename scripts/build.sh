@@ -14,6 +14,9 @@ mkdir -p build/docs
 # redirects — the site owns those under content/.
 cp .lockrot/docs/*.md build/docs/
 cp -R .lockrot/docs/assets build/docs/assets
+# lockrot's docs/changelog.md includes "../CHANGELOG.md", which from build/docs is build/CHANGELOG.md.
+# Putting the file there keeps the page, and its front matter, lockrot's own.
+cp .lockrot/CHANGELOG.md build/CHANGELOG.md
 cp -R content/. build/docs/
 
 export LOCKROT_REF="$(cat .lockrot/REF)"

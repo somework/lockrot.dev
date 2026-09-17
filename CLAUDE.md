@@ -37,7 +37,6 @@ nav that another page links to, an unknown `!ENV`. Fix the cause, never drop the
 ```
 content/               # the site's own docs_dir overlay, copied over .lockrot/docs at build
   index.md             # landing page (overrides lockrot's docs/index.md)
-  changelog.md         # include-markdown of ../../.lockrot/CHANGELOG.md
   blog/index.md        # blog landing; the Material blog plugin renders the list
   blog/.authors.yml    # author ids used in post front matter
   blog/posts/          # one file per post, see "Writing a post"
@@ -96,8 +95,10 @@ they go in — the reference pages there are the source of truth, not memory.
   unreachable.
 - The landing page `content/index.md` started as a copy of lockrot's `docs/index.md` and now lives
   here; its "Read on" table names the reference pages, keep it in step with the nav.
-- `content/changelog.md` includes `.lockrot/CHANGELOG.md`; the `[Unreleased]` section of a tagged
-  checkout is usually empty, which is correct for a site that documents releases.
+- The changelog page is lockrot's `docs/changelog.md`, which includes `../CHANGELOG.md`;
+  `scripts/build.sh` copies `.lockrot/CHANGELOG.md` to `build/CHANGELOG.md` so that path resolves.
+  The `[Unreleased]` section of a tagged checkout is usually empty, which is correct for a site
+  that documents releases.
 - `edit_uri` points at lockrot's `docs/`; the edit button is not enabled, so it is inert.
 - The site follows the **newest `vX.Y.Z` tag** (pre-release tags are skipped), not `main`: a doc
   change in lockrot appears here after the next release. `LOCKROT_REF=main` is for previewing,
