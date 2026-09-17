@@ -15,8 +15,13 @@ edit_uri: edit/main/docs/
 docs_dir: build/docs
 site_dir: site
 
+# The blog is hidden until its first post is finished: blog/ is excluded from the build, the blog
+# plugin is disabled and rss is commented out, and the links to it are gone (nav, the RSS icon under
+# extra.social, the "Read on" row in content/index.md). Bringing it back is `git revert` of the
+# commit that hid it.
 exclude_docs: |
   overrides/
+  blog/
 
 theme:
   name: material
@@ -61,8 +66,6 @@ nav:
   - Example run: example-run.md
   - How it fetches metadata: internals.md
   - Changelog: changelog.md
-  - Blog:
-      - blog/index.md
 
 markdown_extensions:
   - admonition
@@ -82,6 +85,7 @@ plugins:
   - include-markdown:
       comments: false
   - blog:
+      enabled: false
       blog_dir: blog
       post_url_format: "{date}/{slug}"
       post_date_format: long
@@ -95,13 +99,16 @@ plugins:
         - Dependency rot
         - Engineering
       draft_if_future_date: true
-  - rss:
-      match_path: "blog/posts/.*"
-      date_from_meta:
-        as_creation: date
-      categories:
-        - categories
-      use_git: false
+  # Commented out rather than `enabled: false`: Material emits the <link rel="alternate"> feed
+  # tags whenever the plugin is listed, and with the blog hidden they would point at feeds that do
+  # not exist.
+  # - rss:
+  #     match_path: "blog/posts/.*"
+  #     date_from_meta:
+  #       as_creation: date
+  #     categories:
+  #       - categories
+  #     use_git: false
 
 extra_css:
   - assets/extra.css
@@ -116,6 +123,3 @@ extra:
     - icon: fontawesome/solid/box-open
       link: https://packagist.org/packages/somework/lockrot
       name: somework/lockrot on Packagist
-    - icon: fontawesome/solid/rss
-      link: https://lockrot.dev/feed_rss_created.xml
-      name: Blog feed

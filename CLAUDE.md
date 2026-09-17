@@ -55,6 +55,15 @@ wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 .lockrot/ build/ site/ # generated, git-ignored, safe to delete
 ```
 
+## The blog is hidden for now
+
+Until the first post is finished the blog is not built: `blog/` is in `exclude_docs`, the blog
+plugin has `enabled: false`, the rss plugin is commented out, and the nav entry, the RSS icon in
+`extra.social` and the "Read on" row in `content/index.md` are removed. The files under
+`content/blog/` stay. To bring it back, revert the hiding commit
+(`git log --grep='hide the blog'`), then finish the draft. While hidden, `scripts/build.sh serve`
+does not render posts either.
+
 ## Writing a post
 
 `content/blog/posts/YYYY-MM-DD-slug.md`, front matter first:
