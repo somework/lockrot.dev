@@ -1,12 +1,15 @@
 name: Deploy
-# Three triggers, one build: a push to main (content, theme, blog), a lockrot release (the lockrot
+# Four triggers, one build: a push to main (content, theme, blog), a lockrot release (the lockrot
 # PHAR workflow sends `repository_dispatch` with event_type `lockrot-release` after it publishes the
-# release, so the reference pages follow the newest tag), and a manual run.
+# release, so the reference pages follow the newest tag), a weekly run that picks up a release whose
+# dispatch never arrived, and a manual run.
 on:
   push:
     branches: [main]
   repository_dispatch:
     types: [lockrot-release]
+  schedule:
+    - cron: "17 5 * * 1"
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,7 +28,7 @@ jobs:
         with:
           python-version-file: .python-version
           cache: pip
-      - run: pip install -r requirements.txt
+      - run: pip install --require-hashes -r requirements.txt
       - run: scripts/build.sh
       - uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         with:

@@ -1,8 +1,8 @@
 name: CI
+# Pull requests only: a push trigger next to it builds every PR branch twice. main is built by
+# deploy.yml.
 on:
   pull_request:
-  push:
-    branches-ignore: [main]
 permissions:
   contents: read
 jobs:
@@ -16,7 +16,7 @@ jobs:
         with:
           python-version-file: .python-version
           cache: pip
-      - run: pip install -r requirements.txt
+      - run: pip install --require-hashes -r requirements.txt
       # The reference pages are fetched from lockrot's newest tag; a PR here is judged against what
       # the site would actually publish.
       - run: scripts/build.sh

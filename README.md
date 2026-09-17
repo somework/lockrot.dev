@@ -12,11 +12,15 @@ the theme live here.
 ## Build locally
 
 ```bash
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+python3.12 -m venv .venv && .venv/bin/pip install --require-hashes -r requirements.txt
 export PATH=$PWD/.venv/bin:$PATH
 scripts/build.sh          # site/ from lockrot's newest tag, mkdocs --strict
 scripts/build.sh serve    # live preview on http://127.0.0.1:8000, drafts included
 ```
+
+`requirements.txt` is a pip-compile lock of `requirements.in` (every transitive package pinned and
+hashed); after editing `requirements.in`, regenerate it under Python 3.12 with
+`pip-compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in`.
 
 `LOCKROT_REF=main scripts/fetch-lockrot.sh` previews unreleased documentation; delete `.lockrot/`
 to go back to the newest tag.
@@ -25,7 +29,7 @@ to go back to the newest tag.
 
 GitHub Actions (`.github/workflows/deploy.yml`) builds the site and runs `wrangler deploy` against
 the Cloudflare Worker `lockrot` on every push to `main`, on a `repository_dispatch` of type
-`lockrot-release`, and on demand. The Worker serves `site/` as static assets; `content/_redirects`
+`lockrot-release`, weekly, and on demand. The Worker serves `site/` as static assets; `content/_redirects`
 keeps `https://lockrot.dev/lockrot.phar` pointing at the newest GitHub release.
 
 ### Cutover from the lockrot repository

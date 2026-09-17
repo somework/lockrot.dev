@@ -1,0 +1,33 @@
+name: Links
+# External links rot on their own schedule, not on this repository's: checked weekly against the
+# built site, never on a PR (ci.yml checks internal links only, offline).
+on:
+  schedule:
+    - cron: "43 5 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  external:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: .python-version
+          cache: pip
+      - run: pip install --require-hashes -r requirements.txt
+      - run: scripts/build.sh
+      # The site's own absolute URLs (canonical, og:url, sitemap) are excluded: a page added here is
+      # not live until the next deploy, and ci.yml already checks the internal links.
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --root-dir "${{ github.workspace }}/site" --no-progress
+            --exclude "^https://lockrot[.]dev/" --max-retries 3
+            "site/**/*.html"
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

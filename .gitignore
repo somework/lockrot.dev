@@ -7,3 +7,5 @@
 /.cache/
 __pycache__/
 .DS_Store
+# Browser-check leftovers (Playwright MCP snapshots).
+/.playwright-mcp/

@@ -13,8 +13,7 @@ mkdir -p build/docs
 # Only what the site renders: pages and assets. Not lockrot's own overrides, requirements or
 # redirects — the site owns those under content/.
 cp .lockrot/docs/*.md build/docs/
-mkdir -p build/docs/assets
-cp .lockrot/docs/assets/* build/docs/assets/
+cp -R .lockrot/docs/assets build/docs/assets
 cp -R content/. build/docs/
 
 export LOCKROT_REF="$(cat .lockrot/REF)"

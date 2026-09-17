@@ -1,0 +1,22 @@
+{#-
+  Material's partial plus one line: the lockrot ref the reference pages were built from
+  (scripts/build.sh exports LOCKROT_REF, mkdocs.yml reads it into extra.lockrot_ref). `tree/`
+  resolves for a tag and for a branch alike, so a LOCKROT_REF=main preview links correctly too.
+-#}
+<div class="md-copyright">
+  {% if config.copyright %}
+    <div class="md-copyright__highlight">
+      {{ config.copyright }}
+    </div>
+  {% endif %}
+  Reference pages built from lockrot
+  <a href="{{ config.repo_url }}/tree/{{ config.extra.lockrot_ref }}" target="_blank" rel="noopener">
+    {{- config.extra.lockrot_ref -}}
+  </a>.
+  {% if not config.extra.generator == false %}
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  {% endif %}
+</div>

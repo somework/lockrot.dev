@@ -1,0 +1,17 @@
+# Response headers for every asset the Worker serves (Cloudflare static assets read this file
+# from the root of ./site, like _redirects). Not applied to the _redirects 302s themselves.
+#
+# The CSP lists what Material for MkDocs actually loads: its own inline bootstrap scripts and
+# styles (hence 'unsafe-inline' — the pages are static, there is no per-request nonce to hand out),
+# Google Fonts, and one fetch to api.github.com for the star count next to the repository link.
+# A new external origin (an embed, an avatar, analytics) has to be added here or the browser
+# blocks it silently; check the console under `wrangler dev`.
+#
+# HSTS: .dev is on the browser preload list as a whole TLD, so the header only restates it.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
