@@ -85,23 +85,29 @@ A whole run on a smaller project, 52 packages, from the command to the summary b
   maintainer set by hand, or the repository is archived on GitHub or GitLab.
 - **`silent`** — five years with no stable release *and* five years with no push to the repository,
   on the default thresholds. Nobody announced anything; the package simply stopped.
-- **`pinned`** — your lock file holds a branch snapshot or a commit hash instead of a released
-  version, so the thing you installed has no version number anyone else can ask for.
-- **`old-promise`** — the release predates the PHP version you target, and its `require.php`
-  constraint is open-ended, so Composer accepted it on a PHP nobody released it against.
+- **`pinned`** — your lock file holds a branch snapshot (`dev-master`, `dev-main`) or a commit hash
+  instead of a released version, so the thing you installed has no version number anyone else can
+  ask for.
+- **`old-promise`** — the release predates the PHP version you are upgrading to, and its
+  `require.php` constraint is open-ended (`>=7.2`), so Composer accepted it on a PHP nobody released
+  it against. `composer check-platform-reqs` is satisfied too: `>=7.2` is true on 8.4.
 
 A fifth verdict, `stale`, catches a package that is old on one of those fronts but not both — worth
 knowing, rarely worth acting on. Every finding carries the evidence behind it, the date the data was
-read, and the chain of requirements that pulled the package in — every direct requirement it is
-reachable from, not only the shortest one, and each direct requirement says what it pulls in.
+read, and the chain of requirements that pulled the package in — what `composer why` shows for one
+package, for every finding at once: every direct requirement it is reachable from, not only the
+shortest one, and each direct requirement says what it pulls in.
 [What it reports](verdicts.md) has all eight verdicts and the priority rules.
 
 ## "Composer already warns me about abandoned packages"
 
-It does, and lockrot reports the same thing. `composer audit --abandoned` reads one field: the
-`abandoned` marker a maintainer sets by hand on Packagist. Most packages that stop being maintained
-never get it, because setting it is the last act of someone who has already walked away — so the
-field is accurate when it is there, and silent the rest of the time.
+It does: `Package X is abandoned, you should avoid using it` on every install, and
+`composer audit --abandoned` reports the same packages. Both read one field: the `abandoned` marker
+a maintainer sets by hand on Packagist. Most packages that stop being maintained never get it,
+because setting it is the last act of someone who has already walked away — so the field is
+accurate when it is there, and silent the rest of the time. `composer outdated` answers a different
+question, whether a newer version exists: a package can be fully up to date and dead, or two majors
+behind and fine.
 
 lockrot reads that field too, and then keeps going. It asks when the last stable release actually
 landed, when the repository was last pushed to, whether your lock file is holding a branch snapshot
