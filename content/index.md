@@ -51,28 +51,24 @@ Requires PHP 7.4 or newer and Composer 2.2 or newer.
 
 <pre class="lockrot-term"><span class="b">critical (3)</span>
   <span class="r">abandoned</span>    sensio/framework-extra-bundle v6.2.10  direct
-               marked abandoned by its repository, replacement: Symfony; last release 2023-02-24
-               (3.6 years ago); repository archived on GitHub; last push 2023-02-24 (3.6 years ago);
-               released 2023-02-24, before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=7.2.5&quot; has no
-               upper bound; pulls in 1 flagged package: doctrine/annotations (abandoned)
+               marked abandoned by its repository, replacement: Symfony; repository archived on GitHub; last release
+               2023-02-24 (3.6 years ago); last push 2023-02-24 (3.6 years ago); released 2023-02-24, before PHP 8.4 GA
+               (2024-11-21); php constraint &quot;&gt;=7.2.5&quot; has no upper bound; pulls in 1 flagged package:
+               doctrine/annotations (abandoned)
   <span class="r">silent</span>       javibravo/simpleue 2.1.0  direct
-               last release 2017-11-15 (8.8 years ago); last push 2017-11-18 (8.8 years ago);
-               released 2017-11-15, before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=5.5&quot; has no
-               upper bound
+               last release 2017-11-15 (8.8 years ago); last push 2017-11-18 (8.8 years ago); released 2017-11-15,
+               before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=5.5&quot; has no upper bound
   <span class="r">silent</span>       mnapoli/piwik-twig-extension 3.0.0  direct
-               last release 2020-04-24 (6.4 years ago); last push 2020-04-28 (6.4 years ago);
-               released 2020-04-24, before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=7.0&quot; has no
-               upper bound
+               last release 2020-04-24 (6.4 years ago); last push 2020-04-28 (6.4 years ago); released 2020-04-24,
+               before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=7.0&quot; has no upper bound
 
-<span class="b">high (58)</span>
-  <span class="r">abandoned</span>    behat/transliterator v1.5.0  via stof/doctrine-extensions-bundle ›
-               gedmo/doctrine-extensions
-               marked abandoned by its repository; last release 2022-03-30 (4.5 years ago);
-               repository archived on GitHub; released 2022-03-30, before PHP 8.4 GA (2024-11-21);
-               php constraint &quot;&gt;=7.2&quot; has no upper bound</pre>
+<span class="b">high (64)</span>
+  <span class="r">abandoned</span>    behat/transliterator v1.5.0  via stof/doctrine-extensions-bundle › gedmo/doctrine-extensions
+               marked abandoned by its repository; repository archived on GitHub; last release 2022-03-30 (4.5 years
+               ago); released 2022-03-30, before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=7.2&quot; has no upper bound</pre>
 
-The first 21 lines of a real run against wallabag's 200-package lock file, at 100 columns. Four of
-its 75 findings — [read the whole report](example-run.md).
+The first 17 lines of a real run against wallabag's 200-package lock file, at 120 columns. Four of
+its 83 findings — [read the whole report](example-run.md).
 { .lockrot-caption }
 
 A whole run on a smaller project, 52 packages, from the command to the summary block and the footer:
@@ -91,13 +87,16 @@ A whole run on a smaller project, 52 packages, from the command to the summary b
 - **`old-promise`** — the release predates the PHP version you are upgrading to, and its
   `require.php` constraint is open-ended (`>=7.2`), so Composer accepted it on a PHP nobody released
   it against. `composer check-platform-reqs` is satisfied too: `>=7.2` is true on 8.4.
+- **`left-behind`** — the release branch you installed from has had no release for years while a
+  higher branch of the same package keeps shipping. `composer outdated --major-only` says a newer
+  major exists; this says the branch you are on gets no fixes.
 
-A fifth verdict, `stale`, catches a package that is old on one of those fronts but not both — worth
+A sixth verdict, `stale`, catches a package that is old on one of those fronts but not both — worth
 knowing, rarely worth acting on. Every finding carries the evidence behind it, the date the data was
 read, and the chain of requirements that pulled the package in — what `composer why` shows for one
 package, for every finding at once: every direct requirement it is reachable from, not only the
 shortest one, and each direct requirement says what it pulls in.
-[What it reports](verdicts.md) has all eight verdicts and the priority rules.
+[What it reports](verdicts.md) has all nine verdicts and the priority rules.
 
 ## "Composer already warns me about abandoned packages"
 
@@ -113,6 +112,11 @@ lockrot reads that field too, and then keeps going. It asks when the last stable
 landed, when the repository was last pushed to, whether your lock file is holding a branch snapshot
 rather than a version, and whether a release made an open-ended PHP promise it was never tested
 against. It reads `composer.lock` and `composer.json`, and it writes to neither.
+
+The security advisories `composer audit` reports are on lockrot's findings too, fetched through the
+same Composer advisory API. From 0.7.0 on, an advisory on an `abandoned`, `silent` or `left-behind`
+package that no listed release fixes reads `no fix expected` and raises the priority one step: the
+vulnerability is the same, the chance of a patch is not.
 
 ## In CI
 
@@ -172,7 +176,7 @@ anything else, add an entry with a reason to `extra.lockrot.ignore` —
 
 | Page | What is on it |
 |---|---|
-| [What it reports](verdicts.md) | The eight verdicts, the signals behind them, and how priority is assigned |
+| [What it reports](verdicts.md) | The nine verdicts, the signals behind them, and how priority is assigned |
 | [Configuration](configuration.md) | `extra.lockrot`, every option, and the command-line flags |
 | [In CI](ci.md) | GitHub Actions, GitLab CI, SARIF, PR comments |
 | [Baseline](baseline.md) | Accept today's findings, fail on new and worsened ones |
