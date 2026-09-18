@@ -2,13 +2,13 @@
 
 > lockrot finds abandoned, unmaintained and branch-pinned packages in a PHP project's composer.lock, and releases that promise a PHP version they were never tested against. It is a Composer plugin and a standalone PHAR, MIT-licensed, for PHP 7.4+ and Composer 2.2+. It reads composer.json and composer.lock and writes to neither.
 
-`composer audit --abandoned` reads one field, the `abandoned` marker a maintainer sets by hand on Packagist. lockrot reads that field too, then checks when the last stable release landed, when the repository was last pushed to, whether the lock file holds a branch snapshot instead of a version, and whether a release's open-ended `require.php` constraint predates the PHP version the project targets. Every finding carries its evidence, a priority and the chain of requirements that pulled the package in.
+`composer audit --abandoned` reads one field, the `abandoned` marker a maintainer sets by hand on Packagist. lockrot reads that field too, then checks when the last stable release landed, when the repository was last pushed to, whether the lock file holds a branch snapshot instead of a version, and whether a release's open-ended `require.php` constraint predates the PHP version the project targets. Every finding carries its evidence, a priority, the chain of requirements that pulled the package in, and, from 0.7.0, the security advisories `composer audit` would report for it.
 
 Install: `composer require --dev somework/lockrot`, or download https://lockrot.dev/lockrot.phar. Run: `composer lockrot --target-php=8.4`. In CI: `--fail-on=<verdict or priority>`; exit 0 is clean, 1 means a finding reached the threshold, 2 is lockrot's own error.
 
 ## Reference
 
-- [Verdicts and priority](https://lockrot.dev/verdicts/): the eight verdicts (abandoned, silent, pinned, old-promise, stale, unknown, finished, ok), the signals behind them, how priority is assigned
+- [Verdicts and priority](https://lockrot.dev/verdicts/): the nine verdicts (abandoned, silent, pinned, left-behind, old-promise, stale, unknown, finished, ok), the signals behind them, how priority is assigned, and how security advisories with no fix expected raise it
 - [Configuration](https://lockrot.dev/configuration/): every `extra.lockrot` key, environment overrides, CLI options, caching, the allowlist
 - [In CI](https://lockrot.dev/ci/): the GitHub Action, exit codes, and the github, sarif, gitlab, markdown and json formats
 - [Baseline](https://lockrot.dev/baseline/): accept today's findings, fail only on new and worsened ones
