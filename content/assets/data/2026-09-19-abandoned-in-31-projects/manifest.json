@@ -17,7 +17,9 @@
    "commit": "55669f7cc427f15bd8abf110e3cb2c0cdc422467",
    "lock_path": "composer.lock",
    "stars": 10127,
-   "report": "akaunting.json"
+   "report": "akaunting.json",
+   "commit_url": "https://github.com/akaunting/akaunting/tree/55669f7cc427f15bd8abf110e3cb2c0cdc422467",
+   "lock_url": "https://github.com/akaunting/akaunting/blob/55669f7cc427f15bd8abf110e3cb2c0cdc422467/composer.lock"
   },
   {
    "name": "ampache",
@@ -26,7 +28,9 @@
    "commit": "14d52c92973d11a649ebeabc2712b990dc9dca9a",
    "lock_path": "composer.lock",
    "stars": 3831,
-   "report": "ampache.json"
+   "report": "ampache.json",
+   "commit_url": "https://github.com/ampache/ampache/tree/14d52c92973d11a649ebeabc2712b990dc9dca9a",
+   "lock_url": "https://github.com/ampache/ampache/blob/14d52c92973d11a649ebeabc2712b990dc9dca9a/composer.lock"
   },
   {
    "name": "bookstack",
@@ -35,7 +39,9 @@
    "commit": "cf133540b13073e18e08f10b65a2aff2be0f155e",
    "lock_path": "composer.lock",
    "stars": 19050,
-   "report": "bookstack.json"
+   "report": "bookstack.json",
+   "commit_url": "https://github.com/BookStackApp/BookStack/tree/cf133540b13073e18e08f10b65a2aff2be0f155e",
+   "lock_url": "https://github.com/BookStackApp/BookStack/blob/cf133540b13073e18e08f10b65a2aff2be0f155e/composer.lock"
   },
   {
    "name": "cachet",
@@ -44,7 +50,9 @@
    "commit": "188d8c81878fe942aeae3c74b6bed81d3cae9288",
    "lock_path": "composer.lock",
    "stars": 15244,
-   "report": "cachet.json"
+   "report": "cachet.json",
+   "commit_url": "https://github.com/cachethq/cachet/tree/188d8c81878fe942aeae3c74b6bed81d3cae9288",
+   "lock_url": "https://github.com/cachethq/cachet/blob/188d8c81878fe942aeae3c74b6bed81d3cae9288/composer.lock"
   },
   {
    "name": "chamilo-lms",
@@ -53,7 +61,9 @@
    "commit": "cd3efcb74dcf4244d3a18a94fefa585523f18d66",
    "lock_path": "composer.lock",
    "stars": 1004,
-   "report": "chamilo-lms.json"
+   "report": "chamilo-lms.json",
+   "commit_url": "https://github.com/chamilo/chamilo-lms/tree/cd3efcb74dcf4244d3a18a94fefa585523f18d66",
+   "lock_url": "https://github.com/chamilo/chamilo-lms/blob/cd3efcb74dcf4244d3a18a94fefa585523f18d66/composer.lock"
   },
   {
    "name": "concretecms",
@@ -62,7 +72,9 @@
    "commit": "66d3f3d614e26e4b7955b967fed133a8acdb6820",
    "lock_path": "composer.lock",
    "stars": 851,
-   "report": "concretecms.json"
+   "report": "concretecms.json",
+   "commit_url": "https://github.com/concretecms/concretecms/tree/66d3f3d614e26e4b7955b967fed133a8acdb6820",
+   "lock_url": "https://github.com/concretecms/concretecms/blob/66d3f3d614e26e4b7955b967fed133a8acdb6820/composer.lock"
   },
   {
    "name": "demo",
@@ -71,7 +83,9 @@
    "commit": "8d2e2ef75c3e18df173d8bf2379a14abb58c4c31",
    "lock_path": "composer.lock",
    "stars": 2620,
-   "report": "demo.json"
+   "report": "demo.json",
+   "commit_url": "https://github.com/symfony/demo/tree/8d2e2ef75c3e18df173d8bf2379a14abb58c4c31",
+   "lock_url": "https://github.com/symfony/demo/blob/8d2e2ef75c3e18df173d8bf2379a14abb58c4c31/composer.lock"
   },
   {
    "name": "drupal",
@@ -80,7 +94,9 @@
    "commit": "c0277ee2f7b0c402d7cd7eb35e8b8f193efe6543",
    "lock_path": "composer.lock",
    "stars": 4286,
-   "report": "drupal.json"
+   "report": "drupal.json",
+   "commit_url": "https://github.com/drupal/drupal/tree/c0277ee2f7b0c402d7cd7eb35e8b8f193efe6543",
+   "lock_url": "https://github.com/drupal/drupal/blob/c0277ee2f7b0c402d7cd7eb35e8b8f193efe6543/composer.lock"
   },
   {
    "name": "espocrm",
@@ -89,7 +105,9 @@
    "commit": "8499172c1b631e6fff57093445e11e2440788d6f",
    "lock_path": "composer.lock",
    "stars": 3372,
-   "report": "espocrm.json"
+   "report": "espocrm.json",
+   "commit_url": "https://github.com/espocrm/espocrm/tree/8499172c1b631e6fff57093445e11e2440788d6f",
+   "lock_url": "https://github.com/espocrm/espocrm/blob/8499172c1b631e6fff57093445e11e2440788d6f/composer.lock"
   },
   {
    "name": "firefly-iii",
@@ -98,7 +116,9 @@
    "commit": "99f9b7477d064b1d1729a4348e43fffef1b385ce",
    "lock_path": "composer.lock",
    "stars": 24668,
-   "report": "firefly-iii.json"
+   "report": "firefly-iii.json",
+   "commit_url": "https://github.com/firefly-iii/firefly-iii/tree/99f9b7477d064b1d1729a4348e43fffef1b385ce",
+   "lock_url": "https://github.com/firefly-iii/firefly-iii/blob/99f9b7477d064b1d1729a4348e43fffef1b385ce/composer.lock"
   },
   {
    "name": "humhub",
@@ -107,7 +127,9 @@
    "commit": "cf51cf811d36d5c1ab59e2fd1e098d67786121ab",
    "lock_path": "composer.lock",
    "stars": 6747,
-   "report": "humhub.json"
+   "report": "humhub.json",
+   "commit_url": "https://github.com/humhub/humhub/tree/cf51cf811d36d5c1ab59e2fd1e098d67786121ab",
+   "lock_url": "https://github.com/humhub/humhub/blob/cf51cf811d36d5c1ab59e2fd1e098d67786121ab/composer.lock"
   },
   {
    "name": "invoiceninja",
@@ -116,7 +138,9 @@
    "commit": "f1ffa5f9989afbed4e7dc80b5c0cc18944335ffc",
    "lock_path": "composer.lock",
    "stars": 10090,
-   "report": "invoiceninja.json"
+   "report": "invoiceninja.json",
+   "commit_url": "https://github.com/invoiceninja/invoiceninja/tree/f1ffa5f9989afbed4e7dc80b5c0cc18944335ffc",
+   "lock_url": "https://github.com/invoiceninja/invoiceninja/blob/f1ffa5f9989afbed4e7dc80b5c0cc18944335ffc/composer.lock"
   },
   {
    "name": "joomla-cms",
@@ -125,7 +149,9 @@
    "commit": "a8bd3564ef52e830069aeb91286c2fd67bb3872d",
    "lock_path": "composer.lock",
    "stars": 5140,
-   "report": "joomla-cms.json"
+   "report": "joomla-cms.json",
+   "commit_url": "https://github.com/joomla/joomla-cms/tree/a8bd3564ef52e830069aeb91286c2fd67bb3872d",
+   "lock_url": "https://github.com/joomla/joomla-cms/blob/a8bd3564ef52e830069aeb91286c2fd67bb3872d/composer.lock"
   },
   {
    "name": "kanboard",
@@ -134,7 +160,9 @@
    "commit": "cf53b54597b67b60140586c09c2fe6132ead013c",
    "lock_path": "composer.lock",
    "stars": 9873,
-   "report": "kanboard.json"
+   "report": "kanboard.json",
+   "commit_url": "https://github.com/kanboard/kanboard/tree/cf53b54597b67b60140586c09c2fe6132ead013c",
+   "lock_url": "https://github.com/kanboard/kanboard/blob/cf53b54597b67b60140586c09c2fe6132ead013c/composer.lock"
   },
   {
    "name": "koel",
@@ -143,7 +171,9 @@
    "commit": "51698046353dfc7dd4ee466580f9120d5a1f6762",
    "lock_path": "composer.lock",
    "stars": 17256,
-   "report": "koel.json"
+   "report": "koel.json",
+   "commit_url": "https://github.com/koel/koel/tree/51698046353dfc7dd4ee466580f9120d5a1f6762",
+   "lock_url": "https://github.com/koel/koel/blob/51698046353dfc7dd4ee466580f9120d5a1f6762/composer.lock"
   },
   {
    "name": "librenms",
@@ -152,7 +182,9 @@
    "commit": "4381e1a98a83a7b72599045095f6d5ef37bda2e6",
    "lock_path": "composer.lock",
    "stars": 4896,
-   "report": "librenms.json"
+   "report": "librenms.json",
+   "commit_url": "https://github.com/librenms/librenms/tree/4381e1a98a83a7b72599045095f6d5ef37bda2e6",
+   "lock_url": "https://github.com/librenms/librenms/blob/4381e1a98a83a7b72599045095f6d5ef37bda2e6/composer.lock"
   },
   {
    "name": "magento2",
@@ -161,7 +193,9 @@
    "commit": "874f1f5cdf3bc52b61c3d66becf159cc16345d7a",
    "lock_path": "composer.lock",
    "stars": 12198,
-   "report": "magento2.json"
+   "report": "magento2.json",
+   "commit_url": "https://github.com/magento/magento2/tree/874f1f5cdf3bc52b61c3d66becf159cc16345d7a",
+   "lock_url": "https://github.com/magento/magento2/blob/874f1f5cdf3bc52b61c3d66becf159cc16345d7a/composer.lock"
   },
   {
    "name": "matomo",
@@ -170,7 +204,9 @@
    "commit": "49225bef3528bf825b7fe1a986a219a82f0dd606",
    "lock_path": "composer.lock",
    "stars": 21888,
-   "report": "matomo.json"
+   "report": "matomo.json",
+   "commit_url": "https://github.com/matomo-org/matomo/tree/49225bef3528bf825b7fe1a986a219a82f0dd606",
+   "lock_url": "https://github.com/matomo-org/matomo/blob/49225bef3528bf825b7fe1a986a219a82f0dd606/composer.lock"
   },
   {
    "name": "mautic",
@@ -179,7 +215,9 @@
    "commit": "7912edbd7ede249ddbb2721abd6def94bee52f3e",
    "lock_path": "composer.lock",
    "stars": 10532,
-   "report": "mautic.json"
+   "report": "mautic.json",
+   "commit_url": "https://github.com/mautic/mautic/tree/7912edbd7ede249ddbb2721abd6def94bee52f3e",
+   "lock_url": "https://github.com/mautic/mautic/blob/7912edbd7ede249ddbb2721abd6def94bee52f3e/composer.lock"
   },
   {
    "name": "monica",
@@ -188,7 +226,9 @@
    "commit": "e08e91734170b6bbd582cb578532c3948196124e",
    "lock_path": "composer.lock",
    "stars": 25336,
-   "report": "monica.json"
+   "report": "monica.json",
+   "commit_url": "https://github.com/monicahq/monica/tree/e08e91734170b6bbd582cb578532c3948196124e",
+   "lock_url": "https://github.com/monicahq/monica/blob/e08e91734170b6bbd582cb578532c3948196124e/composer.lock"
   },
   {
    "name": "moodle",
@@ -197,7 +237,9 @@
    "commit": "e68a1418bea512dd5992c29eb9e36570a3844e94",
    "lock_path": "composer.lock",
    "stars": 7418,
-   "report": "moodle.json"
+   "report": "moodle.json",
+   "commit_url": "https://github.com/moodle/moodle/tree/e68a1418bea512dd5992c29eb9e36570a3844e94",
+   "lock_url": "https://github.com/moodle/moodle/blob/e68a1418bea512dd5992c29eb9e36570a3844e94/composer.lock"
   },
   {
    "name": "opencart",
@@ -206,7 +248,9 @@
    "commit": "c78dd969319ba2c7ea86ab3c0bd292d830b92df2",
    "lock_path": "composer.lock",
    "stars": 8201,
-   "report": "opencart.json"
+   "report": "opencart.json",
+   "commit_url": "https://github.com/opencart/opencart/tree/c78dd969319ba2c7ea86ab3c0bd292d830b92df2",
+   "lock_url": "https://github.com/opencart/opencart/blob/c78dd969319ba2c7ea86ab3c0bd292d830b92df2/composer.lock"
   },
   {
    "name": "panel",
@@ -215,7 +259,9 @@
    "commit": "113ea43d0d48f48d567c9d91e4a7d5b5bb8876e3",
    "lock_path": "composer.lock",
    "stars": 9246,
-   "report": "panel.json"
+   "report": "panel.json",
+   "commit_url": "https://github.com/pterodactyl/panel/tree/113ea43d0d48f48d567c9d91e4a7d5b5bb8876e3",
+   "lock_url": "https://github.com/pterodactyl/panel/blob/113ea43d0d48f48d567c9d91e4a7d5b5bb8876e3/composer.lock"
   },
   {
    "name": "phpbb",
@@ -224,7 +270,9 @@
    "commit": "ccb3ac2e92a0f8f89fc3350ba136746db2578ed1",
    "lock_path": "phpBB/composer.lock",
    "stars": 2096,
-   "report": "phpbb.json"
+   "report": "phpbb.json",
+   "commit_url": "https://github.com/phpbb/phpbb/tree/ccb3ac2e92a0f8f89fc3350ba136746db2578ed1",
+   "lock_url": "https://github.com/phpbb/phpbb/blob/ccb3ac2e92a0f8f89fc3350ba136746db2578ed1/phpBB/composer.lock"
   },
   {
    "name": "phpmyadmin",
@@ -233,7 +281,9 @@
    "commit": "21ef436eff4013f6fa2200e072916eca4fc865bb",
    "lock_path": "composer.lock",
    "stars": 7939,
-   "report": "phpmyadmin.json"
+   "report": "phpmyadmin.json",
+   "commit_url": "https://github.com/phpmyadmin/phpmyadmin/tree/21ef436eff4013f6fa2200e072916eca4fc865bb",
+   "lock_url": "https://github.com/phpmyadmin/phpmyadmin/blob/21ef436eff4013f6fa2200e072916eca4fc865bb/composer.lock"
   },
   {
    "name": "pixelfed",
@@ -242,7 +292,9 @@
    "commit": "29877111d2fa9f28087de0d4eee144b2bdee63d6",
    "lock_path": "composer.lock",
    "stars": 7105,
-   "report": "pixelfed.json"
+   "report": "pixelfed.json",
+   "commit_url": "https://github.com/pixelfed/pixelfed/tree/29877111d2fa9f28087de0d4eee144b2bdee63d6",
+   "lock_url": "https://github.com/pixelfed/pixelfed/blob/29877111d2fa9f28087de0d4eee144b2bdee63d6/composer.lock"
   },
   {
    "name": "prestashop",
@@ -251,7 +303,9 @@
    "commit": "e5515d88ead3761a342c72bffb91446ba213ba13",
    "lock_path": "composer.lock",
    "stars": 9214,
-   "report": "prestashop.json"
+   "report": "prestashop.json",
+   "commit_url": "https://github.com/PrestaShop/PrestaShop/tree/e5515d88ead3761a342c72bffb91446ba213ba13",
+   "lock_url": "https://github.com/PrestaShop/PrestaShop/blob/e5515d88ead3761a342c72bffb91446ba213ba13/composer.lock"
   },
   {
    "name": "snipe-it",
@@ -260,7 +314,9 @@
    "commit": "4b16384c9289b0c4f1df0235bf6f1b58e08d3f0f",
    "lock_path": "composer.lock",
    "stars": 14959,
-   "report": "snipe-it.json"
+   "report": "snipe-it.json",
+   "commit_url": "https://github.com/snipe/snipe-it/tree/4b16384c9289b0c4f1df0235bf6f1b58e08d3f0f",
+   "lock_url": "https://github.com/snipe/snipe-it/blob/4b16384c9289b0c4f1df0235bf6f1b58e08d3f0f/composer.lock"
   },
   {
    "name": "suitecrm-core",
@@ -269,7 +325,9 @@
    "commit": "2cd77380bc838b8bd6c80f9fbe25855d73ef860c",
    "lock_path": "composer.lock",
    "stars": 281,
-   "report": "suitecrm-core.json"
+   "report": "suitecrm-core.json",
+   "commit_url": "https://github.com/salesagility/SuiteCRM-Core/tree/2cd77380bc838b8bd6c80f9fbe25855d73ef860c",
+   "lock_url": "https://github.com/salesagility/SuiteCRM-Core/blob/2cd77380bc838b8bd6c80f9fbe25855d73ef860c/composer.lock"
   },
   {
    "name": "typo3",
@@ -278,7 +336,9 @@
    "commit": "d74c1343dcd2b442dca896140e2be6258503abcc",
    "lock_path": "composer.lock",
    "stars": 1209,
-   "report": "typo3.json"
+   "report": "typo3.json",
+   "commit_url": "https://github.com/typo3/typo3/tree/d74c1343dcd2b442dca896140e2be6258503abcc",
+   "lock_url": "https://github.com/typo3/typo3/blob/d74c1343dcd2b442dca896140e2be6258503abcc/composer.lock"
   },
   {
    "name": "wallabag",
@@ -287,7 +347,9 @@
    "commit": "ac82cd088f21f34435376602e2d7ce291a0135dc",
    "lock_path": "composer.lock",
    "stars": 12970,
-   "report": "wallabag.json"
+   "report": "wallabag.json",
+   "commit_url": "https://github.com/wallabag/wallabag/tree/ac82cd088f21f34435376602e2d7ce291a0135dc",
+   "lock_url": "https://github.com/wallabag/wallabag/blob/ac82cd088f21f34435376602e2d7ce291a0135dc/composer.lock"
   }
  ]
 }
