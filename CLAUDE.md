@@ -54,6 +54,8 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
                        # (Cloudflare Web Analytics is injected at the edge and is already listed)
   llms.txt             # page map for AI search; check-nav.sh fails if a reference page is missing
   robots.txt
+  38ddaaca....txt      # IndexNow key file: the protocol proves ownership by serving the key at
+                       # its own URL, so it is public by design, not a secret (see Deploy)
 mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
 scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, mkdocs_hooks.py (MkDocs hooks: the landing
                        # page's Questions section becomes the FAQPage markup, read from the rendered HTML;
@@ -126,6 +128,14 @@ they go in — the reference pages there are the source of truth, not memory.
 `deploy.yml` builds and runs `wrangler deploy` on: a push to `main`, a `repository_dispatch` with
 `event_type: lockrot-release` (to be sent by lockrot's `phar.yml` after a release), a weekly
 schedule (the safety net for a dispatch that never arrived), or a manual run.
+After `wrangler deploy` the run announces the changed pages to the IndexNow engines — Bing,
+Yandex, Naver, Seznam; Google does not take part — with `indexnowkit/indexnow-action`. MkDocs
+stamps every page in the sitemap with the build date, so `lastmod` cannot say what moved; the
+action's `new-only` keeps a state file (cached between runs under `.indexnow`) and announces each
+page once per change. It reads `site/sitemap.xml` from the checkout, checks that
+`https://lockrot.dev/<key>.txt` is served before sending anything, and never fails the deploy.
+The key is in the workflow and in `content/<key>.txt` on purpose: the protocol publishes it.
+
 Secrets on the `production` environment: `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit on the
 account), `CLOUDFLARE_ACCOUNT_ID`. Until the Cloudflare side is switched over, the old Workers
 Builds connection on the lockrot repo still deploys the same Worker — see README "Cutover".
@@ -137,4 +147,5 @@ Builds connection on the lockrot repo still deploys the same Worker — see READ
 - Do not edit files under `build/` or `.lockrot/`; they are overwritten by the next build.
 - Do not drop `--strict`, `check-nav.sh` or an action's SHA pin to get a build green.
 - Do not hand-edit `requirements.txt`; change `requirements.in` and re-run pip-compile.
-- Do not paste tokens, deploy hook URLs or account ids into committed files.
+- Do not paste tokens, deploy hook URLs or account ids into committed files. The IndexNow key is
+  not one of those: the protocol requires the site to serve it.

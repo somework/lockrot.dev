@@ -35,3 +35,24 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+      # Tell the IndexNow engines — Bing, Yandex, Naver, Seznam; Google does not take part — which
+      # pages this deploy changed. MkDocs stamps every page in the sitemap with the build date, so
+      # `lastmod` cannot say what actually moved; `new-only` keeps a small state file between runs
+      # and announces each page once per change. The sitemap is read from the checkout, so nothing
+      # waits for the deploy to propagate. A search engine that will not listen is not a failed
+      # deploy, hence `fail-on-error: false`.
+      #
+      # `key` is not a secret: the protocol proves ownership by serving it at
+      # https://lockrot.dev/<key>.txt, which is content/38ddaaca504b025498fe10e1b956d1d3.txt here.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .indexnow
+          key: indexnow-${{ github.run_id }}
+          restore-keys: indexnow-
+      - uses: indexnowkit/indexnow-action@77ce1f29f9abec488847db6d5c204aabb8f2a102 # v1.0.1
+        with:
+          key: 38ddaaca504b025498fe10e1b956d1d3
+          base-url: https://lockrot.dev
+          sitemap: site/sitemap.xml
+          new-only: "true"
+          fail-on-error: "false"
