@@ -4,7 +4,7 @@ date: 2026-09-20
 authors: [igor]
 categories: [Dependency rot]
 slug: composer-audit-abandoned-misses
-description: 129 packages in 31 open-source PHP projects are abandoned, archived or five years silent. composer audit --abandoned reports 62. Where the rest hide, and why.
+description: 129 packages in 31 open-source PHP projects are abandoned, archived or five years silent. composer audit --abandoned reports 62, and the lock file explains why.
 ---
 
 # What composer audit --abandoned misses in 31 PHP projects
@@ -94,9 +94,9 @@ $ curl -s https://repo.packagist.org/p2/doctrine/annotations.json | jq '.package
 true
 ```
 
-Eleven lock entries in the sample sit in that gap — four in PrestaShop, three in wallabag, two in
-SuiteCRM, one each in Concrete CMS and Joomla — eight distinct packages. Three of the eight are ones
-a PHP developer already knows about: `doctrine/annotations` gave way to attributes,
+Eleven lock entries in the sample sit in that gap: four in PrestaShop, three in wallabag, two in
+SuiteCRM, one each in Concrete CMS and Joomla. They are eight distinct packages, and three of the
+eight a PHP developer will already know about: `doctrine/annotations` gave way to attributes,
 `composer/package-versions-deprecated` says so in its name, `symfony/security-guard` was removed
 in Symfony 6. `microsoft/azure-storage-blob` is not one of those: marked abandoned and archived by
 Microsoft with no replacement named, an Azure storage client that handles account keys, in
@@ -104,10 +104,10 @@ SuiteCRM's production lock, and invisible to `composer audit`. The other four ar
 `doctrine/cache`, `behat/transliterator`, `jakeasmith/http_build_url` and
 `marcusschwarz/lesserphp`.
 
-"Just run `composer update`" closes the gap for the entries it resolves, and that is where the gap
-comes from: the marker is learned at update time, on a laptop, and not in CI on a branch that
-deliberately does not update. A partial update rewrites only the entries it resolved. On a
-throwaway project with `doctrine/annotations` 2.0.2 and the field removed from its entry, Composer
+"Just run `composer update`" closes the gap for the entries it resolves, and that is also where
+the gap comes from: you learn about the marker when you update, on your laptop, and not in CI on a
+release branch that on purpose does not update. A partial update rewrites only the entries it
+resolved. On a throwaway project with `doctrine/annotations` 2.0.2 and the field removed from its entry, Composer
 2.10.3 (funding and plugin lines trimmed):
 
 ```console
@@ -136,18 +136,19 @@ of 2024.
 The third command is the one that does ask: `composer outdated` (and `composer show --latest`)
 fetches current metadata and prints the warning for all three wallabag packages, whatever the lock
 says, and `--strict` exits 1 for them too, since an abandoned package counts as outdated even at
-its newest release — as does every package with a newer version, which makes it a noisy gate. It
+its newest release. So does every package with a newer version, which makes it a noisy gate, and it
 says nothing about the 56 below.
 
 `composer audit` already accepts that one property of a locked package changes after the lock is
-written — that is what the advisory request is for. Abandonment is the same kind of property: it
+written; the advisory request exists for exactly that. Abandonment is the same kind of property: it
 describes the package upstream today, not the version installed. lockrot asks because it reads each
 package's repository metadata for the release dates anyway, through Composer's own repository layer
 and cache; the marker is in the same file.
 
 ## The 56 nobody marked
 
-The marker is set on Packagist by the maintainer. Nothing derives it from the repository: two
+I expected the marker to cover most of the dead packages; it covers 73 of the 129. The maintainer
+sets it on Packagist, and nothing derives it from the repository: two
 packages in the sample are archived on GitHub and carry no marker (`pear/console_color2`,
 `sebastian/resource-operations`). The other 54 have had no stable release and no push to any
 branch for at least five years, lockrot's `silent`. None of the 31 projects gets a word about any
@@ -181,8 +182,8 @@ years, 54 at the default five, 33 at seven, 11 at ten.
 `silent` is an observation, not a judgement. `ircmaxell/random-lib` does what `random_bytes()`
 has done in core since PHP 7; `spomky-labs/base64url` encodes base64url and will not need a
 release in 2035 either. That is what the [allowlist](../../configuration.md#the-allowlist) is
-for: name the package, say why, and the report calls it `finished` from then on. The point is that
-the decision gets made by someone who looked, rather than by a field nobody set.
+for: name the package, say why, and the report calls it `finished` from then on. Both take
+someone looking at the package; the marker does not.
 
 ## In CI
 
