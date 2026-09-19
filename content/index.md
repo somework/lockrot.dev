@@ -71,9 +71,9 @@ The first 17 lines of a real run against wallabag's 200-package lock file, at 12
 its 83 findings — [read the whole report](example-run.md).
 { .lockrot-caption }
 
-A whole run on a smaller project, 52 packages, from the command to the summary block and the footer:
+A whole run on a smaller project, 156 packages, from the command to the summary block and the footer:
 
-![lockrot in a terminal: two critical and five high findings with their evidence, then the summary counts by verdict and priority and the "Data as of" footer](assets/lockrot-demo.gif){ .lockrot-demo width="1228" height="884" loading="lazy" }
+![lockrot in a terminal: one critical and four high findings — three of them left-behind, each with the constraint to require — then the medium and low rows, the summary counts by verdict and priority and the "Data as of" footer](assets/lockrot-demo.gif){ .lockrot-demo width="1214" height="983" loading="lazy" }
 
 ## What it looks for
 
@@ -89,7 +89,9 @@ A whole run on a smaller project, 52 packages, from the command to the summary b
   it against. `composer check-platform-reqs` is satisfied too: `>=7.2` is true on 8.4.
 - **`left-behind`** — the release branch you installed from has had no release for years while a
   higher branch of the same package keeps shipping. `composer outdated --major-only` says a newer
-  major exists; this says the branch you are on gets no fixes.
+  major exists; this says the branch you are on gets no fixes, and from 0.8.0 on names the
+  constraint that follows the fixes (`require ^7.2 to follow`), written as `composer require`
+  writes it.
 
 A sixth verdict, `stale`, catches a package that is old on one of those fronts but not both — worth
 knowing, rarely worth acting on. Every finding carries the evidence behind it, the date the data was
