@@ -1,0 +1,126 @@
+{
+    "check": {
+        "status": "warning",
+        "environment": "prod",
+        "items": [
+            {
+                "level": "ok",
+                "code": "environment.name",
+                "message": "environment: prod",
+                "host": null
+            },
+            {
+                "level": "warning",
+                "code": "config.strict_hosts",
+                "message": "strict_hosts is off: URLs of any host this application is reached under (a staging copy, an internal hostname) are submitted under the lockrot.dev key. Set strict_hosts: true unless that is intended.",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "config.base_url",
+                "message": "base_url: https://lockrot.dev",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "config.engines",
+                "message": "engines: api",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "config.delivery",
+                "message": "dispatch: sync, debounce: 600s, batch: 10000, throttle: 60/min, timeout: 10s",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "key_file.status",
+                "message": "lockrot.dev: key file OK (https://lockrot.dev/38dd********.txt)",
+                "host": "lockrot.dev"
+            },
+            {
+                "level": "ok",
+                "code": "key_file.content_type",
+                "message": "lockrot.dev: Content-Type text/plain",
+                "host": "lockrot.dev"
+            },
+            {
+                "level": "ok",
+                "code": "key_file.cache_control",
+                "message": "lockrot.dev: key file cached for at most 0s (Cache-Control)",
+                "host": "lockrot.dev"
+            },
+            {
+                "level": "ok",
+                "code": "key_file.robots",
+                "message": "lockrot.dev: robots.txt does not block the key file",
+                "host": "lockrot.dev"
+            },
+            {
+                "level": "ok",
+                "code": "cli.sources",
+                "message": "configuration: the INDEXNOW_* variables",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "cli.state",
+                "message": "state: /state/state.sqlite (writable)",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "debounce.store",
+                "message": "debounce: 600s per URL, shared through store \"state\" (/state/state.sqlite)",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "sitemap.spool",
+                "message": "sitemap: documents are spooled to temp files in /tmp",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "verify.installed",
+                "message": "verify: installed, disabled (verify.enabled: false)",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "verify.sample",
+                "message": "verify sample: no sample given (check --sample=<url>, --sample-class=<class>)",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "history.store",
+                "message": "history: pdo store (indexnow_submissions)",
+                "host": null
+            },
+            {
+                "level": "ok",
+                "code": "history.records",
+                "message": "history: no records yet",
+                "host": null
+            }
+        ]
+    },
+    "results": [
+        "https://lockrot.dev/",
+        "https://lockrot.dev/baseline/",
+        "https://lockrot.dev/changelog/",
+        "https://lockrot.dev/ci/",
+        "https://lockrot.dev/configuration/",
+        "https://lockrot.dev/example-run/",
+        "https://lockrot.dev/install-time/",
+        "https://lockrot.dev/internals/",
+        "https://lockrot.dev/phar/",
+        "https://lockrot.dev/verdicts/",
+        "https://lockrot.dev/blog/",
+        "https://lockrot.dev/blog/2026/09/19/composer-audit-abandoned-misses/",
+        "https://lockrot.dev/blog/archive/2026/",
+        "https://lockrot.dev/blog/category/dependency-rot/"
+    ]
+}

@@ -49,10 +49,26 @@ jobs:
           path: .indexnow
           key: indexnow-${{ github.run_id }}
           restore-keys: indexnow-
-      - uses: indexnowkit/indexnow-action@77ce1f29f9abec488847db6d5c204aabb8f2a102 # v1.0.1
+      - id: indexnow
+        uses: indexnowkit/indexnow-action@77ce1f29f9abec488847db6d5c204aabb8f2a102 # v1.0.1
         with:
           key: 38ddaaca504b025498fe10e1b956d1d3
           base-url: https://lockrot.dev
           sitemap: site/sitemap.xml
           new-only: "true"
           fail-on-error: "false"
+      # The action is a container action: it runs as root and creates the state directory 0700,
+      # which the cache's post-step, running as the runner user, cannot read — `EACCES: permission
+      # denied, scandir '.indexnow'`, and with the state never saved `new-only` starts from nothing
+      # on every deploy and announces the whole sitemap again. `|| true` because a step that only
+      # fixes ownership must not decide whether a deploy succeeded.
+      - if: always()
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" .indexnow || true
+      # The action reports through the step summary and its outputs; the log stays silent. One line
+      # here says in the log what a deploy announced.
+      - if: always()
+        run: |
+          echo "indexnow submitted=${{ steps.indexnow.outputs.submitted }}" \
+               "skipped=${{ steps.indexnow.outputs.skipped }}" \
+               "failed=${{ steps.indexnow.outputs.failed }}"
