@@ -56,6 +56,9 @@ body[data-md-color-primary="black"] {
 body[data-md-color-scheme="slate"][data-md-color-primary="black"],
 body[data-md-color-scheme="slate"] {
   --md-typeset-a-color: #26c6b8;
+  /* Material's slate builtin-name colour (#9383e2) is 4.48:1 on the code background, a hair under
+     AA; this one is 5.0:1 and reads the same. */
+  --md-code-hl-constant-color: #9c8de6;
 }
 
 /* Colour alone does not mark a link: teal against body text is 1.2:1 on slate, far under the 3:1
