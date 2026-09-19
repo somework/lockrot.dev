@@ -1,0 +1,358 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:35:13+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 52,
+ "include_dev": false,
+ "not_from_composer_repository": 0,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 1,
+  "silent": 3,
+  "pinned": 2,
+  "left-behind": 0,
+  "old-promise": 1,
+  "stale": 0,
+  "unknown": 0,
+  "finished": 9,
+  "ok": 36
+ },
+ "priorities": {
+  "critical": 2,
+  "high": 5,
+  "medium": 0,
+  "low": 0,
+  "none": 45
+ },
+ "exposure": [
+  {
+   "package": "matomo/cache",
+   "flagged": 1
+  },
+  {
+   "package": "matomo/decompress",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [],
+ "findings": [
+  {
+   "package": "lox/xhprof",
+   "version": "dev-master",
+   "verdict": "abandoned",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S1",
+     "level": "high",
+     "summary": "marked abandoned by its repository",
+     "data": {
+      "replacement": null
+     }
+    },
+    {
+     "id": "S3",
+     "level": "high",
+     "summary": "repository archived on GitHub",
+     "data": {
+      "repo": "lox/xhprof",
+      "host": "github.com"
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-07-25 (4.2 years ago)",
+     "data": {
+      "last_push": "2022-07-25T12:43:58+00:00",
+      "repo": "lox/xhprof",
+      "host": "github.com",
+      "years": 4.2
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2015-08-31, before PHP 8.4 GA (2024-11-21); php constraint \">=5.2.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.2.0",
+      "released": "2015-08-31T22:07:48+00:00"
+     }
+    },
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-master",
+     "data": {
+      "version": "dev-master"
+     }
+    }
+   ],
+   "chain": [
+    "lox/xhprof"
+   ],
+   "direct_dependents": [
+    "lox/xhprof"
+   ],
+   "evidence": "marked abandoned by its repository; repository archived on GitHub; last push 2022-07-25 (4.2 years ago); released 2015-08-31, before PHP 8.4 GA (2024-11-21); php constraint \">=5.2.0\" has no upper bound; pinned to branch snapshot dev-master",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:13+00:00"
+  },
+  {
+   "package": "mustangostang/spyc",
+   "version": "0.6.3",
+   "verdict": "silent",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2019-09-10 (7.0 years ago)",
+     "data": {
+      "last_release": "2019-09-10T13:16:29+00:00",
+      "last_version": "0.6.3",
+      "years": 7
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2020-03-16 (6.5 years ago)",
+     "data": {
+      "last_push": "2020-03-16T01:12:27+00:00",
+      "repo": "mustangostang/spyc",
+      "host": "github.com",
+      "years": 6.5
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2019-09-10, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.1\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.1",
+      "released": "2019-09-10T13:16:29+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mustangostang/spyc"
+   ],
+   "direct_dependents": [
+    "matomo/device-detector",
+    "mustangostang/spyc"
+   ],
+   "evidence": "last release 2019-09-10 (7.0 years ago); last push 2020-03-16 (6.5 years ago); released 2019-09-10, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.1\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:13+00:00"
+  },
+  {
+   "package": "matomo/doctrine-cache-fork",
+   "version": "1.10.4",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2021-09-13 (5.0 years ago)",
+     "data": {
+      "last_release": "2021-09-13T22:06:08+00:00",
+      "last_version": "1.10.4",
+      "years": 5
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2021-09-13 (5.0 years ago)",
+     "data": {
+      "last_push": "2021-09-13T22:06:57+00:00",
+      "repo": "matomo-org/cache",
+      "host": "github.com",
+      "years": 5
+     }
+    }
+   ],
+   "chain": [
+    "matomo/cache",
+    "matomo/doctrine-cache-fork"
+   ],
+   "direct_dependents": [
+    "matomo/cache"
+   ],
+   "evidence": "last release 2021-09-13 (5.0 years ago); last push 2021-09-13 (5.0 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:13+00:00"
+  },
+  {
+   "package": "pear/console_getopt",
+   "version": "v1.4.3",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2019-11-20 (6.8 years ago)",
+     "data": {
+      "last_release": "2019-11-20T18:27:48+00:00",
+      "last_version": "v1.4.3",
+      "years": 6.8
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2021-08-11 (5.1 years ago)",
+     "data": {
+      "last_push": "2021-08-11T00:08:37+00:00",
+      "repo": "pear/Console_Getopt",
+      "host": "github.com",
+      "years": 5.1
+     }
+    }
+   ],
+   "chain": [
+    "matomo/decompress",
+    "pear/archive_tar",
+    "pear/pear-core-minimal",
+    "pear/console_getopt"
+   ],
+   "direct_dependents": [
+    "matomo/decompress"
+   ],
+   "evidence": "last release 2019-11-20 (6.8 years ago); last push 2021-08-11 (5.1 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:13+00:00"
+  },
+  {
+   "package": "matomo/referrer-spam-list",
+   "version": "dev-master",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-master",
+     "data": {
+      "version": "dev-master"
+     }
+    }
+   ],
+   "chain": [
+    "matomo/referrer-spam-list"
+   ],
+   "direct_dependents": [
+    "matomo/referrer-spam-list"
+   ],
+   "evidence": "pinned to branch snapshot dev-master",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:13+00:00"
+  },
+  {
+   "package": "matomo/searchengine-and-social-list",
+   "version": "dev-master",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-01-20 (3.7 years ago)",
+     "data": {
+      "last_release": "2023-01-20T11:12:22+00:00",
+      "last_version": "3.14.0",
+      "years": 3.7
+     }
+    },
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-master",
+     "data": {
+      "version": "dev-master"
+     }
+    }
+   ],
+   "chain": [
+    "matomo/searchengine-and-social-list"
+   ],
+   "direct_dependents": [
+    "matomo/searchengine-and-social-list"
+   ],
+   "evidence": "pinned to branch snapshot dev-master; last release 2023-01-20 (3.7 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:13+00:00"
+  },
+  {
+   "package": "pear/pear_exception",
+   "version": "v1.0.2",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2021-03-21 (5.5 years ago)",
+     "data": {
+      "last_release": "2021-03-21T15:43:46+00:00",
+      "last_version": "v1.0.2",
+      "years": 5.5
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2021-03-21, before PHP 8.4 GA (2024-11-21); php constraint \">=5.2.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.2.0",
+      "released": "2021-03-21T15:43:46+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "pear/pear_exception"
+   ],
+   "direct_dependents": [
+    "matomo/decompress",
+    "pear/pear_exception"
+   ],
+   "evidence": "released 2021-03-21, before PHP 8.4 GA (2024-11-21); php constraint \">=5.2.0\" has no upper bound; last release 2021-03-21 (5.5 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:13+00:00"
+  }
+ ]
+}

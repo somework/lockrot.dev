@@ -1,0 +1,599 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:35:04+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 138,
+ "include_dev": false,
+ "not_from_composer_repository": 0,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 2,
+  "silent": 2,
+  "pinned": 1,
+  "left-behind": 0,
+  "old-promise": 5,
+  "stale": 2,
+  "unknown": 0,
+  "finished": 20,
+  "ok": 106
+ },
+ "priorities": {
+  "critical": 3,
+  "high": 5,
+  "medium": 2,
+  "low": 2,
+  "none": 126
+ },
+ "exposure": [
+  {
+   "package": "binaryk/laravel-restify",
+   "flagged": 1
+  },
+  {
+   "package": "influxdata/influxdb-client-php",
+   "flagged": 1
+  },
+  {
+   "package": "jalle19/certificate-parser",
+   "flagged": 1
+  },
+  {
+   "package": "laravel-notification-channels/webpush",
+   "flagged": 1
+  },
+  {
+   "package": "laravel/framework",
+   "flagged": 1
+  },
+  {
+   "package": "tightenco/ziggy",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [],
+ "findings": [
+  {
+   "package": "influxdb/influxdb-php",
+   "version": "1.15.2",
+   "verdict": "abandoned",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S1",
+     "level": "high",
+     "summary": "marked abandoned by its repository",
+     "data": {
+      "replacement": null
+     }
+    },
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-12-26 (5.7 years ago)",
+     "data": {
+      "last_release": "2020-12-26T17:45:17+00:00",
+      "last_version": "1.15.2",
+      "years": 5.7
+     }
+    },
+    {
+     "id": "S3",
+     "level": "high",
+     "summary": "repository archived on GitHub",
+     "data": {
+      "repo": "influxdata/influxdb-php",
+      "host": "github.com"
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-11-15 (3.8 years ago)",
+     "data": {
+      "last_push": "2022-11-15T21:22:35+00:00",
+      "repo": "influxdata/influxdb-php",
+      "host": "github.com",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "influxdb/influxdb-php"
+   ],
+   "direct_dependents": [
+    "influxdb/influxdb-php"
+   ],
+   "evidence": "marked abandoned by its repository; repository archived on GitHub; last release 2020-12-26 (5.7 years ago); last push 2022-11-15 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "pear/console_color2",
+   "version": "0.1.2",
+   "verdict": "abandoned",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2012-10-23 (13.9 years ago)",
+     "data": {
+      "last_release": "2012-10-23T11:52:18+00:00",
+      "last_version": "0.1.2",
+      "years": 13.9
+     }
+    },
+    {
+     "id": "S3",
+     "level": "high",
+     "summary": "repository archived on GitHub",
+     "data": {
+      "repo": "pear/Console_Color2",
+      "host": "github.com"
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2014-10-03 (12.0 years ago)",
+     "data": {
+      "last_push": "2014-10-03T18:14:43+00:00",
+      "repo": "pear/Console_Color2",
+      "host": "github.com",
+      "years": 12
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2012-10-23, before PHP 8.4 GA (2024-11-21); php constraint \">=5.0.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.0.0",
+      "released": "2012-10-23T11:52:18+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "pear/console_color2"
+   ],
+   "direct_dependents": [
+    "pear/console_color2"
+   ],
+   "evidence": "repository archived on GitHub; last release 2012-10-23 (13.9 years ago); last push 2014-10-03 (12.0 years ago); released 2012-10-23, before PHP 8.4 GA (2024-11-21); php constraint \">=5.0.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "easybook/geshi",
+   "version": "v1.0.8.19",
+   "verdict": "silent",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2018-04-20 (8.4 years ago)",
+     "data": {
+      "last_release": "2018-04-20T18:19:44+00:00",
+      "last_version": "v1.0.8.19",
+      "years": 8.4
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2018-04-20 (8.4 years ago)",
+     "data": {
+      "last_push": "2018-04-20T18:20:50+00:00",
+      "repo": "easybook/geshi",
+      "host": "github.com",
+      "years": 8.4
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2018-04-20, before PHP 8.4 GA (2024-11-21); php constraint \">=5.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.0",
+      "released": "2018-04-20T18:19:44+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "easybook/geshi"
+   ],
+   "direct_dependents": [
+    "easybook/geshi"
+   ],
+   "evidence": "last release 2018-04-20 (8.4 years ago); last push 2018-04-20 (8.4 years ago); released 2018-04-20, before PHP 8.4 GA (2024-11-21); php constraint \">=5.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "spomky-labs/base64url",
+   "version": "v2.0.4",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-11-03 (5.9 years ago)",
+     "data": {
+      "last_release": "2020-11-03T09:10:25+00:00",
+      "last_version": "v2.0.4",
+      "years": 5.9
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2020-11-03 (5.9 years ago)",
+     "data": {
+      "last_push": "2020-11-03T09:12:52+00:00",
+      "repo": "Spomky-Labs/base64url",
+      "host": "github.com",
+      "years": 5.9
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-11-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1",
+      "released": "2020-11-03T09:10:25+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "laravel-notification-channels/webpush",
+    "minishlink/web-push",
+    "spomky-labs/base64url"
+   ],
+   "direct_dependents": [
+    "laravel-notification-channels/webpush"
+   ],
+   "evidence": "last release 2020-11-03 (5.9 years ago); last push 2020-11-03 (5.9 years ago); released 2020-11-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "librenms/laravel-vue-i18n-generator",
+   "version": "dev-master",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-10-11 (3.9 years ago)",
+     "data": {
+      "last_release": "2022-10-11T14:28:22+00:00",
+      "last_version": "0.1.48",
+      "years": 3.9
+     }
+    },
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-master",
+     "data": {
+      "version": "dev-master"
+     }
+    }
+   ],
+   "chain": [
+    "librenms/laravel-vue-i18n-generator"
+   ],
+   "direct_dependents": [
+    "librenms/laravel-vue-i18n-generator"
+   ],
+   "evidence": "pinned to branch snapshot dev-master; last release 2022-10-11 (3.9 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "amenadiel/jpgraph",
+   "version": "v4.1.1",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2021-04-27 (5.4 years ago)",
+     "data": {
+      "last_release": "2021-04-27T19:09:11+00:00",
+      "last_version": "v4.1.1",
+      "years": 5.4
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-03-13 (3.5 years ago)",
+     "data": {
+      "last_push": "2023-03-13T21:41:34+00:00",
+      "repo": "HuasoFoundries/jpgraph",
+      "host": "github.com",
+      "years": 3.5
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2021-04-27, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.0",
+      "released": "2021-04-27T19:09:11+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "amenadiel/jpgraph"
+   ],
+   "direct_dependents": [
+    "amenadiel/jpgraph"
+   ],
+   "evidence": "released 2021-04-27, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.0\" has no upper bound; last release 2021-04-27 (5.4 years ago); last push 2023-03-13 (3.5 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "clue/socket-raw",
+   "version": "v1.6.0",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-04-14 (4.4 years ago)",
+     "data": {
+      "last_release": "2022-04-14T14:58:06+00:00",
+      "last_version": "v1.6.0",
+      "years": 4.4
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-04-14, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3",
+      "released": "2022-04-14T14:58:06+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "clue/socket-raw"
+   ],
+   "direct_dependents": [
+    "clue/socket-raw"
+   ],
+   "evidence": "released 2022-04-14, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound; last release 2022-04-14 (4.4 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "librenms/plugin-interfaces",
+   "version": "1.0",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-08-15, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1",
+      "released": "2024-08-15T15:23:53+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "librenms/plugin-interfaces"
+   ],
+   "direct_dependents": [
+    "librenms/plugin-interfaces"
+   ],
+   "evidence": "released 2024-08-15, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "acmephp/ssl",
+   "version": "2.1.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-05-31 (4.3 years ago)",
+     "data": {
+      "last_release": "2022-05-31T16:44:35+00:00",
+      "last_version": "2.1.0",
+      "years": 4.3
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-06-07 (4.3 years ago)",
+     "data": {
+      "last_push": "2022-06-07T20:51:28+00:00",
+      "repo": "acmephp/ssl",
+      "host": "github.com",
+      "years": 4.3
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-05-31, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2022-05-31T16:44:35+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "jalle19/certificate-parser",
+    "acmephp/ssl"
+   ],
+   "direct_dependents": [
+    "jalle19/certificate-parser"
+   ],
+   "evidence": "released 2022-05-31, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound; last release 2022-05-31 (4.3 years ago); last push 2022-06-07 (4.3 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "clue/stream-filter",
+   "version": "v1.7.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-12-20, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3",
+      "released": "2023-12-20T15:40:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "influxdata/influxdb-client-php",
+    "php-http/client-common",
+    "php-http/message",
+    "clue/stream-filter"
+   ],
+   "direct_dependents": [
+    "influxdata/influxdb-client-php"
+   ],
+   "evidence": "released 2023-12-20, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "league/config",
+   "version": "v1.2.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-11 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-11T20:36:23+00:00",
+      "last_version": "v1.2.0",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "laravel/framework",
+    "league/commonmark",
+    "league/config"
+   ],
+   "direct_dependents": [
+    "laravel/framework",
+    "tightenco/ziggy"
+   ],
+   "evidence": "last release 2022-12-11 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  },
+  {
+   "package": "phpdocumentor/reflection-common",
+   "version": "2.2.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-06-27 (6.2 years ago)",
+     "data": {
+      "last_release": "2020-06-27T09:03:43+00:00",
+      "last_version": "2.2.0",
+      "years": 6.2
+     }
+    }
+   ],
+   "chain": [
+    "binaryk/laravel-restify",
+    "spatie/laravel-data",
+    "phpdocumentor/reflection-common"
+   ],
+   "direct_dependents": [
+    "binaryk/laravel-restify"
+   ],
+   "evidence": "last release 2020-06-27 (6.2 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:04+00:00"
+  }
+ ]
+}

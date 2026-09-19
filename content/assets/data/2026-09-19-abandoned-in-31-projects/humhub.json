@@ -1,0 +1,3825 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:34:26+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 210,
+ "include_dev": false,
+ "not_from_composer_repository": 58,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 2,
+  "silent": 10,
+  "pinned": 0,
+  "left-behind": 12,
+  "old-promise": 16,
+  "stale": 20,
+  "unknown": 58,
+  "finished": 17,
+  "ok": 75
+ },
+ "priorities": {
+  "critical": 5,
+  "high": 18,
+  "medium": 19,
+  "low": 18,
+  "none": 150
+ },
+ "exposure": [
+  {
+   "package": "kartik-v/yii2-widgets",
+   "flagged": 21
+  },
+  {
+   "package": "codeception/stub",
+   "flagged": 18
+  },
+  {
+   "package": "phpoffice/phpspreadsheet",
+   "flagged": 2
+  },
+  {
+   "package": "jbroadway/urlify",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [
+  "58 packages are not from a Composer repository and were not checked"
+ ],
+ "findings": [
+  {
+   "package": "symfony/sendinblue-mailer",
+   "version": "v5.4.45",
+   "verdict": "abandoned",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S1",
+     "level": "high",
+     "summary": "marked abandoned by its repository, replacement: symfony/brevo-mailer",
+     "data": {
+      "replacement": "symfony/brevo-mailer"
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/sendinblue-mailer"
+   ],
+   "direct_dependents": [
+    "symfony/sendinblue-mailer"
+   ],
+   "evidence": "marked abandoned by its repository, replacement: symfony/brevo-mailer; released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widgets",
+   "version": "v3.4.1",
+   "verdict": "silent",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2018-10-09 (7.9 years ago)",
+     "data": {
+      "last_release": "2018-10-09T17:40:19+00:00",
+      "last_version": "v3.4.1",
+      "years": 7.9
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2019-09-03 (7.0 years ago)",
+     "data": {
+      "last_push": "2019-09-03T03:11:12+00:00",
+      "repo": "kartik-v/yii2-widgets",
+      "host": "github.com",
+      "years": 7
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 21 flagged packages: kartik-v/yii2-widget-affix (silent), kartik-v/yii2-widget-rangeinput (silent), kartik-v/yii2-widget-sidenav (silent), kartik-v/yii2-widget-spinner (silent), kartik-v/yii2-widget-switchinput (silent) and 16 more",
+     "data": {
+      "flagged": 21,
+      "packages": [
+       {
+        "package": "kartik-v/yii2-widget-affix",
+        "verdict": "silent",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-affix"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-rangeinput",
+        "verdict": "silent",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-rangeinput"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-sidenav",
+        "verdict": "silent",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-sidenav"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-spinner",
+        "verdict": "silent",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-spinner"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-switchinput",
+        "verdict": "silent",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-switchinput"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-touchspin",
+        "verdict": "silent",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-touchspin"
+        ]
+       },
+       {
+        "package": "kartik-v/bootstrap-star-rating",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-rating",
+         "kartik-v/bootstrap-star-rating"
+        ]
+       },
+       {
+        "package": "kartik-v/dependent-dropdown",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-depdrop",
+         "kartik-v/dependent-dropdown"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-krajee-base",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-krajee-base"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-activeform",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-activeform"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-alert",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-alert"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-colorinput",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-colorinput"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-datepicker",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-datepicker"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-datetimepicker",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-datetimepicker"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-depdrop",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-depdrop"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-fileinput",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-fileinput"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-growl",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-growl"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-rating",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-rating"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-select2",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-select2"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-timepicker",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-timepicker"
+        ]
+       },
+       {
+        "package": "kartik-v/yii2-widget-typeahead",
+        "verdict": "stale",
+        "chain": [
+         "kartik-v/yii2-widgets",
+         "kartik-v/yii2-widget-typeahead"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2018-10-09 (7.9 years ago); last push 2019-09-03 (7.0 years ago); pulls in 21 flagged packages: kartik-v/yii2-widget-affix (silent), kartik-v/yii2-widget-rangeinput (silent), kartik-v/yii2-widget-sidenav (silent), kartik-v/yii2-widget-spinner (silent), kartik-v/yii2-widget-switchinput (silent) and 16 more",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "matthewbdaly/zendsearch",
+   "version": "0.0.3",
+   "verdict": "silent",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2019-09-28 (7.0 years ago)",
+     "data": {
+      "last_release": "2019-09-28T11:03:49+00:00",
+      "last_version": "0.0.3",
+      "years": 7
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2019-09-28 (7.0 years ago)",
+     "data": {
+      "last_push": "2019-09-28T13:45:58+00:00",
+      "repo": "matthewbdaly/ZendSearch",
+      "host": "github.com",
+      "years": 7
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2019-09-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1",
+      "released": "2019-09-28T11:03:49+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "matthewbdaly/zendsearch"
+   ],
+   "direct_dependents": [
+    "matthewbdaly/zendsearch"
+   ],
+   "evidence": "last release 2019-09-28 (7.0 years ago); last push 2019-09-28 (7.0 years ago); released 2019-09-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "raoul2000/yii2-jcrop-widget",
+   "version": "1.0.0",
+   "verdict": "silent",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2014-07-30 (12.1 years ago)",
+     "data": {
+      "last_release": "2014-07-30T15:40:38+00:00",
+      "last_version": "1.0.0",
+      "years": 12.1
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2018-01-28 (8.6 years ago)",
+     "data": {
+      "last_push": "2018-01-28T13:50:42+00:00",
+      "repo": "raoul2000/yii2-jcrop-widget",
+      "host": "github.com",
+      "years": 8.6
+     }
+    }
+   ],
+   "chain": [
+    "raoul2000/yii2-jcrop-widget"
+   ],
+   "direct_dependents": [
+    "raoul2000/yii2-jcrop-widget"
+   ],
+   "evidence": "last release 2014-07-30 (12.1 years ago); last push 2018-01-28 (8.6 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "xj/yii2-jplayer-widget",
+   "version": "2.7.0.3",
+   "verdict": "silent",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2015-07-02 (11.2 years ago)",
+     "data": {
+      "last_release": "2015-07-02T02:12:18+00:00",
+      "last_version": "2.9.0.1",
+      "years": 11.2
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2017-11-30 (8.8 years ago)",
+     "data": {
+      "last_push": "2017-11-30T02:55:14+00:00",
+      "repo": "xjflyttp/yii2-jplayer-widget",
+      "host": "github.com",
+      "years": 8.8
+     }
+    }
+   ],
+   "chain": [
+    "xj/yii2-jplayer-widget"
+   ],
+   "direct_dependents": [
+    "xj/yii2-jplayer-widget"
+   ],
+   "evidence": "last release 2015-07-02 (11.2 years ago); last push 2017-11-30 (8.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/resource-operations",
+   "version": "3.0.4",
+   "verdict": "abandoned",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S3",
+     "level": "high",
+     "summary": "repository archived on GitHub",
+     "data": {
+      "repo": "sebastianbergmann/resource-operations",
+      "host": "github.com"
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-03-14, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2024-03-14T16:00:52+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/resource-operations"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "repository archived on GitHub; released 2024-03-14, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-affix",
+   "version": "v1.0.0",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2014-11-09 (11.9 years ago)",
+     "data": {
+      "last_release": "2014-11-09T04:56:27+00:00",
+      "last_version": "v1.0.0",
+      "years": 11.9
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2018-02-07 (8.6 years ago)",
+     "data": {
+      "last_push": "2018-02-07T11:46:41+00:00",
+      "repo": "kartik-v/yii2-widget-affix",
+      "host": "github.com",
+      "years": 8.6
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-affix"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2014-11-09 (11.9 years ago); last push 2018-02-07 (8.6 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-rangeinput",
+   "version": "v1.0.2",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2018-09-07 (8.0 years ago)",
+     "data": {
+      "last_release": "2018-09-07T10:05:08+00:00",
+      "last_version": "v1.0.2",
+      "years": 8
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2018-11-05 (7.9 years ago)",
+     "data": {
+      "last_push": "2018-11-05T12:34:59+00:00",
+      "repo": "kartik-v/yii2-widget-rangeinput",
+      "host": "github.com",
+      "years": 7.9
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-rangeinput"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2018-09-07 (8.0 years ago); last push 2018-11-05 (7.9 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-sidenav",
+   "version": "v1.0.1",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2021-04-08 (5.4 years ago)",
+     "data": {
+      "last_release": "2021-04-08T17:49:26+00:00",
+      "last_version": "v1.0.1",
+      "years": 5.4
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2021-09-07 (5.0 years ago)",
+     "data": {
+      "last_push": "2021-09-07T07:35:30+00:00",
+      "repo": "kartik-v/yii2-widget-sidenav",
+      "host": "github.com",
+      "years": 5
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-sidenav"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2021-04-08 (5.4 years ago); last push 2021-09-07 (5.0 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-spinner",
+   "version": "v1.0.1",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2018-10-09 (7.9 years ago)",
+     "data": {
+      "last_release": "2018-10-09T11:54:03+00:00",
+      "last_version": "v1.0.1",
+      "years": 7.9
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2019-05-25 (7.3 years ago)",
+     "data": {
+      "last_push": "2019-05-25T07:33:39+00:00",
+      "repo": "kartik-v/yii2-widget-spinner",
+      "host": "github.com",
+      "years": 7.3
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-spinner"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2018-10-09 (7.9 years ago); last push 2019-05-25 (7.3 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-switchinput",
+   "version": "v1.3.1",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2016-01-10 (10.7 years ago)",
+     "data": {
+      "last_release": "2016-01-10T16:47:35+00:00",
+      "last_version": "v1.3.1",
+      "years": 10.7
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2018-02-07 (8.6 years ago)",
+     "data": {
+      "last_push": "2018-02-07T11:45:58+00:00",
+      "repo": "kartik-v/yii2-widget-switchinput",
+      "host": "github.com",
+      "years": 8.6
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-switchinput"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2016-01-10 (10.7 years ago); last push 2018-02-07 (8.6 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-touchspin",
+   "version": "v1.2.4",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2021-09-02 (5.0 years ago)",
+     "data": {
+      "last_release": "2021-09-02T12:50:50+00:00",
+      "last_version": "v1.2.4",
+      "years": 5
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2021-09-02 (5.0 years ago)",
+     "data": {
+      "last_push": "2021-09-02T12:51:43+00:00",
+      "repo": "kartik-v/yii2-widget-touchspin",
+      "host": "github.com",
+      "years": 5
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-touchspin"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2021-09-02 (5.0 years ago); last push 2021-09-02 (5.0 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "yiisoft/yii2-symfonymailer",
+   "version": "2.0.4",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-09-04, before PHP 8.4 GA (2024-11-21); php constraint \">=7.4.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.4.0",
+      "released": "2022-09-04T10:48:21+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 2.x last released 2022-09-04 (4.0 years ago); 4.x released 4.0.0 (2024-01-29)",
+     "data": {
+      "branch": "2.x",
+      "branch_last_release": "2022-09-04T10:48:21+00:00",
+      "branch_last_version": "2.0.4",
+      "years": 4,
+      "newest_branch": "4.x",
+      "newest_version": "4.0.0",
+      "newest_release": "2024-01-29T14:13:45+00:00",
+      "suggested_constraint": "^4.0"
+     }
+    }
+   ],
+   "chain": [
+    "yiisoft/yii2-symfonymailer"
+   ],
+   "direct_dependents": [
+    "yiisoft/yii2-symfonymailer"
+   ],
+   "evidence": "branch 2.x last released 2022-09-04 (4.0 years ago); 4.x released 4.0.0 (2024-01-29); require ^4.0 to follow; released 2022-09-04, before PHP 8.4 GA (2024-11-21); php constraint \">=7.4.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "cebe/markdown",
+   "version": "1.2.1",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2018-03-26 (8.5 years ago)",
+     "data": {
+      "last_release": "2018-03-26T11:24:36+00:00",
+      "last_version": "1.2.1",
+      "years": 8.5
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-10-04 (4.0 years ago)",
+     "data": {
+      "last_push": "2022-10-04T04:54:35+00:00",
+      "repo": "cebe/markdown",
+      "host": "github.com",
+      "years": 4
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2018-03-26, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.4.0",
+      "released": "2018-03-26T11:24:36+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "cebe/markdown"
+   ],
+   "direct_dependents": [
+    "cebe/markdown",
+    "raoul2000/yii2-jcrop-widget",
+    "xj/yii2-jplayer-widget",
+    "yiisoft/yii2",
+    "yiisoft/yii2-authclient",
+    "yiisoft/yii2-bootstrap5",
+    "yiisoft/yii2-httpclient",
+    "yiisoft/yii2-imagine",
+    "yiisoft/yii2-jui",
+    "yiisoft/yii2-queue",
+    "yiisoft/yii2-redis",
+    "yiisoft/yii2-symfonymailer"
+   ],
+   "evidence": "released 2018-03-26, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound; last release 2018-03-26 (8.5 years ago); last push 2022-10-04 (4.0 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/amazon-mailer",
+   "version": "v5.4.45",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/amazon-mailer"
+   ],
+   "direct_dependents": [
+    "symfony/amazon-mailer"
+   ],
+   "evidence": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/google-mailer",
+   "version": "v5.4.45",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/google-mailer"
+   ],
+   "direct_dependents": [
+    "symfony/google-mailer"
+   ],
+   "evidence": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/mailchimp-mailer",
+   "version": "v5.4.45",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/mailchimp-mailer"
+   ],
+   "direct_dependents": [
+    "symfony/mailchimp-mailer"
+   ],
+   "evidence": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/mailer",
+   "version": "v5.4.45",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    },
+    {
+     "id": "S9",
+     "level": "warn",
+     "summary": "1 security advisory affects v5.4.45 (CVE-2026-45068); fixed by v5.4.52",
+     "data": {
+      "advisories": [
+       {
+        "id": "PKSA-28rh-rzzn-djk4",
+        "cve": "CVE-2026-45068",
+        "title": "CVE-2026-45068: Argument Injection in SendmailTransport via Dash-Prefixed Recipient Address",
+        "link": "https://symfony.com/cve-2026-45068",
+        "severity": "medium",
+        "reported_at": "2026-05-20T08:00:00+00:00",
+        "affected_versions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+        "fixed_by": "v5.4.52",
+        "fixed_on_branch": true
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "symfony/mailer"
+   ],
+   "direct_dependents": [
+    "symfony/amazon-mailer",
+    "symfony/google-mailer",
+    "symfony/mail-pace-mailer",
+    "symfony/mailchimp-mailer",
+    "symfony/mailer",
+    "symfony/mailgun-mailer",
+    "symfony/mailjet-mailer",
+    "symfony/postmark-mailer",
+    "symfony/sendgrid-mailer",
+    "symfony/sendinblue-mailer",
+    "yiisoft/yii2-symfonymailer"
+   ],
+   "evidence": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound; 1 security advisory affects v5.4.45 (CVE-2026-45068); fixed by v5.4.52",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/mailgun-mailer",
+   "version": "v5.4.45",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/mailgun-mailer"
+   ],
+   "direct_dependents": [
+    "symfony/mailgun-mailer"
+   ],
+   "evidence": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/mailjet-mailer",
+   "version": "v5.4.45",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/mailjet-mailer"
+   ],
+   "direct_dependents": [
+    "symfony/mailjet-mailer"
+   ],
+   "evidence": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/mercure",
+   "version": "v0.6.5",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-04-08, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1.3",
+      "released": "2024-04-08T12:51:34+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/mercure"
+   ],
+   "direct_dependents": [
+    "symfony/mercure"
+   ],
+   "evidence": "released 2024-04-08, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/postmark-mailer",
+   "version": "v5.4.45",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/postmark-mailer"
+   ],
+   "direct_dependents": [
+    "symfony/postmark-mailer"
+   ],
+   "evidence": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "symfony/sendgrid-mailer",
+   "version": "v5.4.45",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2024-09-25T14:11:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "symfony/sendgrid-mailer"
+   ],
+   "direct_dependents": [
+    "symfony/sendgrid-mailer"
+   ],
+   "evidence": "released 2024-09-25, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "phpunit/php-file-iterator",
+   "version": "3.0.6",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2021-12-02, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2021-12-02T12:48:52+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 3.x last released 2021-12-02 (4.8 years ago); 7.x released 7.0.2 (2026-08-25)",
+     "data": {
+      "branch": "3.x",
+      "branch_last_release": "2021-12-02T12:48:52+00:00",
+      "branch_last_version": "3.0.6",
+      "years": 4.8,
+      "newest_branch": "7.x",
+      "newest_version": "7.0.2",
+      "newest_release": "2026-08-25T14:47:43+00:00",
+      "suggested_constraint": "^7.0"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phpunit/php-file-iterator"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 3.x last released 2021-12-02 (4.8 years ago); 7.x released 7.0.2 (2026-08-25); released 2021-12-02, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "phpunit/php-invoker",
+   "version": "3.1.1",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-09-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2020-09-28T05:58:55+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 3.x last released 2020-09-28 (6.0 years ago); 7.x released 7.0.0 (2026-02-06)",
+     "data": {
+      "branch": "3.x",
+      "branch_last_release": "2020-09-28T05:58:55+00:00",
+      "branch_last_version": "3.1.1",
+      "years": 6,
+      "newest_branch": "7.x",
+      "newest_version": "7.0.0",
+      "newest_release": "2026-02-06T04:34:47+00:00",
+      "suggested_constraint": "^7.0"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phpunit/php-invoker"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 3.x last released 2020-09-28 (6.0 years ago); 7.x released 7.0.0 (2026-02-06); released 2020-09-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "phpunit/php-text-template",
+   "version": "2.0.4",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2020-10-26T05:33:50+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 2.x last released 2020-10-26 (5.9 years ago); 6.x released 6.0.0 (2026-02-06)",
+     "data": {
+      "branch": "2.x",
+      "branch_last_release": "2020-10-26T05:33:50+00:00",
+      "branch_last_version": "2.0.4",
+      "years": 5.9,
+      "newest_branch": "6.x",
+      "newest_version": "6.0.0",
+      "newest_release": "2026-02-06T04:36:37+00:00",
+      "suggested_constraint": "^6.0"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phpunit/php-text-template"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 2.x last released 2020-10-26 (5.9 years ago); 6.x released 6.0.0 (2026-02-06); released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "phpunit/php-timer",
+   "version": "5.0.3",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2020-10-26T13:16:10+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 5.x last released 2020-10-26 (5.9 years ago); 9.x released 9.0.0 (2026-02-06)",
+     "data": {
+      "branch": "5.x",
+      "branch_last_release": "2020-10-26T13:16:10+00:00",
+      "branch_last_version": "5.0.3",
+      "years": 5.9,
+      "newest_branch": "9.x",
+      "newest_version": "9.0.0",
+      "newest_release": "2026-02-06T04:37:53+00:00",
+      "suggested_constraint": "^9.0"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phpunit/php-timer"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 5.x last released 2020-10-26 (5.9 years ago); 9.x released 9.0.0 (2026-02-06); released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/code-unit",
+   "version": "1.0.8",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2020-10-26T13:08:54+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 1.x last released 2020-10-26 (5.9 years ago); 3.x released 3.0.3 (2025-03-19)",
+     "data": {
+      "branch": "1.x",
+      "branch_last_release": "2020-10-26T13:08:54+00:00",
+      "branch_last_version": "1.0.8",
+      "years": 5.9,
+      "newest_branch": "3.x",
+      "newest_version": "3.0.3",
+      "newest_release": "2025-03-19T07:56:08+00:00",
+      "suggested_constraint": "^3.0"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/code-unit"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 1.x last released 2020-10-26 (5.9 years ago); 3.x released 3.0.3 (2025-03-19); released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/code-unit-reverse-lookup",
+   "version": "2.0.3",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-09-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2020-09-28T05:30:19+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 2.x last released 2020-09-28 (6.0 years ago); 4.x released 4.0.1 (2024-07-03)",
+     "data": {
+      "branch": "2.x",
+      "branch_last_release": "2020-09-28T05:30:19+00:00",
+      "branch_last_version": "2.0.3",
+      "years": 6,
+      "newest_branch": "4.x",
+      "newest_version": "4.0.1",
+      "newest_release": "2024-07-03T04:45:54+00:00",
+      "suggested_constraint": "^4.0"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phpunit/php-code-coverage",
+    "sebastian/code-unit-reverse-lookup"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 2.x last released 2020-09-28 (6.0 years ago); 4.x released 4.0.1 (2024-07-03); released 2020-09-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/environment",
+   "version": "5.1.5",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-02-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2023-02-03T06:03:51+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 5.x last released 2023-02-03 (3.6 years ago); 9.x released 9.3.2 (2026-05-25)",
+     "data": {
+      "branch": "5.x",
+      "branch_last_release": "2023-02-03T06:03:51+00:00",
+      "branch_last_version": "5.1.5",
+      "years": 3.6,
+      "newest_branch": "9.x",
+      "newest_version": "9.3.2",
+      "newest_release": "2026-05-25T13:41:38+00:00",
+      "suggested_constraint": "^9.3"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/environment"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 5.x last released 2023-02-03 (3.6 years ago); 9.x released 9.3.2 (2026-05-25); released 2023-02-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/object-enumerator",
+   "version": "4.0.4",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2020-10-26T13:12:34+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 4.x last released 2020-10-26 (5.9 years ago); 8.x released 8.1.0 (2026-08-13)",
+     "data": {
+      "branch": "4.x",
+      "branch_last_release": "2020-10-26T13:12:34+00:00",
+      "branch_last_version": "4.0.4",
+      "years": 5.9,
+      "newest_branch": "8.x",
+      "newest_version": "8.1.0",
+      "newest_release": "2026-08-13T07:05:05+00:00",
+      "suggested_constraint": "^8.1"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/object-enumerator"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 4.x last released 2020-10-26 (5.9 years ago); 8.x released 8.1.0 (2026-08-13); released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/object-reflector",
+   "version": "2.0.4",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2020-10-26T13:14:26+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 2.x last released 2020-10-26 (5.9 years ago); 6.x released 6.1.0 (2026-08-13)",
+     "data": {
+      "branch": "2.x",
+      "branch_last_release": "2020-10-26T13:14:26+00:00",
+      "branch_last_version": "2.0.4",
+      "years": 5.9,
+      "newest_branch": "6.x",
+      "newest_version": "6.1.0",
+      "newest_release": "2026-08-13T06:34:36+00:00",
+      "suggested_constraint": "^6.1"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/global-state",
+    "sebastian/object-reflector"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 2.x last released 2020-10-26 (5.9 years ago); 6.x released 6.1.0 (2026-08-13); released 2020-10-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/type",
+   "version": "3.2.1",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-02-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2023-02-03T06:13:03+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 3.x last released 2023-02-03 (3.6 years ago); 7.x released 7.0.2 (2026-08-10)",
+     "data": {
+      "branch": "3.x",
+      "branch_last_release": "2023-02-03T06:13:03+00:00",
+      "branch_last_version": "3.2.1",
+      "years": 3.6,
+      "newest_branch": "7.x",
+      "newest_version": "7.0.2",
+      "newest_release": "2026-08-10T08:00:57+00:00",
+      "suggested_constraint": "^7.0"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/type"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 3.x last released 2023-02-03 (3.6 years ago); 7.x released 7.0.2 (2026-08-10); released 2023-02-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/version",
+   "version": "3.0.2",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-09-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2020-09-28T06:39:44+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 3.x last released 2020-09-28 (6.0 years ago); 7.x released 7.0.0 (2026-02-06)",
+     "data": {
+      "branch": "3.x",
+      "branch_last_release": "2020-09-28T06:39:44+00:00",
+      "branch_last_version": "3.0.2",
+      "years": 6,
+      "newest_branch": "7.x",
+      "newest_version": "7.0.0",
+      "newest_release": "2026-02-06T04:52:52+00:00",
+      "suggested_constraint": "^7.0"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/version"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "branch 3.x last released 2020-09-28 (6.0 years ago); 7.x released 7.0.0 (2026-02-06); released 2020-09-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "phpunit/php-code-coverage",
+   "version": "9.2.32",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-08-22, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2024-08-22T04:23:01+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phpunit/php-code-coverage"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "released 2024-08-22, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/cli-parser",
+   "version": "1.0.2",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-03-02, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2024-03-02T06:27:43+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/cli-parser"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "released 2024-03-02, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/complexity",
+   "version": "2.0.3",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-12-22, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2023-12-22T06:19:30+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phpunit/php-code-coverage",
+    "sebastian/complexity"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "released 2023-12-22, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/diff",
+   "version": "4.0.6",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-03-02, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2024-03-02T06:30:58+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "sebastian/diff"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "released 2024-03-02, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "sebastian/lines-of-code",
+   "version": "1.0.4",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-12-22, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.3",
+      "released": "2023-12-22T06:20:34+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phpunit/php-code-coverage",
+    "sebastian/lines-of-code"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "released 2023-12-22, before PHP 8.4 GA (2024-11-21); php constraint \">=7.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "voku/stop-words",
+   "version": "2.0.1",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2018-11-23 (7.8 years ago)",
+     "data": {
+      "last_release": "2018-11-23T01:37:27+00:00",
+      "last_version": "2.0.1",
+      "years": 7.8
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2018-11-23, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.0.0",
+      "released": "2018-11-23T01:37:27+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "jbroadway/urlify",
+    "voku/stop-words"
+   ],
+   "direct_dependents": [
+    "jbroadway/urlify"
+   ],
+   "evidence": "released 2018-11-23, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0.0\" has no upper bound; last release 2018-11-23 (7.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "yiisoft/yii2-imagine",
+   "version": "2.3.1",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-09-04 (4.0 years ago)",
+     "data": {
+      "last_release": "2022-09-04T10:06:40+00:00",
+      "last_version": "2.3.1",
+      "years": 4
+     }
+    }
+   ],
+   "chain": [
+    "yiisoft/yii2-imagine"
+   ],
+   "direct_dependents": [
+    "yiisoft/yii2-imagine"
+   ],
+   "evidence": "last release 2022-09-04 (4.0 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "yiisoft/yii2-jui",
+   "version": "2.0.7",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2017-11-25 (8.8 years ago)",
+     "data": {
+      "last_release": "2017-11-25T15:32:29+00:00",
+      "last_version": "2.0.7",
+      "years": 8.8
+     }
+    }
+   ],
+   "chain": [
+    "yiisoft/yii2-jui"
+   ],
+   "direct_dependents": [
+    "yiisoft/yii2-jui"
+   ],
+   "evidence": "last release 2017-11-25 (8.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/bootstrap-star-rating",
+   "version": "v4.1.2",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2021-09-20 (5.0 years ago)",
+     "data": {
+      "last_release": "2021-09-20T03:06:01+00:00",
+      "last_version": "v4.1.2",
+      "years": 5
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-03-22 (3.5 years ago)",
+     "data": {
+      "last_push": "2023-03-22T15:47:40+00:00",
+      "repo": "kartik-v/bootstrap-star-rating",
+      "host": "github.com",
+      "years": 3.5
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-rating",
+    "kartik-v/bootstrap-star-rating"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2021-09-20 (5.0 years ago); last push 2023-03-22 (3.5 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/dependent-dropdown",
+   "version": "v1.4.9",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2019-03-09 (7.5 years ago)",
+     "data": {
+      "last_release": "2019-03-09T10:53:11+00:00",
+      "last_version": "v1.4.9",
+      "years": 7.5
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-04-04 (3.5 years ago)",
+     "data": {
+      "last_push": "2023-04-04T13:27:51+00:00",
+      "repo": "kartik-v/dependent-dropdown",
+      "host": "github.com",
+      "years": 3.5
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-depdrop",
+    "kartik-v/dependent-dropdown"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2019-03-09 (7.5 years ago); last push 2023-04-04 (3.5 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-krajee-base",
+   "version": "v3.0.5",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-06-01 (4.3 years ago)",
+     "data": {
+      "last_release": "2022-06-01T14:05:39+00:00",
+      "last_version": "v3.0.5",
+      "years": 4.3
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-06-28 (4.2 years ago)",
+     "data": {
+      "last_push": "2022-06-28T12:32:04+00:00",
+      "repo": "kartik-v/yii2-krajee-base",
+      "host": "github.com",
+      "years": 4.2
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-krajee-base"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2022-06-01 (4.3 years ago); last push 2022-06-28 (4.2 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-activeform",
+   "version": "v1.6.4",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-07-31 (3.1 years ago)",
+     "data": {
+      "last_release": "2023-07-31T11:33:59+00:00",
+      "last_version": "v1.6.4",
+      "years": 3.1
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-activeform"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2023-07-31 (3.1 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-alert",
+   "version": "v1.1.5",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2021-10-16 (4.9 years ago)",
+     "data": {
+      "last_release": "2021-10-16T10:23:22+00:00",
+      "last_version": "v1.1.5",
+      "years": 4.9
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2021-10-28 (4.9 years ago)",
+     "data": {
+      "last_push": "2021-10-28T04:02:03+00:00",
+      "repo": "kartik-v/yii2-widget-alert",
+      "host": "github.com",
+      "years": 4.9
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-alert"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2021-10-16 (4.9 years ago); last push 2021-10-28 (4.9 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-colorinput",
+   "version": "v1.0.6",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-10-23 (5.9 years ago)",
+     "data": {
+      "last_release": "2020-10-23T17:50:44+00:00",
+      "last_version": "v1.0.6",
+      "years": 5.9
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-colorinput"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2020-10-23 (5.9 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-datepicker",
+   "version": "v1.4.8",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2021-10-28 (4.9 years ago)",
+     "data": {
+      "last_release": "2021-10-28T03:58:09+00:00",
+      "last_version": "v1.4.8",
+      "years": 4.9
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-datepicker"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2021-10-28 (4.9 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-datetimepicker",
+   "version": "v1.5.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-03-18 (4.5 years ago)",
+     "data": {
+      "last_release": "2022-03-18T17:42:22+00:00",
+      "last_version": "v1.5.1",
+      "years": 4.5
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-03-18 (4.5 years ago)",
+     "data": {
+      "last_push": "2022-03-18T17:44:35+00:00",
+      "repo": "kartik-v/yii2-widget-datetimepicker",
+      "host": "github.com",
+      "years": 4.5
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-datetimepicker"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2022-03-18 (4.5 years ago); last push 2022-03-18 (4.5 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-depdrop",
+   "version": "v1.0.6",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2019-04-19 (7.4 years ago)",
+     "data": {
+      "last_release": "2019-04-19T07:02:48+00:00",
+      "last_version": "v1.0.6",
+      "years": 7.4
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-04-04 (3.5 years ago)",
+     "data": {
+      "last_push": "2023-04-04T12:48:37+00:00",
+      "repo": "kartik-v/yii2-widget-depdrop",
+      "host": "github.com",
+      "years": 3.5
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-depdrop"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2019-04-19 (7.4 years ago); last push 2023-04-04 (3.5 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-fileinput",
+   "version": "v1.1.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-06-28 (4.2 years ago)",
+     "data": {
+      "last_release": "2022-06-28T04:31:04+00:00",
+      "last_version": "v1.1.1",
+      "years": 4.2
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-fileinput"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2022-06-28 (4.2 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-growl",
+   "version": "v1.1.2",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2021-05-19 (5.3 years ago)",
+     "data": {
+      "last_release": "2021-05-19T12:44:49+00:00",
+      "last_version": "v1.1.2",
+      "years": 5.3
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2021-10-28 (4.9 years ago)",
+     "data": {
+      "last_push": "2021-10-28T04:21:17+00:00",
+      "repo": "kartik-v/yii2-widget-growl",
+      "host": "github.com",
+      "years": 4.9
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-growl"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2021-05-19 (5.3 years ago); last push 2021-10-28 (4.9 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-rating",
+   "version": "v1.0.5",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2021-11-20 (4.8 years ago)",
+     "data": {
+      "last_release": "2021-11-20T05:26:05+00:00",
+      "last_version": "v1.0.5",
+      "years": 4.8
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2021-11-20 (4.8 years ago)",
+     "data": {
+      "last_push": "2021-11-20T05:29:22+00:00",
+      "repo": "kartik-v/yii2-widget-rating",
+      "host": "github.com",
+      "years": 4.8
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-rating"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2021-11-20 (4.8 years ago); last push 2021-11-20 (4.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-select2",
+   "version": "v2.2.5",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-06-22 (3.2 years ago)",
+     "data": {
+      "last_release": "2023-06-22T07:43:31+00:00",
+      "last_version": "v2.2.5",
+      "years": 3.2
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-select2"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2023-06-22 (3.2 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-timepicker",
+   "version": "v1.0.5",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2021-10-28 (4.9 years ago)",
+     "data": {
+      "last_release": "2021-10-28T03:49:56+00:00",
+      "last_version": "v1.0.5",
+      "years": 4.9
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2021-10-28 (4.9 years ago)",
+     "data": {
+      "last_push": "2021-10-28T03:55:59+00:00",
+      "repo": "kartik-v/yii2-widget-timepicker",
+      "host": "github.com",
+      "years": 4.9
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-timepicker"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2021-10-28 (4.9 years ago); last push 2021-10-28 (4.9 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "kartik-v/yii2-widget-typeahead",
+   "version": "v1.0.4",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2019-05-29 (7.3 years ago)",
+     "data": {
+      "last_release": "2019-05-29T12:06:56+00:00",
+      "last_version": "v1.0.4",
+      "years": 7.3
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2021-12-21 (4.7 years ago)",
+     "data": {
+      "last_push": "2021-12-21T05:27:50+00:00",
+      "repo": "kartik-v/yii2-widget-typeahead",
+      "host": "github.com",
+      "years": 4.7
+     }
+    }
+   ],
+   "chain": [
+    "kartik-v/yii2-widgets",
+    "kartik-v/yii2-widget-typeahead"
+   ],
+   "direct_dependents": [
+    "kartik-v/yii2-widgets"
+   ],
+   "evidence": "last release 2019-05-29 (7.3 years ago); last push 2021-12-21 (4.7 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "markbaker/complex",
+   "version": "3.0.2",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-06 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-06T16:21:08+00:00",
+      "last_version": "3.0.2",
+      "years": 3.8
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-12-06 (3.8 years ago)",
+     "data": {
+      "last_push": "2022-12-06T16:29:17+00:00",
+      "repo": "MarkBaker/PHPComplex",
+      "host": "github.com",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "phpoffice/phpspreadsheet",
+    "markbaker/complex"
+   ],
+   "direct_dependents": [
+    "phpoffice/phpspreadsheet"
+   ],
+   "evidence": "last release 2022-12-06 (3.8 years ago); last push 2022-12-06 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "markbaker/matrix",
+   "version": "3.0.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-02 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-02T22:51:35+00:00",
+      "last_version": "2.1.4",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "phpoffice/phpspreadsheet",
+    "markbaker/matrix"
+   ],
+   "direct_dependents": [
+    "phpoffice/phpspreadsheet"
+   ],
+   "evidence": "last release 2022-12-02 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "phar-io/version",
+   "version": "3.2.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-02-21 (4.6 years ago)",
+     "data": {
+      "last_release": "2022-02-21T01:04:05+00:00",
+      "last_version": "3.2.1",
+      "years": 4.6
+     }
+    }
+   ],
+   "chain": [
+    "codeception/stub",
+    "phpunit/phpunit",
+    "phar-io/version"
+   ],
+   "direct_dependents": [
+    "codeception/stub"
+   ],
+   "evidence": "last release 2022-02-21 (4.6 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:26+00:00"
+  },
+  {
+   "package": "npm-asset/altcha",
+   "version": "2.3.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/altcha"
+   ],
+   "direct_dependents": [
+    "npm-asset/altcha"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/animate.css",
+   "version": "4.1.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/animate.css"
+   ],
+   "direct_dependents": [
+    "npm-asset/animate.css"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/bluebird",
+   "version": "3.7.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/bluebird"
+   ],
+   "direct_dependents": [
+    "npm-asset/bluebird"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/blueimp-file-upload",
+   "version": "9.34.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/blueimp-file-upload"
+   ],
+   "direct_dependents": [
+    "npm-asset/blueimp-file-upload"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/blueimp-gallery",
+   "version": "2.44.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/blueimp-gallery"
+   ],
+   "direct_dependents": [
+    "npm-asset/blueimp-gallery"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/clipboard-polyfill",
+   "version": "3.0.3",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/clipboard-polyfill"
+   ],
+   "direct_dependents": [
+    "npm-asset/clipboard-polyfill"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/codemirror",
+   "version": "5.65.21",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/codemirror"
+   ],
+   "direct_dependents": [
+    "npm-asset/codemirror"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/driver.js",
+   "version": "1.4.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/driver.js"
+   ],
+   "direct_dependents": [
+    "npm-asset/driver.js"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/font-awesome",
+   "version": "4.7.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/font-awesome"
+   ],
+   "direct_dependents": [
+    "npm-asset/font-awesome"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/fontsource--open-sans",
+   "version": "5.2.7",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/fontsource--open-sans"
+   ],
+   "direct_dependents": [
+    "npm-asset/fontsource--open-sans"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/humhub-prosemirror-richtext",
+   "version": "2.3.4",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/humhub-prosemirror-richtext"
+   ],
+   "direct_dependents": [
+    "npm-asset/humhub-prosemirror-richtext"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/imagesloaded",
+   "version": "5.0.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/imagesloaded"
+   ],
+   "direct_dependents": [
+    "npm-asset/imagesloaded"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/intersection-observer",
+   "version": "0.7.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/intersection-observer"
+   ],
+   "direct_dependents": [
+    "npm-asset/intersection-observer"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/jplayer",
+   "version": "2.9.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/jplayer"
+   ],
+   "direct_dependents": [
+    "npm-asset/jplayer"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/jquery",
+   "version": "3.7.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/jquery"
+   ],
+   "direct_dependents": [
+    "npm-asset/jplayer",
+    "npm-asset/jquery",
+    "npm-asset/jquery-highlight",
+    "npm-asset/jquery-ui",
+    "npm-asset/kbw.timeentry",
+    "npm-asset/timeago"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/jquery-autosize",
+   "version": "1.18.18",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/jquery-autosize"
+   ],
+   "direct_dependents": [
+    "npm-asset/jquery-autosize"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/jquery-highlight",
+   "version": "3.5.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/jquery-highlight"
+   ],
+   "direct_dependents": [
+    "npm-asset/jquery-highlight"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/jquery-knob",
+   "version": "1.2.13",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/jquery-knob"
+   ],
+   "direct_dependents": [
+    "npm-asset/jquery-knob"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/jquery-ui",
+   "version": "1.14.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/jquery-ui"
+   ],
+   "direct_dependents": [
+    "npm-asset/jquery-ui"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/jquery.cookie",
+   "version": "1.4.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/jquery.cookie"
+   ],
+   "direct_dependents": [
+    "npm-asset/jquery.cookie"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/kbw.timeentry",
+   "version": "2.0.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/kbw.timeentry"
+   ],
+   "direct_dependents": [
+    "npm-asset/kbw.timeentry"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/nprogress",
+   "version": "0.2.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/nprogress"
+   ],
+   "direct_dependents": [
+    "npm-asset/nprogress"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/select2",
+   "version": "4.0.13",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/select2"
+   ],
+   "direct_dependents": [
+    "npm-asset/select2"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/socket.io-client",
+   "version": "2.5.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/swiped-events",
+   "version": "1.2.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/swiped-events"
+   ],
+   "direct_dependents": [
+    "npm-asset/swiped-events"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/timeago",
+   "version": "1.6.7",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/timeago"
+   ],
+   "direct_dependents": [
+    "npm-asset/timeago"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/unicode-emoji-json",
+   "version": "0.5.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": true,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/unicode-emoji-json"
+   ],
+   "direct_dependents": [
+    "npm-asset/unicode-emoji-json"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "bower-asset/inputmask",
+   "version": "5.0.9",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "yiisoft/yii2",
+    "bower-asset/inputmask"
+   ],
+   "direct_dependents": [
+    "raoul2000/yii2-jcrop-widget",
+    "xj/yii2-jplayer-widget",
+    "yiisoft/yii2",
+    "yiisoft/yii2-authclient",
+    "yiisoft/yii2-bootstrap5",
+    "yiisoft/yii2-httpclient",
+    "yiisoft/yii2-imagine",
+    "yiisoft/yii2-jui",
+    "yiisoft/yii2-queue",
+    "yiisoft/yii2-redis",
+    "yiisoft/yii2-symfonymailer"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "bower-asset/punycode",
+   "version": "v2.3.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "yiisoft/yii2",
+    "bower-asset/punycode"
+   ],
+   "direct_dependents": [
+    "raoul2000/yii2-jcrop-widget",
+    "xj/yii2-jplayer-widget",
+    "yiisoft/yii2",
+    "yiisoft/yii2-authclient",
+    "yiisoft/yii2-bootstrap5",
+    "yiisoft/yii2-httpclient",
+    "yiisoft/yii2-imagine",
+    "yiisoft/yii2-jui",
+    "yiisoft/yii2-queue",
+    "yiisoft/yii2-redis",
+    "yiisoft/yii2-symfonymailer"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "bower-asset/yii2-pjax",
+   "version": "2.0.9",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "yiisoft/yii2",
+    "bower-asset/yii2-pjax"
+   ],
+   "direct_dependents": [
+    "raoul2000/yii2-jcrop-widget",
+    "xj/yii2-jplayer-widget",
+    "yiisoft/yii2",
+    "yiisoft/yii2-authclient",
+    "yiisoft/yii2-bootstrap5",
+    "yiisoft/yii2-httpclient",
+    "yiisoft/yii2-imagine",
+    "yiisoft/yii2-jui",
+    "yiisoft/yii2-queue",
+    "yiisoft/yii2-redis",
+    "yiisoft/yii2-symfonymailer"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/after",
+   "version": "0.8.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/engine.io-parser",
+    "npm-asset/after"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/altcha--crypto",
+   "version": "0.0.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/altcha",
+    "npm-asset/altcha--crypto"
+   ],
+   "direct_dependents": [
+    "npm-asset/altcha"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/arraybuffer.slice",
+   "version": "0.0.7",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/engine.io-parser",
+    "npm-asset/arraybuffer.slice"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/backo2",
+   "version": "1.0.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/backo2"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/base64-arraybuffer",
+   "version": "0.1.4",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/engine.io-parser",
+    "npm-asset/base64-arraybuffer"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/blob",
+   "version": "0.0.5",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/engine.io-parser",
+    "npm-asset/blob"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/blueimp-canvas-to-blob",
+   "version": "3.5.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/blueimp-file-upload",
+    "npm-asset/blueimp-canvas-to-blob"
+   ],
+   "direct_dependents": [
+    "npm-asset/blueimp-file-upload"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/blueimp-load-image",
+   "version": "2.12.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/blueimp-file-upload",
+    "npm-asset/blueimp-load-image"
+   ],
+   "direct_dependents": [
+    "npm-asset/blueimp-file-upload"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/blueimp-tmpl",
+   "version": "3.6.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/blueimp-file-upload",
+    "npm-asset/blueimp-tmpl"
+   ],
+   "direct_dependents": [
+    "npm-asset/blueimp-file-upload"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/component-bind",
+   "version": "1.0.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/component-bind"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/component-emitter",
+   "version": "1.3.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/component-emitter"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/component-inherit",
+   "version": "0.0.3",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/component-inherit"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/debug",
+   "version": "3.1.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/debug"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/engine.io-client",
+   "version": "3.5.6",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/engine.io-parser",
+   "version": "2.2.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/engine.io-parser"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/ev-emitter",
+   "version": "2.1.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/imagesloaded",
+    "npm-asset/ev-emitter"
+   ],
+   "direct_dependents": [
+    "npm-asset/imagesloaded"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/has-binary2",
+   "version": "1.0.3",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/has-binary2"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/has-cors",
+   "version": "1.1.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/has-cors"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/indexof",
+   "version": "0.0.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/indexof"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/isarray",
+   "version": "2.0.1",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/has-binary2",
+    "npm-asset/isarray"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/ms",
+   "version": "2.0.0",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/debug",
+    "npm-asset/ms"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/parseqs",
+   "version": "0.0.6",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/parseqs"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/parseuri",
+   "version": "0.0.6",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/parseuri"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/socket.io-parser",
+   "version": "3.3.4",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/socket.io-parser"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/to-array",
+   "version": "0.1.4",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/to-array"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/ws",
+   "version": "7.5.10",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/ws"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/xmlhttprequest-ssl",
+   "version": "1.6.3",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/xmlhttprequest-ssl"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "npm-asset/yeast",
+   "version": "0.1.2",
+   "verdict": "unknown",
+   "priority": "none",
+   "direct": false,
+   "dev": false,
+   "signals": [],
+   "chain": [
+    "npm-asset/socket.io-client",
+    "npm-asset/engine.io-client",
+    "npm-asset/yeast"
+   ],
+   "direct_dependents": [
+    "npm-asset/socket.io-client"
+   ],
+   "evidence": "not from a Composer repository, not checked",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  }
+ ]
+}

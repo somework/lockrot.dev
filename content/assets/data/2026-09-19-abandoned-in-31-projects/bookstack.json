@@ -1,0 +1,173 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:33:35+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 113,
+ "include_dev": false,
+ "not_from_composer_repository": 0,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 0,
+  "silent": 0,
+  "pinned": 0,
+  "left-behind": 0,
+  "old-promise": 1,
+  "stale": 3,
+  "unknown": 0,
+  "finished": 20,
+  "ok": 89
+ },
+ "priorities": {
+  "critical": 0,
+  "high": 0,
+  "medium": 3,
+  "low": 1,
+  "none": 109
+ },
+ "exposure": [
+  {
+   "package": "laravel/framework",
+   "flagged": 1
+  },
+  {
+   "package": "league/commonmark",
+   "flagged": 1
+  },
+  {
+   "package": "league/flysystem-aws-s3-v3",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [],
+ "findings": [
+  {
+   "package": "aws/aws-crt-php",
+   "version": "v1.2.7",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-10-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.5",
+      "released": "2024-10-18T22:15:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "league/flysystem-aws-s3-v3",
+    "aws/aws-sdk-php",
+    "aws/aws-crt-php"
+   ],
+   "direct_dependents": [
+    "league/flysystem-aws-s3-v3"
+   ],
+   "evidence": "released 2024-10-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:35+00:00"
+  },
+  {
+   "package": "socialiteproviders/discord",
+   "version": "4.2.0",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-07-24 (3.2 years ago)",
+     "data": {
+      "last_release": "2023-07-24T23:28:47+00:00",
+      "last_version": "4.2.0",
+      "years": 3.2
+     }
+    }
+   ],
+   "chain": [
+    "socialiteproviders/discord"
+   ],
+   "direct_dependents": [
+    "socialiteproviders/discord"
+   ],
+   "evidence": "last release 2023-07-24 (3.2 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:35+00:00"
+  },
+  {
+   "package": "socialiteproviders/gitlab",
+   "version": "4.1.0",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-12-01 (5.8 years ago)",
+     "data": {
+      "last_release": "2020-12-01T23:10:59+00:00",
+      "last_version": "4.1.0",
+      "years": 5.8
+     }
+    }
+   ],
+   "chain": [
+    "socialiteproviders/gitlab"
+   ],
+   "direct_dependents": [
+    "socialiteproviders/gitlab"
+   ],
+   "evidence": "last release 2020-12-01 (5.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:35+00:00"
+  },
+  {
+   "package": "league/config",
+   "version": "v1.2.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-11 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-11T20:36:23+00:00",
+      "last_version": "v1.2.0",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "league/commonmark",
+    "league/config"
+   ],
+   "direct_dependents": [
+    "laravel/framework",
+    "league/commonmark"
+   ],
+   "evidence": "last release 2022-12-11 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:35+00:00"
+  }
+ ]
+}

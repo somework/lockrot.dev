@@ -1,0 +1,892 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:34:16+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 125,
+ "include_dev": false,
+ "not_from_composer_repository": 2,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 0,
+  "silent": 1,
+  "pinned": 2,
+  "left-behind": 4,
+  "old-promise": 8,
+  "stale": 4,
+  "unknown": 0,
+  "finished": 22,
+  "ok": 84
+ },
+ "priorities": {
+  "critical": 1,
+  "high": 6,
+  "medium": 8,
+  "low": 4,
+  "none": 106
+ },
+ "exposure": [
+  {
+   "package": "lasserafn/php-initial-avatar-generator",
+   "flagged": 4
+  },
+  {
+   "package": "cboden/ratchet",
+   "flagged": 3
+  },
+  {
+   "package": "league/oauth2-server",
+   "flagged": 2
+  },
+  {
+   "package": "phpoffice/phpspreadsheet",
+   "flagged": 2
+  },
+  {
+   "package": "react/child-process",
+   "flagged": 2
+  },
+  {
+   "package": "react/zmq",
+   "flagged": 1
+  },
+  {
+   "package": "slim/slim",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [
+  "2 packages are not from a Composer repository and were not checked"
+ ],
+ "findings": [
+  {
+   "package": "react/zmq",
+   "version": "v0.4.0",
+   "verdict": "silent",
+   "priority": "critical",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2018-05-18 (8.3 years ago)",
+     "data": {
+      "last_release": "2018-05-18T15:27:55+00:00",
+      "last_version": "v0.4.0",
+      "years": 8.3
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2018-05-18 (8.3 years ago)",
+     "data": {
+      "last_push": "2018-05-18T15:28:48+00:00",
+      "repo": "friends-of-reactphp/zmq",
+      "host": "github.com",
+      "years": 8.3
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2018-05-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.4.0",
+      "released": "2018-05-18T15:27:55+00:00"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 1 flagged package: evenement/evenement (old-promise)",
+     "data": {
+      "flagged": 1,
+      "packages": [
+       {
+        "package": "evenement/evenement",
+        "verdict": "old-promise",
+        "chain": [
+         "react/zmq",
+         "evenement/evenement"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "react/zmq"
+   ],
+   "direct_dependents": [
+    "react/zmq"
+   ],
+   "evidence": "last release 2018-05-18 (8.3 years ago); last push 2018-05-18 (8.3 years ago); released 2018-05-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound; pulls in 1 flagged package: evenement/evenement (old-promise)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "cboden/ratchet",
+   "version": "0.4.x-dev",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot 0.4.x-dev",
+     "data": {
+      "version": "0.4.x-dev"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 3 flagged packages: evenement/evenement (old-promise), react/cache (old-promise), react/stream (old-promise)",
+     "data": {
+      "flagged": 3,
+      "packages": [
+       {
+        "package": "evenement/evenement",
+        "verdict": "old-promise",
+        "chain": [
+         "cboden/ratchet",
+         "react/socket",
+         "evenement/evenement"
+        ]
+       },
+       {
+        "package": "react/cache",
+        "verdict": "old-promise",
+        "chain": [
+         "cboden/ratchet",
+         "react/socket",
+         "react/dns",
+         "react/cache"
+        ]
+       },
+       {
+        "package": "react/stream",
+        "verdict": "old-promise",
+        "chain": [
+         "cboden/ratchet",
+         "react/socket",
+         "react/stream"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "cboden/ratchet"
+   ],
+   "direct_dependents": [
+    "cboden/ratchet"
+   ],
+   "evidence": "pinned to branch snapshot 0.4.x-dev; pulls in 3 flagged packages: evenement/evenement (old-promise), react/cache (old-promise), react/stream (old-promise)",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "lasserafn/php-initial-avatar-generator",
+   "version": "dev-update-image-lib",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-update-image-lib",
+     "data": {
+      "version": "dev-update-image-lib"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 4 flagged packages: meyfa/php-svg (left-behind), overtrue/pinyin (left-behind), lasserafn/php-initials (stale), lasserafn/php-string-script-language (stale)",
+     "data": {
+      "flagged": 4,
+      "packages": [
+       {
+        "package": "meyfa/php-svg",
+        "verdict": "left-behind",
+        "chain": [
+         "lasserafn/php-initial-avatar-generator",
+         "meyfa/php-svg"
+        ]
+       },
+       {
+        "package": "overtrue/pinyin",
+        "verdict": "left-behind",
+        "chain": [
+         "lasserafn/php-initial-avatar-generator",
+         "overtrue/pinyin"
+        ]
+       },
+       {
+        "package": "lasserafn/php-initials",
+        "verdict": "stale",
+        "chain": [
+         "lasserafn/php-initial-avatar-generator",
+         "lasserafn/php-initials"
+        ]
+       },
+       {
+        "package": "lasserafn/php-string-script-language",
+        "verdict": "stale",
+        "chain": [
+         "lasserafn/php-initial-avatar-generator",
+         "lasserafn/php-string-script-language"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "lasserafn/php-initial-avatar-generator"
+   ],
+   "direct_dependents": [
+    "lasserafn/php-initial-avatar-generator"
+   ],
+   "evidence": "pinned to branch snapshot dev-update-image-lib; pulls in 4 flagged packages: meyfa/php-svg (left-behind), overtrue/pinyin (left-behind), lasserafn/php-initials (stale), lasserafn/php-string-script-language (stale)",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "brick/phonenumber",
+   "version": "0.5.0",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 0.5.x last released 2023-02-23 (3.6 years ago); 0.8.x released 0.8.0 (2025-03-20)",
+     "data": {
+      "branch": "0.5.x",
+      "branch_last_release": "2023-02-23T21:41:31+00:00",
+      "branch_last_version": "0.5.0",
+      "years": 3.6,
+      "newest_branch": "0.8.x",
+      "newest_version": "0.8.0",
+      "newest_release": "2025-03-20T12:59:09+00:00",
+      "suggested_constraint": "^0.8.0"
+     }
+    }
+   ],
+   "chain": [
+    "brick/phonenumber"
+   ],
+   "direct_dependents": [
+    "brick/phonenumber"
+   ],
+   "evidence": "branch 0.5.x last released 2023-02-23 (3.6 years ago); 0.8.x released 0.8.0 (2025-03-20); require ^0.8.0 to follow",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "robthree/twofactorauth",
+   "version": "1.8.2",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-03-22, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.6.0",
+      "released": "2022-03-22T16:11:07+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 1.x last released 2022-03-22 (4.5 years ago); 3.x released v3.0.3 (2026-01-05)",
+     "data": {
+      "branch": "1.x",
+      "branch_last_release": "2022-03-22T16:11:07+00:00",
+      "branch_last_version": "1.8.2",
+      "years": 4.5,
+      "newest_branch": "3.x",
+      "newest_version": "v3.0.3",
+      "newest_release": "2026-01-05T13:17:41+00:00",
+      "suggested_constraint": "^3.0"
+     }
+    }
+   ],
+   "chain": [
+    "robthree/twofactorauth"
+   ],
+   "direct_dependents": [
+    "robthree/twofactorauth"
+   ],
+   "evidence": "branch 1.x last released 2022-03-22 (4.5 years ago); 3.x released v3.0.3 (2026-01-05); require ^3.0 to follow; released 2022-03-22, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "michelf/php-markdown",
+   "version": "1.9.1",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-09-26 (4.0 years ago)",
+     "data": {
+      "last_release": "2022-09-26T12:21:08+00:00",
+      "last_version": "2.0.0",
+      "years": 4
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2021-11-24, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.0",
+      "released": "2021-11-24T02:52:38+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "michelf/php-markdown"
+   ],
+   "direct_dependents": [
+    "michelf/php-markdown"
+   ],
+   "evidence": "released 2021-11-24, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound; last release 2022-09-26 (4.0 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "tholu/php-cidr-match",
+   "version": "0.5",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-08-06, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.4",
+      "released": "2024-08-06T15:53:04+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "tholu/php-cidr-match"
+   ],
+   "direct_dependents": [
+    "tholu/php-cidr-match"
+   ],
+   "evidence": "released 2024-08-06, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "meyfa/php-svg",
+   "version": "v0.9.1",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2019-07-30, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.3",
+      "released": "2019-07-30T18:41:25+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 0.9.x last released 2019-07-30 (7.1 years ago); 0.16.x released v0.16.1 (2025-03-10)",
+     "data": {
+      "branch": "0.9.x",
+      "branch_last_release": "2019-07-30T18:41:25+00:00",
+      "branch_last_version": "v0.9.1",
+      "years": 7.1,
+      "newest_branch": "0.16.x",
+      "newest_version": "v0.16.1",
+      "newest_release": "2025-03-10T22:28:37+00:00",
+      "suggested_constraint": "^0.16.1"
+     }
+    }
+   ],
+   "chain": [
+    "lasserafn/php-initial-avatar-generator",
+    "meyfa/php-svg"
+   ],
+   "direct_dependents": [
+    "lasserafn/php-initial-avatar-generator"
+   ],
+   "evidence": "branch 0.9.x last released 2019-07-30 (7.1 years ago); 0.16.x released v0.16.1 (2025-03-10); released 2019-07-30, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "overtrue/pinyin",
+   "version": "4.1.0",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-04-27, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1",
+      "released": "2023-04-27T10:17:12+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 4.x last released 2023-04-27 (3.4 years ago); 6.x released 6.0.1 (2026-03-06)",
+     "data": {
+      "branch": "4.x",
+      "branch_last_release": "2023-04-27T10:17:12+00:00",
+      "branch_last_version": "4.1.0",
+      "years": 3.4,
+      "newest_branch": "6.x",
+      "newest_version": "6.0.1",
+      "newest_release": "2026-03-06T13:15:43+00:00",
+      "suggested_constraint": "^6.0"
+     }
+    }
+   ],
+   "chain": [
+    "lasserafn/php-initial-avatar-generator",
+    "overtrue/pinyin"
+   ],
+   "direct_dependents": [
+    "lasserafn/php-initial-avatar-generator"
+   ],
+   "evidence": "branch 4.x last released 2023-04-27 (3.4 years ago); 6.x released 6.0.1 (2026-03-06); released 2023-04-27, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "defuse/php-encryption",
+   "version": "v2.4.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-06-19 (3.3 years ago)",
+     "data": {
+      "last_release": "2023-06-19T06:10:36+00:00",
+      "last_version": "v2.4.0",
+      "years": 3.3
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-06-19, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.6.0",
+      "released": "2023-06-19T06:10:36+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "league/oauth2-server",
+    "defuse/php-encryption"
+   ],
+   "direct_dependents": [
+    "league/oauth2-server"
+   ],
+   "evidence": "released 2023-06-19, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6.0\" has no upper bound; last release 2023-06-19 (3.3 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "evenement/evenement",
+   "version": "v3.0.2",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-08-08 (3.1 years ago)",
+     "data": {
+      "last_release": "2023-08-08T05:53:35+00:00",
+      "last_version": "v3.0.2",
+      "years": 3.1
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-08-08, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.0",
+      "released": "2023-08-08T05:53:35+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "react/zmq",
+    "evenement/evenement"
+   ],
+   "direct_dependents": [
+    "cboden/ratchet",
+    "react/child-process",
+    "react/zmq"
+   ],
+   "evidence": "released 2023-08-08, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0\" has no upper bound; last release 2023-08-08 (3.1 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "league/event",
+   "version": "3.0.3",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-04, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.0",
+      "released": "2024-09-04T16:06:53+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "league/oauth2-server",
+    "league/event"
+   ],
+   "direct_dependents": [
+    "league/oauth2-server"
+   ],
+   "evidence": "released 2024-09-04, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "nikic/fast-route",
+   "version": "v1.3.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2018-02-13, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.4.0",
+      "released": "2018-02-13T20:26:39+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "slim/slim",
+    "nikic/fast-route"
+   ],
+   "direct_dependents": [
+    "slim/slim"
+   ],
+   "evidence": "released 2018-02-13, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "react/cache",
+   "version": "v1.2.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-11-30 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-11-30T15:59:55+00:00",
+      "last_version": "v1.2.0",
+      "years": 3.8
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-11-30, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.0",
+      "released": "2022-11-30T15:59:55+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "cboden/ratchet",
+    "react/socket",
+    "react/dns",
+    "react/cache"
+   ],
+   "direct_dependents": [
+    "cboden/ratchet"
+   ],
+   "evidence": "released 2022-11-30, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound; last release 2022-11-30 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "react/stream",
+   "version": "v1.4.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-06-11, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.8\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.8",
+      "released": "2024-06-11T12:45:25+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "react/child-process",
+    "react/stream"
+   ],
+   "direct_dependents": [
+    "cboden/ratchet",
+    "react/child-process"
+   ],
+   "evidence": "released 2024-06-11, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.8\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "lasserafn/php-initials",
+   "version": "3.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-12-24 (5.7 years ago)",
+     "data": {
+      "last_release": "2020-12-24T12:25:51+00:00",
+      "last_version": "3.1",
+      "years": 5.7
+     }
+    }
+   ],
+   "chain": [
+    "lasserafn/php-initial-avatar-generator",
+    "lasserafn/php-initials"
+   ],
+   "direct_dependents": [
+    "lasserafn/php-initial-avatar-generator"
+   ],
+   "evidence": "last release 2020-12-24 (5.7 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "lasserafn/php-string-script-language",
+   "version": "0.4",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-07-26 (3.2 years ago)",
+     "data": {
+      "last_release": "2023-07-26T07:23:39+00:00",
+      "last_version": "0.4",
+      "years": 3.2
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-07-26 (3.2 years ago)",
+     "data": {
+      "last_push": "2023-07-26T07:23:54+00:00",
+      "repo": "LasseRafn/php-string-script-language",
+      "host": "github.com",
+      "years": 3.2
+     }
+    }
+   ],
+   "chain": [
+    "lasserafn/php-initial-avatar-generator",
+    "lasserafn/php-string-script-language"
+   ],
+   "direct_dependents": [
+    "lasserafn/php-initial-avatar-generator"
+   ],
+   "evidence": "last release 2023-07-26 (3.2 years ago); last push 2023-07-26 (3.2 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "markbaker/complex",
+   "version": "3.0.2",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-06 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-06T16:21:08+00:00",
+      "last_version": "3.0.2",
+      "years": 3.8
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-12-06 (3.8 years ago)",
+     "data": {
+      "last_push": "2022-12-06T16:29:17+00:00",
+      "repo": "MarkBaker/PHPComplex",
+      "host": "github.com",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "phpoffice/phpspreadsheet",
+    "markbaker/complex"
+   ],
+   "direct_dependents": [
+    "phpoffice/phpspreadsheet"
+   ],
+   "evidence": "last release 2022-12-06 (3.8 years ago); last push 2022-12-06 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  },
+  {
+   "package": "markbaker/matrix",
+   "version": "3.0.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-02 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-02T22:51:35+00:00",
+      "last_version": "2.1.4",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "phpoffice/phpspreadsheet",
+    "markbaker/matrix"
+   ],
+   "direct_dependents": [
+    "phpoffice/phpspreadsheet"
+   ],
+   "evidence": "last release 2022-12-02 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:16+00:00"
+  }
+ ]
+}

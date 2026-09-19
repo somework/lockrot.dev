@@ -1,0 +1,71 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:34:07+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 99,
+ "include_dev": false,
+ "not_from_composer_repository": 0,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 0,
+  "silent": 0,
+  "pinned": 0,
+  "left-behind": 0,
+  "old-promise": 0,
+  "stale": 1,
+  "unknown": 0,
+  "finished": 16,
+  "ok": 82
+ },
+ "priorities": {
+  "critical": 0,
+  "high": 0,
+  "medium": 0,
+  "low": 1,
+  "none": 98
+ },
+ "exposure": [
+  {
+   "package": "league/commonmark",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [],
+ "findings": [
+  {
+   "package": "league/config",
+   "version": "v1.2.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-11 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-11T20:36:23+00:00",
+      "last_version": "v1.2.0",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "league/commonmark",
+    "league/config"
+   ],
+   "direct_dependents": [
+    "league/commonmark"
+   ],
+   "evidence": "last release 2022-12-11 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:07+00:00"
+  }
+ ]
+}

@@ -1,0 +1,293 @@
+{
+ "run": {
+  "date": "2026-09-19",
+  "lockrot": "0.8.0",
+  "lockrot_phar_sha256": "8e074a234e0115ad0998c37301db4805568c6797d827562097c0ce509d93bf92",
+  "composer": "2.10.3",
+  "php": "8.5.10",
+  "lockrot_command": "php lockrot.phar --target-php=8.4 --format=json (GITHUB_TOKEN set, packages-dev excluded)",
+  "audit_command": "composer audit --abandoned=report --no-dev --locked --format=json",
+  "note": "Each report is lockrot's JSON with the findings whose verdict is ok or finished removed; counts and priorities are the full run's."
+ },
+ "projects": [
+  {
+   "name": "akaunting",
+   "repo": "akaunting/akaunting",
+   "branch": "master",
+   "commit": "55669f7cc427f15bd8abf110e3cb2c0cdc422467",
+   "lock_path": "composer.lock",
+   "stars": 10127,
+   "report": "akaunting.json"
+  },
+  {
+   "name": "ampache",
+   "repo": "ampache/ampache",
+   "branch": "develop",
+   "commit": "14d52c92973d11a649ebeabc2712b990dc9dca9a",
+   "lock_path": "composer.lock",
+   "stars": 3831,
+   "report": "ampache.json"
+  },
+  {
+   "name": "bookstack",
+   "repo": "BookStackApp/BookStack",
+   "branch": "development",
+   "commit": "cf133540b13073e18e08f10b65a2aff2be0f155e",
+   "lock_path": "composer.lock",
+   "stars": 19050,
+   "report": "bookstack.json"
+  },
+  {
+   "name": "cachet",
+   "repo": "cachethq/cachet",
+   "branch": "3.x",
+   "commit": "188d8c81878fe942aeae3c74b6bed81d3cae9288",
+   "lock_path": "composer.lock",
+   "stars": 15244,
+   "report": "cachet.json"
+  },
+  {
+   "name": "chamilo-lms",
+   "repo": "chamilo/chamilo-lms",
+   "branch": "master",
+   "commit": "cd3efcb74dcf4244d3a18a94fefa585523f18d66",
+   "lock_path": "composer.lock",
+   "stars": 1004,
+   "report": "chamilo-lms.json"
+  },
+  {
+   "name": "concretecms",
+   "repo": "concretecms/concretecms",
+   "branch": "9.5.x",
+   "commit": "66d3f3d614e26e4b7955b967fed133a8acdb6820",
+   "lock_path": "composer.lock",
+   "stars": 851,
+   "report": "concretecms.json"
+  },
+  {
+   "name": "demo",
+   "repo": "symfony/demo",
+   "branch": "main",
+   "commit": "8d2e2ef75c3e18df173d8bf2379a14abb58c4c31",
+   "lock_path": "composer.lock",
+   "stars": 2620,
+   "report": "demo.json"
+  },
+  {
+   "name": "drupal",
+   "repo": "drupal/drupal",
+   "branch": "main",
+   "commit": "c0277ee2f7b0c402d7cd7eb35e8b8f193efe6543",
+   "lock_path": "composer.lock",
+   "stars": 4286,
+   "report": "drupal.json"
+  },
+  {
+   "name": "espocrm",
+   "repo": "espocrm/espocrm",
+   "branch": "master",
+   "commit": "8499172c1b631e6fff57093445e11e2440788d6f",
+   "lock_path": "composer.lock",
+   "stars": 3372,
+   "report": "espocrm.json"
+  },
+  {
+   "name": "firefly-iii",
+   "repo": "firefly-iii/firefly-iii",
+   "branch": "main",
+   "commit": "99f9b7477d064b1d1729a4348e43fffef1b385ce",
+   "lock_path": "composer.lock",
+   "stars": 24668,
+   "report": "firefly-iii.json"
+  },
+  {
+   "name": "humhub",
+   "repo": "humhub/humhub",
+   "branch": "master",
+   "commit": "cf51cf811d36d5c1ab59e2fd1e098d67786121ab",
+   "lock_path": "composer.lock",
+   "stars": 6747,
+   "report": "humhub.json"
+  },
+  {
+   "name": "invoiceninja",
+   "repo": "invoiceninja/invoiceninja",
+   "branch": "v5-stable",
+   "commit": "f1ffa5f9989afbed4e7dc80b5c0cc18944335ffc",
+   "lock_path": "composer.lock",
+   "stars": 10090,
+   "report": "invoiceninja.json"
+  },
+  {
+   "name": "joomla-cms",
+   "repo": "joomla/joomla-cms",
+   "branch": "5.4-dev",
+   "commit": "a8bd3564ef52e830069aeb91286c2fd67bb3872d",
+   "lock_path": "composer.lock",
+   "stars": 5140,
+   "report": "joomla-cms.json"
+  },
+  {
+   "name": "kanboard",
+   "repo": "kanboard/kanboard",
+   "branch": "main",
+   "commit": "cf53b54597b67b60140586c09c2fe6132ead013c",
+   "lock_path": "composer.lock",
+   "stars": 9873,
+   "report": "kanboard.json"
+  },
+  {
+   "name": "koel",
+   "repo": "koel/koel",
+   "branch": "master",
+   "commit": "51698046353dfc7dd4ee466580f9120d5a1f6762",
+   "lock_path": "composer.lock",
+   "stars": 17256,
+   "report": "koel.json"
+  },
+  {
+   "name": "librenms",
+   "repo": "librenms/librenms",
+   "branch": "master",
+   "commit": "4381e1a98a83a7b72599045095f6d5ef37bda2e6",
+   "lock_path": "composer.lock",
+   "stars": 4896,
+   "report": "librenms.json"
+  },
+  {
+   "name": "magento2",
+   "repo": "magento/magento2",
+   "branch": "2.4-develop",
+   "commit": "874f1f5cdf3bc52b61c3d66becf159cc16345d7a",
+   "lock_path": "composer.lock",
+   "stars": 12198,
+   "report": "magento2.json"
+  },
+  {
+   "name": "matomo",
+   "repo": "matomo-org/matomo",
+   "branch": "6.x-dev",
+   "commit": "49225bef3528bf825b7fe1a986a219a82f0dd606",
+   "lock_path": "composer.lock",
+   "stars": 21888,
+   "report": "matomo.json"
+  },
+  {
+   "name": "mautic",
+   "repo": "mautic/mautic",
+   "branch": "7.x",
+   "commit": "7912edbd7ede249ddbb2721abd6def94bee52f3e",
+   "lock_path": "composer.lock",
+   "stars": 10532,
+   "report": "mautic.json"
+  },
+  {
+   "name": "monica",
+   "repo": "monicahq/monica",
+   "branch": "main",
+   "commit": "e08e91734170b6bbd582cb578532c3948196124e",
+   "lock_path": "composer.lock",
+   "stars": 25336,
+   "report": "monica.json"
+  },
+  {
+   "name": "moodle",
+   "repo": "moodle/moodle",
+   "branch": "main",
+   "commit": "e68a1418bea512dd5992c29eb9e36570a3844e94",
+   "lock_path": "composer.lock",
+   "stars": 7418,
+   "report": "moodle.json"
+  },
+  {
+   "name": "opencart",
+   "repo": "opencart/opencart",
+   "branch": "master",
+   "commit": "c78dd969319ba2c7ea86ab3c0bd292d830b92df2",
+   "lock_path": "composer.lock",
+   "stars": 8201,
+   "report": "opencart.json"
+  },
+  {
+   "name": "panel",
+   "repo": "pterodactyl/panel",
+   "branch": "1.0-develop",
+   "commit": "113ea43d0d48f48d567c9d91e4a7d5b5bb8876e3",
+   "lock_path": "composer.lock",
+   "stars": 9246,
+   "report": "panel.json"
+  },
+  {
+   "name": "phpbb",
+   "repo": "phpbb/phpbb",
+   "branch": "master",
+   "commit": "ccb3ac2e92a0f8f89fc3350ba136746db2578ed1",
+   "lock_path": "phpBB/composer.lock",
+   "stars": 2096,
+   "report": "phpbb.json"
+  },
+  {
+   "name": "phpmyadmin",
+   "repo": "phpmyadmin/phpmyadmin",
+   "branch": "master",
+   "commit": "21ef436eff4013f6fa2200e072916eca4fc865bb",
+   "lock_path": "composer.lock",
+   "stars": 7939,
+   "report": "phpmyadmin.json"
+  },
+  {
+   "name": "pixelfed",
+   "repo": "pixelfed/pixelfed",
+   "branch": "dev",
+   "commit": "29877111d2fa9f28087de0d4eee144b2bdee63d6",
+   "lock_path": "composer.lock",
+   "stars": 7105,
+   "report": "pixelfed.json"
+  },
+  {
+   "name": "prestashop",
+   "repo": "PrestaShop/PrestaShop",
+   "branch": "develop",
+   "commit": "e5515d88ead3761a342c72bffb91446ba213ba13",
+   "lock_path": "composer.lock",
+   "stars": 9214,
+   "report": "prestashop.json"
+  },
+  {
+   "name": "snipe-it",
+   "repo": "snipe/snipe-it",
+   "branch": "master",
+   "commit": "4b16384c9289b0c4f1df0235bf6f1b58e08d3f0f",
+   "lock_path": "composer.lock",
+   "stars": 14959,
+   "report": "snipe-it.json"
+  },
+  {
+   "name": "suitecrm-core",
+   "repo": "salesagility/SuiteCRM-Core",
+   "branch": "hotfix",
+   "commit": "2cd77380bc838b8bd6c80f9fbe25855d73ef860c",
+   "lock_path": "composer.lock",
+   "stars": 281,
+   "report": "suitecrm-core.json"
+  },
+  {
+   "name": "typo3",
+   "repo": "typo3/typo3",
+   "branch": "main",
+   "commit": "d74c1343dcd2b442dca896140e2be6258503abcc",
+   "lock_path": "composer.lock",
+   "stars": 1209,
+   "report": "typo3.json"
+  },
+  {
+   "name": "wallabag",
+   "repo": "wallabag/wallabag",
+   "branch": "master",
+   "commit": "ac82cd088f21f34435376602e2d7ce291a0135dc",
+   "lock_path": "composer.lock",
+   "stars": 12970,
+   "report": "wallabag.json"
+  }
+ ]
+}

@@ -1,0 +1,737 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:33:30+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 74,
+ "include_dev": false,
+ "not_from_composer_repository": 1,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 0,
+  "silent": 0,
+  "pinned": 4,
+  "left-behind": 2,
+  "old-promise": 8,
+  "stale": 2,
+  "unknown": 0,
+  "finished": 12,
+  "ok": 46
+ },
+ "priorities": {
+  "critical": 0,
+  "high": 9,
+  "medium": 5,
+  "low": 2,
+  "none": 58
+ },
+ "exposure": [
+  {
+   "package": "cboden/ratchet",
+   "flagged": 3
+  },
+  {
+   "package": "clue/multicast-react",
+   "flagged": 3
+  },
+  {
+   "package": "rsd/seafile-php-sdk",
+   "flagged": 2
+  },
+  {
+   "package": "shrikeh/teapot",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [
+  "1 package is not from a Composer repository and was not checked"
+ ],
+ "findings": [
+  {
+   "package": "cboden/ratchet",
+   "version": "0.4.x-dev",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2021-12-14 (4.8 years ago)",
+     "data": {
+      "last_release": "2021-12-14T00:20:41+00:00",
+      "last_version": "v0.4.4",
+      "years": 4.8
+     }
+    },
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot 0.4.x-dev",
+     "data": {
+      "version": "0.4.x-dev"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 3 flagged packages: evenement/evenement (old-promise), react/cache (old-promise), react/stream (old-promise)",
+     "data": {
+      "flagged": 3,
+      "packages": [
+       {
+        "package": "evenement/evenement",
+        "verdict": "old-promise",
+        "chain": [
+         "cboden/ratchet",
+         "react/socket",
+         "evenement/evenement"
+        ]
+       },
+       {
+        "package": "react/cache",
+        "verdict": "old-promise",
+        "chain": [
+         "cboden/ratchet",
+         "react/socket",
+         "react/dns",
+         "react/cache"
+        ]
+       },
+       {
+        "package": "react/stream",
+        "verdict": "old-promise",
+        "chain": [
+         "cboden/ratchet",
+         "react/socket",
+         "react/stream"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "cboden/ratchet"
+   ],
+   "direct_dependents": [
+    "cboden/ratchet"
+   ],
+   "evidence": "pinned to branch snapshot 0.4.x-dev; last release 2021-12-14 (4.8 years ago); pulls in 3 flagged packages: evenement/evenement (old-promise), react/cache (old-promise), react/stream (old-promise)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "james-heinrich/getid3",
+   "version": "dev-master",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-master",
+     "data": {
+      "version": "dev-master"
+     }
+    }
+   ],
+   "chain": [
+    "james-heinrich/getid3"
+   ],
+   "direct_dependents": [
+    "james-heinrich/getid3"
+   ],
+   "evidence": "pinned to branch snapshot dev-master",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "krixon/xbmc-php-rpc",
+   "version": "dev-master",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-master",
+     "data": {
+      "version": "dev-master"
+     }
+    }
+   ],
+   "chain": [
+    "krixon/xbmc-php-rpc"
+   ],
+   "direct_dependents": [
+    "krixon/xbmc-php-rpc"
+   ],
+   "evidence": "pinned to branch snapshot dev-master",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "rsd/seafile-php-sdk",
+   "version": "dev-master",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-12-08 (5.8 years ago)",
+     "data": {
+      "last_release": "2020-12-08T08:47:41+00:00",
+      "last_version": "v2.0.1",
+      "years": 5.8
+     }
+    },
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-master",
+     "data": {
+      "version": "dev-master"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 2 flagged packages: marcusball/case-helper (stale), sdo/bitmask (stale)",
+     "data": {
+      "flagged": 2,
+      "packages": [
+       {
+        "package": "marcusball/case-helper",
+        "verdict": "stale",
+        "chain": [
+         "rsd/seafile-php-sdk",
+         "marcusball/case-helper"
+        ]
+       },
+       {
+        "package": "sdo/bitmask",
+        "verdict": "stale",
+        "chain": [
+         "rsd/seafile-php-sdk",
+         "sdo/bitmask"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "rsd/seafile-php-sdk"
+   ],
+   "direct_dependents": [
+    "rsd/seafile-php-sdk"
+   ],
+   "evidence": "pinned to branch snapshot dev-master; last release 2020-12-08 (5.8 years ago); pulls in 2 flagged packages: marcusball/case-helper (stale), sdo/bitmask (stale)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "kunalvarma05/dropbox-php-sdk",
+   "version": "v0.4.2",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 0.4.x last released 2023-03-02 (3.6 years ago); 0.5.x released v0.5.0 (2024-08-05)",
+     "data": {
+      "branch": "0.4.x",
+      "branch_last_release": "2023-03-02T04:58:28+00:00",
+      "branch_last_version": "v0.4.2",
+      "years": 3.6,
+      "newest_branch": "0.5.x",
+      "newest_version": "v0.5.0",
+      "newest_release": "2024-08-05T07:37:25+00:00",
+      "suggested_constraint": "^0.5.0"
+     }
+    }
+   ],
+   "chain": [
+    "kunalvarma05/dropbox-php-sdk"
+   ],
+   "direct_dependents": [
+    "kunalvarma05/dropbox-php-sdk"
+   ],
+   "evidence": "branch 0.4.x last released 2023-03-02 (3.6 years ago); 0.5.x released v0.5.0 (2024-08-05); require ^0.5.0 to follow",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "clue/multicast-react",
+   "version": "v1.2.0",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-04-05, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3",
+      "released": "2024-04-05T12:49:27+00:00"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 3 flagged packages: evenement/evenement (old-promise), react/cache (old-promise), react/datagram (old-promise)",
+     "data": {
+      "flagged": 3,
+      "packages": [
+       {
+        "package": "evenement/evenement",
+        "verdict": "old-promise",
+        "chain": [
+         "clue/multicast-react",
+         "react/datagram",
+         "evenement/evenement"
+        ]
+       },
+       {
+        "package": "react/cache",
+        "verdict": "old-promise",
+        "chain": [
+         "clue/multicast-react",
+         "react/datagram",
+         "react/dns",
+         "react/cache"
+        ]
+       },
+       {
+        "package": "react/datagram",
+        "verdict": "old-promise",
+        "chain": [
+         "clue/multicast-react",
+         "react/datagram"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "clue/multicast-react"
+   ],
+   "direct_dependents": [
+    "clue/multicast-react"
+   ],
+   "evidence": "released 2024-04-05, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound; pulls in 3 flagged packages: evenement/evenement (old-promise), react/cache (old-promise), react/datagram (old-promise)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "jumbojett/openid-connect-php",
+   "version": "v1.0.2",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-13, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.0",
+      "released": "2024-09-13T07:08:11+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "jumbojett/openid-connect-php"
+   ],
+   "direct_dependents": [
+    "jumbojett/openid-connect-php"
+   ],
+   "evidence": "released 2024-09-13, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "nyholm/psr7",
+   "version": "1.8.2",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-09, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2",
+      "released": "2024-09-09T07:06:30+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "nyholm/psr7"
+   ],
+   "direct_dependents": [
+    "nyholm/psr7"
+   ],
+   "evidence": "released 2024-09-09, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "shrikeh/teapot",
+   "version": "v2.3.1",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-09-08 (3.0 years ago)",
+     "data": {
+      "last_release": "2023-09-08T11:52:13+00:00",
+      "last_version": "3.0.0",
+      "years": 3
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2017-09-01, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.5",
+      "released": "2017-09-01T13:56:48+00:00"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 1 flagged package: teapot/status-code (left-behind)",
+     "data": {
+      "flagged": 1,
+      "packages": [
+       {
+        "package": "teapot/status-code",
+        "verdict": "left-behind",
+        "chain": [
+         "shrikeh/teapot",
+         "teapot/status-code"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "shrikeh/teapot"
+   ],
+   "direct_dependents": [
+    "shrikeh/teapot"
+   ],
+   "evidence": "released 2017-09-01, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound; last release 2023-09-08 (3.0 years ago); pulls in 1 flagged package: teapot/status-code (left-behind)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "teapot/status-code",
+   "version": "v1.1.2",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 1.x last released 2020-11-03 (5.9 years ago); 2.x released 2.5.0 (2025-11-20)",
+     "data": {
+      "branch": "1.x",
+      "branch_last_release": "2020-11-03T17:14:32+00:00",
+      "branch_last_version": "v1.1.2",
+      "years": 5.9,
+      "newest_branch": "2.x",
+      "newest_version": "2.5.0",
+      "newest_release": "2025-11-20T08:53:39+00:00",
+      "suggested_constraint": "^2.5"
+     }
+    }
+   ],
+   "chain": [
+    "shrikeh/teapot",
+    "teapot/status-code"
+   ],
+   "direct_dependents": [
+    "shrikeh/teapot"
+   ],
+   "evidence": "branch 1.x last released 2020-11-03 (5.9 years ago); 2.x released 2.5.0 (2025-11-20)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "evenement/evenement",
+   "version": "v3.0.2",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-08-08 (3.1 years ago)",
+     "data": {
+      "last_release": "2023-08-08T05:53:35+00:00",
+      "last_version": "v3.0.2",
+      "years": 3.1
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-08-08, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.0",
+      "released": "2023-08-08T05:53:35+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "cboden/ratchet",
+    "react/socket",
+    "evenement/evenement"
+   ],
+   "direct_dependents": [
+    "cboden/ratchet",
+    "clue/multicast-react"
+   ],
+   "evidence": "released 2023-08-08, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0\" has no upper bound; last release 2023-08-08 (3.1 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "react/cache",
+   "version": "v1.2.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-11-30 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-11-30T15:59:55+00:00",
+      "last_version": "v1.2.0",
+      "years": 3.8
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-11-30, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.0",
+      "released": "2022-11-30T15:59:55+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "cboden/ratchet",
+    "react/socket",
+    "react/dns",
+    "react/cache"
+   ],
+   "direct_dependents": [
+    "cboden/ratchet",
+    "clue/multicast-react"
+   ],
+   "evidence": "released 2022-11-30, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound; last release 2022-11-30 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "react/datagram",
+   "version": "v1.10.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-06, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3",
+      "released": "2024-09-06T11:22:35+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "clue/multicast-react",
+    "react/datagram"
+   ],
+   "direct_dependents": [
+    "clue/multicast-react"
+   ],
+   "evidence": "released 2024-09-06, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "react/stream",
+   "version": "v1.4.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-06-11, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.8\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.8",
+      "released": "2024-06-11T12:45:25+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "cboden/ratchet",
+    "react/socket",
+    "react/stream"
+   ],
+   "direct_dependents": [
+    "cboden/ratchet"
+   ],
+   "evidence": "released 2024-06-11, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.8\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "marcusball/case-helper",
+   "version": "0.2.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2021-07-14 (5.2 years ago)",
+     "data": {
+      "last_release": "2021-07-14T21:20:15+00:00",
+      "last_version": "0.2.0",
+      "years": 5.2
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-03-04 (4.5 years ago)",
+     "data": {
+      "last_push": "2022-03-04T20:20:14+00:00",
+      "repo": "marcusball/case-helper",
+      "host": "github.com",
+      "years": 4.5
+     }
+    }
+   ],
+   "chain": [
+    "rsd/seafile-php-sdk",
+    "marcusball/case-helper"
+   ],
+   "direct_dependents": [
+    "rsd/seafile-php-sdk"
+   ],
+   "evidence": "last release 2021-07-14 (5.2 years ago); last push 2022-03-04 (4.5 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  },
+  {
+   "package": "sdo/bitmask",
+   "version": "v1.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2017-12-29 (8.7 years ago)",
+     "data": {
+      "last_release": "2017-12-29T12:42:25+00:00",
+      "last_version": "v1.0",
+      "years": 8.7
+     }
+    }
+   ],
+   "chain": [
+    "rsd/seafile-php-sdk",
+    "sdo/bitmask"
+   ],
+   "direct_dependents": [
+    "rsd/seafile-php-sdk"
+   ],
+   "evidence": "last release 2017-12-29 (8.7 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:33:30+00:00"
+  }
+ ]
+}

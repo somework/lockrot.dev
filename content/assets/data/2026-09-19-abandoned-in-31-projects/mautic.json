@@ -1,0 +1,1567 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:35:17+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 193,
+ "include_dev": false,
+ "not_from_composer_repository": 1,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 2,
+  "silent": 2,
+  "pinned": 1,
+  "left-behind": 10,
+  "old-promise": 13,
+  "stale": 3,
+  "unknown": 0,
+  "finished": 25,
+  "ok": 137
+ },
+ "priorities": {
+  "critical": 0,
+  "high": 6,
+  "medium": 22,
+  "low": 3,
+  "none": 162
+ },
+ "exposure": [
+  {
+   "package": "mautic/core-lib",
+   "flagged": 29
+  }
+ ],
+ "baseline": null,
+ "notes": [
+  "1 package is not from a Composer repository and was not checked"
+ ],
+ "findings": [
+  {
+   "package": "composer/package-versions-deprecated",
+   "version": "1.11.99.1",
+   "verdict": "abandoned",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S1",
+     "level": "high",
+     "summary": "marked abandoned by its repository",
+     "data": {
+      "replacement": null
+     }
+    },
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-01-17 (4.7 years ago)",
+     "data": {
+      "last_release": "2022-01-17T14:14:24+00:00",
+      "last_version": "1.11.99.5",
+      "years": 4.7
+     }
+    },
+    {
+     "id": "S3",
+     "level": "high",
+     "summary": "repository archived on GitHub",
+     "data": {
+      "repo": "composer/package-versions-deprecated",
+      "host": "github.com"
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-01-17 (4.7 years ago)",
+     "data": {
+      "last_push": "2022-01-17T14:15:51+00:00",
+      "repo": "composer/package-versions-deprecated",
+      "host": "github.com",
+      "years": 4.7
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "composer/package-versions-deprecated"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "marked abandoned by its repository; repository archived on GitHub; last release 2022-01-17 (4.7 years ago); last push 2022-01-17 (4.7 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "doctrine/cache",
+   "version": "2.2.0",
+   "verdict": "abandoned",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S1",
+     "level": "high",
+     "summary": "marked abandoned by its repository",
+     "data": {
+      "replacement": null
+     }
+    },
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-05-20 (4.3 years ago)",
+     "data": {
+      "last_release": "2022-05-20T20:07:39+00:00",
+      "last_version": "2.2.0",
+      "years": 4.3
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "doctrine/dbal",
+    "doctrine/cache"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "marked abandoned by its repository; last release 2022-05-20 (4.3 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "gaufrette/extras",
+   "version": "v0.1.0",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2017-06-17 (9.3 years ago)",
+     "data": {
+      "last_release": "2017-06-17T15:28:53+00:00",
+      "last_version": "v0.1.0",
+      "years": 9.3
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2017-11-30 (8.8 years ago)",
+     "data": {
+      "last_push": "2017-11-30T11:46:45+00:00",
+      "repo": "Gaufrette/extras",
+      "host": "github.com",
+      "years": 8.8
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "gaufrette/extras"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "last release 2017-06-17 (9.3 years ago); last push 2017-11-30 (8.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "mustangostang/spyc",
+   "version": "0.6.3",
+   "verdict": "silent",
+   "priority": "high",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2019-09-10 (7.0 years ago)",
+     "data": {
+      "last_release": "2019-09-10T13:16:29+00:00",
+      "last_version": "0.6.3",
+      "years": 7
+     }
+    },
+    {
+     "id": "S4",
+     "level": "high",
+     "summary": "last push 2020-03-16 (6.5 years ago)",
+     "data": {
+      "last_push": "2020-03-16T01:12:27+00:00",
+      "repo": "mustangostang/spyc",
+      "host": "github.com",
+      "years": 6.5
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2019-09-10, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.1\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.1",
+      "released": "2019-09-10T13:16:29+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "matomo/device-detector",
+    "mustangostang/spyc"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "last release 2019-09-10 (7.0 years ago); last push 2020-03-16 (6.5 years ago); released 2019-09-10, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.1\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "mautic/core-lib",
+   "version": "7.0.0-dev",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot 7.0.0-dev",
+     "data": {
+      "version": "7.0.0-dev"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 29 flagged packages: composer/package-versions-deprecated (abandoned), doctrine/cache (abandoned), gaufrette/extras (silent), mustangostang/spyc (silent), barryvdh/elfinder-flysystem-driver (left-behind) and 24 more",
+     "data": {
+      "flagged": 29,
+      "packages": [
+       {
+        "package": "composer/package-versions-deprecated",
+        "verdict": "abandoned",
+        "chain": [
+         "mautic/core-lib",
+         "composer/package-versions-deprecated"
+        ]
+       },
+       {
+        "package": "doctrine/cache",
+        "verdict": "abandoned",
+        "chain": [
+         "mautic/core-lib",
+         "doctrine/dbal",
+         "doctrine/cache"
+        ]
+       },
+       {
+        "package": "gaufrette/extras",
+        "verdict": "silent",
+        "chain": [
+         "mautic/core-lib",
+         "gaufrette/extras"
+        ]
+       },
+       {
+        "package": "mustangostang/spyc",
+        "verdict": "silent",
+        "chain": [
+         "mautic/core-lib",
+         "matomo/device-detector",
+         "mustangostang/spyc"
+        ]
+       },
+       {
+        "package": "barryvdh/elfinder-flysystem-driver",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "barryvdh/elfinder-flysystem-driver"
+        ]
+       },
+       {
+        "package": "brick/math",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "ramsey/uuid",
+         "brick/math"
+        ]
+       },
+       {
+        "package": "geoip2/geoip2",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "geoip2/geoip2"
+        ]
+       },
+       {
+        "package": "intervention/image",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "barryvdh/elfinder-flysystem-driver",
+         "intervention/image"
+        ]
+       },
+       {
+        "package": "ip2location/ip2location-php",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "ip2location/ip2location-php"
+        ]
+       },
+       {
+        "package": "knplabs/gaufrette",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "knplabs/gaufrette"
+        ]
+       },
+       {
+        "package": "maxmind/web-service-common",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "geoip2/geoip2",
+         "maxmind/web-service-common"
+        ]
+       },
+       {
+        "package": "ramsey/collection",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "ramsey/uuid",
+         "ramsey/collection"
+        ]
+       },
+       {
+        "package": "twilio/sdk",
+        "verdict": "left-behind",
+        "chain": [
+         "mautic/core-lib",
+         "twilio/sdk"
+        ]
+       },
+       {
+        "package": "aws/aws-crt-php",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "aws/aws-sdk-php",
+         "aws/aws-crt-php"
+        ]
+       },
+       {
+        "package": "giggsey/libphonenumber-for-php",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "giggsey/libphonenumber-for-php"
+        ]
+       },
+       {
+        "package": "giggsey/locale",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "giggsey/libphonenumber-for-php",
+         "giggsey/locale"
+        ]
+       },
+       {
+        "package": "jbroadway/urlify",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "jbroadway/urlify"
+        ]
+       },
+       {
+        "package": "matthiasmullie/minify",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "matthiasmullie/minify"
+        ]
+       },
+       {
+        "package": "matthiasmullie/path-converter",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "matthiasmullie/minify",
+         "matthiasmullie/path-converter"
+        ]
+       },
+       {
+        "package": "maxmind-db/reader",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "geoip2/geoip2",
+         "maxmind-db/reader"
+        ]
+       },
+       {
+        "package": "seld/signal-handler",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "composer/composer",
+         "seld/signal-handler"
+        ]
+       },
+       {
+        "package": "symfony/monolog-bundle",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "symfony/monolog-bundle"
+        ]
+       },
+       {
+        "package": "voku/portable-ascii",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "jbroadway/urlify",
+         "voku/portable-ascii"
+        ]
+       },
+       {
+        "package": "voku/stop-words",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "jbroadway/urlify",
+         "voku/stop-words"
+        ]
+       },
+       {
+        "package": "willdurand/jsonp-callback-validator",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "friendsofsymfony/rest-bundle",
+         "willdurand/jsonp-callback-validator"
+        ]
+       },
+       {
+        "package": "willdurand/negotiation",
+        "verdict": "old-promise",
+        "chain": [
+         "mautic/core-lib",
+         "api-platform/core",
+         "willdurand/negotiation"
+        ]
+       },
+       {
+        "package": "markbaker/complex",
+        "verdict": "stale",
+        "chain": [
+         "mautic/core-lib",
+         "phpoffice/phpspreadsheet",
+         "markbaker/complex"
+        ]
+       },
+       {
+        "package": "markbaker/matrix",
+        "verdict": "stale",
+        "chain": [
+         "mautic/core-lib",
+         "phpoffice/phpspreadsheet",
+         "markbaker/matrix"
+        ]
+       },
+       {
+        "package": "twbs/bootstrap-sass",
+        "verdict": "stale",
+        "chain": [
+         "mautic/core-lib",
+         "twbs/bootstrap-sass"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "pinned to branch snapshot 7.0.0-dev; pulls in 29 flagged packages: composer/package-versions-deprecated (abandoned), doctrine/cache (abandoned), gaufrette/extras (silent), mustangostang/spyc (silent), barryvdh/elfinder-flysystem-driver (left-behind) and 24 more",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "cweagans/composer-patches",
+   "version": "1.7.3",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-12-20, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.0",
+      "released": "2022-12-20T22:53:13+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 1.x last released 2022-12-20 (3.7 years ago); 2.x released 2.0.0 (2025-10-30)",
+     "data": {
+      "branch": "1.x",
+      "branch_last_release": "2022-12-20T22:53:13+00:00",
+      "branch_last_version": "1.7.3",
+      "years": 3.7,
+      "newest_branch": "2.x",
+      "newest_version": "2.0.0",
+      "newest_release": "2025-10-30T23:44:22+00:00",
+      "suggested_constraint": "^2.0"
+     }
+    }
+   ],
+   "chain": [
+    "cweagans/composer-patches"
+   ],
+   "direct_dependents": [
+    "cweagans/composer-patches"
+   ],
+   "evidence": "branch 1.x last released 2022-12-20 (3.7 years ago); 2.x released 2.0.0 (2025-10-30); require ^2.0 to follow; released 2022-12-20, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "barryvdh/elfinder-flysystem-driver",
+   "version": "v0.4.3",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 0.4.x last released 2022-03-24 (4.5 years ago); 0.6.x released v0.6.0 (2026-03-30)",
+     "data": {
+      "branch": "0.4.x",
+      "branch_last_release": "2022-03-24T06:03:55+00:00",
+      "branch_last_version": "v0.4.3",
+      "years": 4.5,
+      "newest_branch": "0.6.x",
+      "newest_version": "v0.6.0",
+      "newest_release": "2026-03-30T18:24:57+00:00",
+      "suggested_constraint": "^0.6.0"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "barryvdh/elfinder-flysystem-driver"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 0.4.x last released 2022-03-24 (4.5 years ago); 0.6.x released v0.6.0 (2026-03-30)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "brick/math",
+   "version": "0.11.0",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 0.11.x last released 2023-01-15 (3.7 years ago); 1.x released 1.0.0 (2026-09-12)",
+     "data": {
+      "branch": "0.11.x",
+      "branch_last_release": "2023-01-15T23:15:59+00:00",
+      "branch_last_version": "0.11.0",
+      "years": 3.7,
+      "newest_branch": "1.x",
+      "newest_version": "1.0.0",
+      "newest_release": "2026-09-12T10:28:18+00:00",
+      "suggested_constraint": "^1.0"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "ramsey/uuid",
+    "brick/math"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 0.11.x last released 2023-01-15 (3.7 years ago); 1.x released 1.0.0 (2026-09-12)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "geoip2/geoip2",
+   "version": "v2.13.0",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-08-05, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2",
+      "released": "2022-08-05T20:32:58+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 2.x last released 2022-08-05 (4.1 years ago); 3.x released v3.4.0 (2026-07-16)",
+     "data": {
+      "branch": "2.x",
+      "branch_last_release": "2022-08-05T20:32:58+00:00",
+      "branch_last_version": "v2.13.0",
+      "years": 4.1,
+      "newest_branch": "3.x",
+      "newest_version": "v3.4.0",
+      "newest_release": "2026-07-16T22:11:20+00:00",
+      "suggested_constraint": "^3.4"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "geoip2/geoip2"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 2.x last released 2022-08-05 (4.1 years ago); 3.x released v3.4.0 (2026-07-16); released 2022-08-05, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "intervention/image",
+   "version": "2.7.2",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-05-21, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.4.0",
+      "released": "2022-05-21T17:30:32+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 2.x last released 2022-05-21 (4.3 years ago); 4.x released 4.3.2 (2026-08-29)",
+     "data": {
+      "branch": "2.x",
+      "branch_last_release": "2022-05-21T17:30:32+00:00",
+      "branch_last_version": "2.7.2",
+      "years": 4.3,
+      "newest_branch": "4.x",
+      "newest_version": "4.3.2",
+      "newest_release": "2026-08-29T05:35:03+00:00",
+      "suggested_constraint": "^4.3"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "barryvdh/elfinder-flysystem-driver",
+    "intervention/image"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 2.x last released 2022-05-21 (4.3 years ago); 4.x released 4.3.2 (2026-08-29); released 2022-05-21, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "ip2location/ip2location-php",
+   "version": "7.2.5",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 7.x last released 2016-06-10 (10.3 years ago); 9.x released 9.8.1 (2025-12-21)",
+     "data": {
+      "branch": "7.x",
+      "branch_last_release": "2016-06-10T07:21:52+00:00",
+      "branch_last_version": "7.2.5",
+      "years": 10.3,
+      "newest_branch": "9.x",
+      "newest_version": "9.8.1",
+      "newest_release": "2025-12-21T22:28:29+00:00",
+      "suggested_constraint": "^9.8"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "ip2location/ip2location-php"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 7.x last released 2016-06-10 (10.3 years ago); 9.x released 9.8.1 (2025-12-21)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "knplabs/gaufrette",
+   "version": "v0.9.0",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2019-12-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1",
+      "released": "2019-12-26T15:15:38+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 0.9.x last released 2019-12-26 (6.7 years ago); 1.x released v1.0.0 (2026-07-22)",
+     "data": {
+      "branch": "0.9.x",
+      "branch_last_release": "2019-12-26T15:15:38+00:00",
+      "branch_last_version": "v0.9.0",
+      "years": 6.7,
+      "newest_branch": "1.x",
+      "newest_version": "v1.0.0",
+      "newest_release": "2026-07-22T20:52:43+00:00",
+      "suggested_constraint": "^1.0"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "knplabs/gaufrette"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 0.9.x last released 2019-12-26 (6.7 years ago); 1.x released v1.0.0 (2026-07-22); released 2019-12-26, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "maxmind/web-service-common",
+   "version": "v0.9.0",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-03-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2",
+      "released": "2022-03-28T17:43:20+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 0.9.x last released 2022-03-28 (4.5 years ago); 0.11.x released v0.11.1 (2026-01-13)",
+     "data": {
+      "branch": "0.9.x",
+      "branch_last_release": "2022-03-28T17:43:20+00:00",
+      "branch_last_version": "v0.9.0",
+      "years": 4.5,
+      "newest_branch": "0.11.x",
+      "newest_version": "v0.11.1",
+      "newest_release": "2026-01-13T17:56:03+00:00",
+      "suggested_constraint": "^0.11.1"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "geoip2/geoip2",
+    "maxmind/web-service-common"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 0.9.x last released 2022-03-28 (4.5 years ago); 0.11.x released v0.11.1 (2026-01-13); released 2022-03-28, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "ramsey/collection",
+   "version": "1.3.0",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 1.x last released 2022-12-27 (3.7 years ago); 2.x released 2.1.1 (2025-03-22)",
+     "data": {
+      "branch": "1.x",
+      "branch_last_release": "2022-12-27T19:12:24+00:00",
+      "branch_last_version": "1.3.0",
+      "years": 3.7,
+      "newest_branch": "2.x",
+      "newest_version": "2.1.1",
+      "newest_release": "2025-03-22T05:38:12+00:00",
+      "suggested_constraint": "^2.1"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "ramsey/uuid",
+    "ramsey/collection"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 1.x last released 2022-12-27 (3.7 years ago); 2.x released 2.1.1 (2025-03-22)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "twilio/sdk",
+   "version": "5.42.2",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-02-05, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.5.0",
+      "released": "2020-02-05T19:55:13+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "high",
+     "summary": "branch 5.x last released 2020-02-05 (6.6 years ago); 8.x released 8.12.1 (2026-09-09)",
+     "data": {
+      "branch": "5.x",
+      "branch_last_release": "2020-02-05T19:55:13+00:00",
+      "branch_last_version": "5.42.2",
+      "years": 6.6,
+      "newest_branch": "8.x",
+      "newest_version": "8.12.1",
+      "newest_release": "2026-09-09T12:37:32+00:00",
+      "suggested_constraint": "^8.12"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "twilio/sdk"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "branch 5.x last released 2020-02-05 (6.6 years ago); 8.x released 8.12.1 (2026-09-09); released 2020-02-05, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "aws/aws-crt-php",
+   "version": "v1.2.7",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-10-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.5",
+      "released": "2024-10-18T22:15:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "aws/aws-sdk-php",
+    "aws/aws-crt-php"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2024-10-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "giggsey/libphonenumber-for-php",
+   "version": "8.13.29",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-01-26, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.2\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.2",
+      "released": "2024-01-26T08:49:18+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "giggsey/libphonenumber-for-php"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2024-01-26, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.2\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "giggsey/locale",
+   "version": "2.5",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-11-01, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2",
+      "released": "2023-11-01T17:19:48+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "giggsey/libphonenumber-for-php",
+    "giggsey/locale"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2023-11-01, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "jbroadway/urlify",
+   "version": "1.2.4-stable",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-06-15, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2",
+      "released": "2022-06-15T16:46:46+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "jbroadway/urlify"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2022-06-15, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "matthiasmullie/minify",
+   "version": "1.3.71",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-04-25, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.0",
+      "released": "2023-04-25T20:33:03+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "matthiasmullie/minify"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2023-04-25, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "matthiasmullie/path-converter",
+   "version": "1.1.3",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2019-02-05 (7.6 years ago)",
+     "data": {
+      "last_release": "2019-02-05T23:41:09+00:00",
+      "last_version": "1.1.3",
+      "years": 7.6
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-07-01 (3.2 years ago)",
+     "data": {
+      "last_push": "2023-07-01T17:55:42+00:00",
+      "repo": "matthiasmullie/path-converter",
+      "host": "github.com",
+      "years": 3.2
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2019-02-05, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3.0",
+      "released": "2019-02-05T23:41:09+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "matthiasmullie/minify",
+    "matthiasmullie/path-converter"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2019-02-05, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3.0\" has no upper bound; last release 2019-02-05 (7.6 years ago); last push 2023-07-01 (3.2 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "maxmind-db/reader",
+   "version": "v1.11.1",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-12-02, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2",
+      "released": "2023-12-02T00:09:23+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "geoip2/geoip2",
+    "maxmind-db/reader"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2023-12-02, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "seld/signal-handler",
+   "version": "2.0.2",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-09-03 (3.0 years ago)",
+     "data": {
+      "last_release": "2023-09-03T09:24:00+00:00",
+      "last_version": "2.0.2",
+      "years": 3
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-09-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.0",
+      "released": "2023-09-03T09:24:00+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "composer/composer",
+    "seld/signal-handler"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2023-09-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.0\" has no upper bound; last release 2023-09-03 (3.0 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "symfony/monolog-bundle",
+   "version": "v3.10.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-11-06, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.5",
+      "released": "2023-11-06T17:08:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "symfony/monolog-bundle"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2023-11-06, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "voku/portable-ascii",
+   "version": "2.0.1",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-03-08, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.0.0",
+      "released": "2022-03-08T17:03:00+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "jbroadway/urlify",
+    "voku/portable-ascii"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2022-03-08, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "voku/stop-words",
+   "version": "2.0.1",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2018-11-23 (7.8 years ago)",
+     "data": {
+      "last_release": "2018-11-23T01:37:27+00:00",
+      "last_version": "2.0.1",
+      "years": 7.8
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2018-11-23, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.0.0",
+      "released": "2018-11-23T01:37:27+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "jbroadway/urlify",
+    "voku/stop-words"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2018-11-23, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0.0\" has no upper bound; last release 2018-11-23 (7.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "willdurand/jsonp-callback-validator",
+   "version": "v2.0.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-01-30 (4.6 years ago)",
+     "data": {
+      "last_release": "2022-01-30T20:33:09+00:00",
+      "last_version": "v2.0.0",
+      "years": 4.6
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-07-29 (3.1 years ago)",
+     "data": {
+      "last_push": "2023-07-29T16:52:43+00:00",
+      "repo": "willdurand/JsonpCallbackValidator",
+      "host": "github.com",
+      "years": 3.1
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-01-30, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1.0",
+      "released": "2022-01-30T20:33:09+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "friendsofsymfony/rest-bundle",
+    "willdurand/jsonp-callback-validator"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2022-01-30, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1.0\" has no upper bound; last release 2022-01-30 (4.6 years ago); last push 2023-07-29 (3.1 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "willdurand/negotiation",
+   "version": "3.1.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-01-30 (4.6 years ago)",
+     "data": {
+      "last_release": "2022-01-30T20:08:53+00:00",
+      "last_version": "3.1.0",
+      "years": 4.6
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-08-03 (3.1 years ago)",
+     "data": {
+      "last_push": "2023-08-03T17:52:44+00:00",
+      "repo": "willdurand/Negotiation",
+      "host": "github.com",
+      "years": 3.1
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-01-30, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1.0",
+      "released": "2022-01-30T20:08:53+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "api-platform/core",
+    "willdurand/negotiation"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "released 2022-01-30, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1.0\" has no upper bound; last release 2022-01-30 (4.6 years ago); last push 2023-08-03 (3.1 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "markbaker/complex",
+   "version": "3.0.2",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-06 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-06T16:21:08+00:00",
+      "last_version": "3.0.2",
+      "years": 3.8
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-12-06 (3.8 years ago)",
+     "data": {
+      "last_push": "2022-12-06T16:29:17+00:00",
+      "repo": "MarkBaker/PHPComplex",
+      "host": "github.com",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "phpoffice/phpspreadsheet",
+    "markbaker/complex"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "last release 2022-12-06 (3.8 years ago); last push 2022-12-06 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "markbaker/matrix",
+   "version": "3.0.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-02 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-02T22:51:35+00:00",
+      "last_version": "2.1.4",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "phpoffice/phpspreadsheet",
+    "markbaker/matrix"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "last release 2022-12-02 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  },
+  {
+   "package": "twbs/bootstrap-sass",
+   "version": "v3.4.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-02-28 (4.6 years ago)",
+     "data": {
+      "last_release": "2022-02-28T07:48:53+00:00",
+      "last_version": "v3.4.3",
+      "years": 4.6
+     }
+    }
+   ],
+   "chain": [
+    "mautic/core-lib",
+    "twbs/bootstrap-sass"
+   ],
+   "direct_dependents": [
+    "mautic/core-lib"
+   ],
+   "evidence": "last release 2022-02-28 (4.6 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:17+00:00"
+  }
+ ]
+}
