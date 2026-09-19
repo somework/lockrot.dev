@@ -1,6 +1,5 @@
 ---
-draft: false
-date: 2026-09-20
+date: 2026-09-19
 authors: [igor]
 categories: [Dependency rot]
 slug: composer-audit-abandoned-misses
