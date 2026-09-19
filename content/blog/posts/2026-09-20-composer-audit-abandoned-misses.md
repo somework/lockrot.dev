@@ -4,6 +4,7 @@ date: 2026-09-20
 authors: [igor]
 categories: [Dependency rot]
 slug: composer-audit-abandoned-misses
+title: What composer audit --abandoned misses in 31 PHP projects
 description: 129 packages in 31 open-source PHP projects are abandoned, archived or five years silent. composer audit --abandoned reports 62, and the lock file explains why.
 ---
 
@@ -24,8 +25,8 @@ does not report them, because it never asks Packagist.
 ## The numbers
 
 Every lock file is the project's default branch as of 2026-09-19, read with `--no-dev`, so only
-what runs in production counts. The middle column is lockrot 0.8.0's `abandoned` and `silent`
-verdicts together (lockrot is the tool this site documents: it reads `composer.lock` and asks
+what runs in production counts. The middle column is lockrot 0.8.0's [`abandoned` and `silent`
+verdicts](../../verdicts.md#the-nine-verdicts) together (lockrot is the tool this site documents: it reads `composer.lock` and asks
 Packagist and the repository host about each package). `abandoned` is the Packagist marker or an
 archived repository; `silent` is no stable release *and* no push to any branch for five years, the
 default thresholds. "Marked" is the subset with the marker. The last column is what
