@@ -47,7 +47,7 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
   assets/              # extra.css (terminal sample, demo GIF box, link colour and underline), og.png
   overrides/main.html  # <title> rule and OpenGraph tags (Material's social plugin needs Cairo)
   overrides/partials/copyright.html  # footer: Material's partial plus "built from lockrot <ref>"
-  overrides/partials/jsonld.html     # JSON-LD: SoftwareApplication on the home page, breadcrumbs elsewhere
+  overrides/partials/jsonld.html     # JSON-LD: SoftwareApplication on the home page, BlogPosting on posts, breadcrumbs elsewhere
   _redirects           # /lockrot.phar -> GitHub latest release, 302 on purpose (see the file)
   _headers             # CSP and security headers; a new external origin must be added to the CSP
                        # (Cloudflare Web Analytics is injected at the edge and is already listed)
@@ -67,17 +67,24 @@ wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 
 ```yaml
 ---
-draft: true                 # drop when publishing; drafts render only under `serve`
-date: 2026-09-17
+draft: false                # true while writing; drafts render only under `serve`
+date: 2026-09-20
 authors: [igor]             # ids from content/blog/.authors.yml
-categories: [Releases]      # one of the categories_allowed list in mkdocs.yml, or extend the list
-slug: signed-releases       # URL: /blog/2026/09/17/signed-releases/
-description: One sentence for search and the OpenGraph card.
+categories: [Dependency rot]  # one of the categories_allowed list in mkdocs.yml, or extend the list
+slug: composer-audit-abandoned-misses   # URL: /blog/2026/09/20/composer-audit-abandoned-misses/
+description: One sentence for search and the OpenGraph card; also the BlogPosting description.
 ---
 ```
 
 Then a `# Title`, one or two paragraphs, `<!-- more -->` (required: `post_excerpt: required`), the
-rest. A post with a future `date` stays a draft on its own.
+rest. A post with a future `date` stays a draft on its own. Links to reference pages are relative
+to the post file: `../../configuration.md#the-allowlist`.
+
+A post built on a data run (lockrot over other projects' lock files) keeps the run reproducible in
+the text: lockrot version and PHAR checksum, Composer and PHP versions, thresholds, the date, and a
+link to the exact commit of every lock file read. Numbers are recomputed from the JSON reports
+before publishing, not copied from a terminal; claims about Composer's own behaviour are checked
+against its source at the version named and, where they can be, reproduced on a throwaway project.
 
 Voice, same as the docs and README: plain, specific, evidence first. Name the version a claim is
 true for (`from 0.5.0 on`), show the real command and its real output, no marketing adjectives, no

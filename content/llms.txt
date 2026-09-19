@@ -20,6 +20,11 @@ Install: `composer require --dev somework/lockrot`, or download https://lockrot.
 
 - [Example run](https://lockrot.dev/example-run/): a complete report on a public 200-package composer.lock, as a table and as JSON
 
+## Blog
+
+- [What composer audit --abandoned misses in 31 PHP projects](https://lockrot.dev/blog/2026/09/20/composer-audit-abandoned-misses/): 129 of 4,109 production packages in 31 open-source PHP applications are marked abandoned, archived or five years silent; composer audit --abandoned reports 62, because it reads the abandoned field from composer.lock rather than Packagist; data and lock-file commits linked
+- [Blog index](https://lockrot.dev/blog/) and [RSS feed](https://lockrot.dev/feed_rss_created.xml)
+
 ## Optional
 
 - [Changelog](https://lockrot.dev/changelog/): what changed, release by release

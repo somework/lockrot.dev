@@ -1,0 +1,1023 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:34:42+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 245,
+ "include_dev": false,
+ "not_from_composer_repository": 2,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 0,
+  "silent": 0,
+  "pinned": 2,
+  "left-behind": 7,
+  "old-promise": 7,
+  "stale": 8,
+  "unknown": 0,
+  "finished": 23,
+  "ok": 198
+ },
+ "priorities": {
+  "critical": 0,
+  "high": 10,
+  "medium": 9,
+  "low": 5,
+  "none": 221
+ },
+ "exposure": [
+  {
+   "package": "horstoeko/zugferdvisualizer",
+   "flagged": 3
+  },
+  {
+   "package": "phpoffice/phpspreadsheet",
+   "flagged": 2
+  },
+  {
+   "package": "aws/aws-sdk-php",
+   "flagged": 1
+  },
+  {
+   "package": "imdhemy/laravel-purchases",
+   "flagged": 1
+  },
+  {
+   "package": "invoiceninja/einvoice",
+   "flagged": 1
+  },
+  {
+   "package": "laravel/framework",
+   "flagged": 1
+  },
+  {
+   "package": "laravel/octane",
+   "flagged": 1
+  },
+  {
+   "package": "league/flysystem-aws-s3-v3",
+   "flagged": 1
+  },
+  {
+   "package": "mailgun/mailgun-php",
+   "flagged": 1
+  },
+  {
+   "package": "sentry/sentry-laravel",
+   "flagged": 1
+  },
+  {
+   "package": "sprain/swiss-qr-bill",
+   "flagged": 1
+  },
+  {
+   "package": "square/square",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [
+  "2 packages are not from a Composer repository and were not checked"
+ ],
+ "findings": [
+  {
+   "package": "beganovich/snappdf",
+   "version": "dev-master",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-master",
+     "data": {
+      "version": "dev-master"
+     }
+    }
+   ],
+   "chain": [
+    "beganovich/snappdf"
+   ],
+   "direct_dependents": [
+    "beganovich/snappdf"
+   ],
+   "evidence": "pinned to branch snapshot dev-master",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "invoiceninja/einvoice",
+   "version": "dev-main",
+   "verdict": "pinned",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S6",
+     "level": "warn",
+     "summary": "pinned to branch snapshot dev-main",
+     "data": {
+      "version": "dev-main"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 1 flagged package: phpdocumentor/reflection-common (stale)",
+     "data": {
+      "flagged": 1,
+      "packages": [
+       {
+        "package": "phpdocumentor/reflection-common",
+        "verdict": "stale",
+        "chain": [
+         "invoiceninja/einvoice",
+         "phpdocumentor/reflection-docblock",
+         "phpdocumentor/reflection-common"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "invoiceninja/einvoice"
+   ],
+   "direct_dependents": [
+    "invoiceninja/einvoice"
+   ],
+   "evidence": "pinned to branch snapshot dev-main; pulls in 1 flagged package: phpdocumentor/reflection-common (stale)",
+   "allowlist_reason": null,
+   "note": "not from a Composer repository, not checked",
+   "data_date": null
+  },
+  {
+   "package": "getbrevo/brevo-php",
+   "version": "v1.0.2",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-07-14, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.6",
+      "released": "2023-07-14T10:00:50+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 1.x last released 2023-07-14 (3.2 years ago); 5.x released 5.0.2 (2026-08-10)",
+     "data": {
+      "branch": "1.x",
+      "branch_last_release": "2023-07-14T10:00:50+00:00",
+      "branch_last_version": "v1.0.2",
+      "years": 3.2,
+      "newest_branch": "5.x",
+      "newest_version": "5.0.2",
+      "newest_release": "2026-08-10T15:43:20+00:00",
+      "suggested_constraint": "^5.0"
+     }
+    }
+   ],
+   "chain": [
+    "getbrevo/brevo-php"
+   ],
+   "direct_dependents": [
+    "getbrevo/brevo-php"
+   ],
+   "evidence": "branch 1.x last released 2023-07-14 (3.2 years ago); 5.x released 5.0.2 (2026-08-10); require ^5.0 to follow; released 2023-07-14, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "halaxa/json-machine",
+   "version": "0.7.1",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2021-12-06, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.6",
+      "released": "2021-12-06T13:33:35+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 0.7.x last released 2021-12-06 (4.8 years ago); 1.x released 1.2.6 (2025-12-05)",
+     "data": {
+      "branch": "0.7.x",
+      "branch_last_release": "2021-12-06T13:33:35+00:00",
+      "branch_last_version": "0.7.1",
+      "years": 4.8,
+      "newest_branch": "1.x",
+      "newest_version": "1.2.6",
+      "newest_release": "2025-12-05T14:53:09+00:00",
+      "suggested_constraint": "^1.2"
+     }
+    }
+   ],
+   "chain": [
+    "halaxa/json-machine"
+   ],
+   "direct_dependents": [
+    "halaxa/json-machine"
+   ],
+   "evidence": "branch 0.7.x last released 2021-12-06 (4.8 years ago); 1.x released 1.2.6 (2025-12-05); require ^1.2 to follow; released 2021-12-06, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "intervention/image",
+   "version": "2.7.2",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2022-05-21, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.4.0",
+      "released": "2022-05-21T17:30:32+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 2.x last released 2022-05-21 (4.3 years ago); 4.x released 4.3.2 (2026-08-29)",
+     "data": {
+      "branch": "2.x",
+      "branch_last_release": "2022-05-21T17:30:32+00:00",
+      "branch_last_version": "2.7.2",
+      "years": 4.3,
+      "newest_branch": "4.x",
+      "newest_version": "4.3.2",
+      "newest_release": "2026-08-29T05:35:03+00:00",
+      "suggested_constraint": "^4.3"
+     }
+    }
+   ],
+   "chain": [
+    "intervention/image"
+   ],
+   "direct_dependents": [
+    "intervention/image"
+   ],
+   "evidence": "branch 2.x last released 2022-05-21 (4.3 years ago); 4.x released 4.3.2 (2026-08-29); require ^4.3 to follow; released 2022-05-21, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "square/square",
+   "version": "30.0.0.20230816",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 30.x last released 2023-08-15 (3.1 years ago); 47.x released 47.0.0.20260916 (2026-09-15)",
+     "data": {
+      "branch": "30.x",
+      "branch_last_release": "2023-08-15T21:45:55+00:00",
+      "branch_last_version": "30.0.0.20230816",
+      "years": 3.1,
+      "newest_branch": "47.x",
+      "newest_version": "47.0.0.20260916",
+      "newest_release": "2026-09-15T20:57:49+00:00",
+      "suggested_constraint": "^47.0"
+     }
+    },
+    {
+     "id": "S7",
+     "level": "info",
+     "summary": "pulls in 1 flagged package: php-jsonpointer/php-jsonpointer (old-promise)",
+     "data": {
+      "flagged": 1,
+      "packages": [
+       {
+        "package": "php-jsonpointer/php-jsonpointer",
+        "verdict": "old-promise",
+        "chain": [
+         "square/square",
+         "apimatic/core",
+         "php-jsonpointer/php-jsonpointer"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "chain": [
+    "square/square"
+   ],
+   "direct_dependents": [
+    "square/square"
+   ],
+   "evidence": "branch 30.x last released 2023-08-15 (3.1 years ago); 47.x released 47.0.0.20260916 (2026-09-15); require ^47.0 to follow; pulls in 1 flagged package: php-jsonpointer/php-jsonpointer (old-promise)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "twilio/sdk",
+   "version": "6.44.4",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-02-22, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.1.0",
+      "released": "2023-02-22T19:59:53+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 6.x last released 2023-02-22 (3.6 years ago); 8.x released 8.12.1 (2026-09-09)",
+     "data": {
+      "branch": "6.x",
+      "branch_last_release": "2023-02-22T19:59:53+00:00",
+      "branch_last_version": "6.44.4",
+      "years": 3.6,
+      "newest_branch": "8.x",
+      "newest_version": "8.12.1",
+      "newest_release": "2026-09-09T12:37:32+00:00",
+      "suggested_constraint": "^8.12"
+     }
+    }
+   ],
+   "chain": [
+    "twilio/sdk"
+   ],
+   "direct_dependents": [
+    "twilio/sdk"
+   ],
+   "evidence": "branch 6.x last released 2023-02-22 (3.6 years ago); 8.x released 8.12.1 (2026-09-09); require ^8.12 to follow; released 2023-02-22, before PHP 8.4 GA (2024-11-21); php constraint \">=7.1.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "wildbit/postmark-php",
+   "version": "v4.0.5",
+   "verdict": "left-behind",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-02-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.0.0",
+      "released": "2023-02-03T15:00:17+00:00"
+     }
+    },
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 4.x last released 2023-02-03 (3.6 years ago); 7.x released v7.0.0 (2025-07-11)",
+     "data": {
+      "branch": "4.x",
+      "branch_last_release": "2023-02-03T15:00:17+00:00",
+      "branch_last_version": "v4.0.5",
+      "years": 3.6,
+      "newest_branch": "7.x",
+      "newest_version": "v7.0.0",
+      "newest_release": "2025-07-11T11:40:30+00:00",
+      "suggested_constraint": "^7.0"
+     }
+    }
+   ],
+   "chain": [
+    "wildbit/postmark-php"
+   ],
+   "direct_dependents": [
+    "wildbit/postmark-php"
+   ],
+   "evidence": "branch 4.x last released 2023-02-03 (3.6 years ago); 7.x released v7.0.0 (2025-07-11); require ^7.0 to follow; released 2023-02-03, before PHP 8.4 GA (2024-11-21); php constraint \">=7.0.0\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "authorizenet/authorizenet",
+   "version": "2.0.4",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.6",
+      "released": "2024-09-18T06:23:52+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "authorizenet/authorizenet"
+   ],
+   "direct_dependents": [
+    "authorizenet/authorizenet"
+   ],
+   "evidence": "released 2024-09-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.6\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "wikimedia/composer-merge-plugin",
+   "version": "v2.1.0",
+   "verdict": "old-promise",
+   "priority": "high",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-04-15 (3.4 years ago)",
+     "data": {
+      "last_release": "2023-04-15T19:07:00+00:00",
+      "last_version": "v2.1.0",
+      "years": 3.4
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-04-15, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2.0",
+      "released": "2023-04-15T19:07:00+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "wikimedia/composer-merge-plugin"
+   ],
+   "direct_dependents": [
+    "nwidart/laravel-modules",
+    "wikimedia/composer-merge-plugin"
+   ],
+   "evidence": "released 2023-04-15, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2.0\" has no upper bound; last release 2023-04-15 (3.4 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "mpdf/psr-http-message-shim",
+   "version": "1.0.0",
+   "verdict": "left-behind",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S8",
+     "level": "warn",
+     "summary": "branch 1.x last released 2023-09-01 (3.1 years ago); 2.x released v2.0.1 (2023-10-02)",
+     "data": {
+      "branch": "1.x",
+      "branch_last_release": "2023-09-01T05:59:47+00:00",
+      "branch_last_version": "1.0.0",
+      "years": 3.1,
+      "newest_branch": "2.x",
+      "newest_version": "v2.0.1",
+      "newest_release": "2023-10-02T14:34:03+00:00",
+      "suggested_constraint": "^2.0"
+     }
+    }
+   ],
+   "chain": [
+    "horstoeko/zugferdvisualizer",
+    "mpdf/mpdf",
+    "mpdf/psr-http-message-shim"
+   ],
+   "direct_dependents": [
+    "horstoeko/zugferdvisualizer"
+   ],
+   "evidence": "branch 1.x last released 2023-09-01 (3.1 years ago); 2.x released v2.0.1 (2023-10-02)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "aws/aws-crt-php",
+   "version": "v1.2.7",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-10-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.5",
+      "released": "2024-10-18T22:15:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "aws/aws-sdk-php",
+    "aws/aws-crt-php"
+   ],
+   "direct_dependents": [
+    "aws/aws-sdk-php",
+    "league/flysystem-aws-s3-v3"
+   ],
+   "evidence": "released 2024-10-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "clue/stream-filter",
+   "version": "v1.7.0",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2023-12-20, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.3",
+      "released": "2023-12-20T15:40:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "mailgun/mailgun-php",
+    "php-http/client-common",
+    "php-http/message",
+    "clue/stream-filter"
+   ],
+   "direct_dependents": [
+    "mailgun/mailgun-php"
+   ],
+   "evidence": "released 2023-12-20, before PHP 8.4 GA (2024-11-21); php constraint \">=5.3\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "kmukku/php-iso11649",
+   "version": "1.6",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-04-21 (6.4 years ago)",
+     "data": {
+      "last_release": "2020-04-21T13:01:17+00:00",
+      "last_version": "1.6",
+      "years": 6.4
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-05-11 (3.4 years ago)",
+     "data": {
+      "last_push": "2023-05-11T13:26:56+00:00",
+      "repo": "kmukku/php-iso11649",
+      "host": "github.com",
+      "years": 3.4
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2020-04-21, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.4.0",
+      "released": "2020-04-21T13:01:17+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "sprain/swiss-qr-bill",
+    "kmukku/php-iso11649"
+   ],
+   "direct_dependents": [
+    "sprain/swiss-qr-bill"
+   ],
+   "evidence": "released 2020-04-21, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4.0\" has no upper bound; last release 2020-04-21 (6.4 years ago); last push 2023-05-11 (3.4 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "nyholm/psr7",
+   "version": "1.8.2",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-09-09, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=7.2",
+      "released": "2024-09-09T07:06:30+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "sentry/sentry-laravel",
+    "nyholm/psr7"
+   ],
+   "direct_dependents": [
+    "sentry/sentry-laravel"
+   ],
+   "evidence": "released 2024-09-09, before PHP 8.4 GA (2024-11-21); php constraint \">=7.2\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "php-jsonpointer/php-jsonpointer",
+   "version": "v3.0.2",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-01-11 (4.7 years ago)",
+     "data": {
+      "last_release": "2022-01-11T14:28:07+00:00",
+      "last_version": "v4.0.0",
+      "years": 4.7
+     }
+    },
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2016-08-29, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.4",
+      "released": "2016-08-29T08:51:01+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "square/square",
+    "apimatic/core",
+    "php-jsonpointer/php-jsonpointer"
+   ],
+   "direct_dependents": [
+    "square/square"
+   ],
+   "evidence": "released 2016-08-29, before PHP 8.4 GA (2024-11-21); php constraint \">=5.4\" has no upper bound; last release 2022-01-11 (4.7 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "hashids/hashids",
+   "version": "4.1.0",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-02-23 (3.6 years ago)",
+     "data": {
+      "last_release": "2023-02-23T15:00:54+00:00",
+      "last_version": "5.0.2",
+      "years": 3.6
+     }
+    }
+   ],
+   "chain": [
+    "hashids/hashids"
+   ],
+   "direct_dependents": [
+    "hashids/hashids"
+   ],
+   "evidence": "last release 2023-02-23 (3.6 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "hyvor/php-json-exporter",
+   "version": "0.0.3",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-04-11 (3.4 years ago)",
+     "data": {
+      "last_release": "2023-04-11T15:12:18+00:00",
+      "last_version": "0.0.3",
+      "years": 3.4
+     }
+    }
+   ],
+   "chain": [
+    "hyvor/php-json-exporter"
+   ],
+   "direct_dependents": [
+    "hyvor/php-json-exporter"
+   ],
+   "evidence": "last release 2023-04-11 (3.4 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "nelexa/zip",
+   "version": "4.0.2",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-06-17 (4.3 years ago)",
+     "data": {
+      "last_release": "2022-06-17T11:17:46+00:00",
+      "last_version": "4.0.2",
+      "years": 4.3
+     }
+    }
+   ],
+   "chain": [
+    "nelexa/zip"
+   ],
+   "direct_dependents": [
+    "nelexa/zip"
+   ],
+   "evidence": "last release 2022-06-17 (4.3 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "league/config",
+   "version": "v1.2.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-11 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-11T20:36:23+00:00",
+      "last_version": "v1.2.0",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "horstoeko/zugferdvisualizer",
+    "league/commonmark",
+    "league/config"
+   ],
+   "direct_dependents": [
+    "horstoeko/zugferdvisualizer",
+    "imdhemy/laravel-purchases",
+    "laravel/framework",
+    "laravel/octane"
+   ],
+   "evidence": "last release 2022-12-11 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "markbaker/complex",
+   "version": "3.0.2",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-06 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-06T16:21:08+00:00",
+      "last_version": "3.0.2",
+      "years": 3.8
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2022-12-06 (3.8 years ago)",
+     "data": {
+      "last_push": "2022-12-06T16:29:17+00:00",
+      "repo": "MarkBaker/PHPComplex",
+      "host": "github.com",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "phpoffice/phpspreadsheet",
+    "markbaker/complex"
+   ],
+   "direct_dependents": [
+    "phpoffice/phpspreadsheet"
+   ],
+   "evidence": "last release 2022-12-06 (3.8 years ago); last push 2022-12-06 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "markbaker/matrix",
+   "version": "3.0.1",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-02 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-02T22:51:35+00:00",
+      "last_version": "2.1.4",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "phpoffice/phpspreadsheet",
+    "markbaker/matrix"
+   ],
+   "direct_dependents": [
+    "phpoffice/phpspreadsheet"
+   ],
+   "evidence": "last release 2022-12-02 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "mpdf/psr-log-aware-trait",
+   "version": "v3.0.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-05-03 (3.4 years ago)",
+     "data": {
+      "last_release": "2023-05-03T06:19:36+00:00",
+      "last_version": "v3.0.0",
+      "years": 3.4
+     }
+    },
+    {
+     "id": "S4",
+     "level": "warn",
+     "summary": "last push 2023-05-03 (3.4 years ago)",
+     "data": {
+      "last_push": "2023-05-03T12:17:55+00:00",
+      "repo": "mpdf/psr-log-aware-trait",
+      "host": "github.com",
+      "years": 3.4
+     }
+    }
+   ],
+   "chain": [
+    "horstoeko/zugferdvisualizer",
+    "mpdf/mpdf",
+    "mpdf/psr-log-aware-trait"
+   ],
+   "direct_dependents": [
+    "horstoeko/zugferdvisualizer"
+   ],
+   "evidence": "last release 2023-05-03 (3.4 years ago); last push 2023-05-03 (3.4 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  },
+  {
+   "package": "phpdocumentor/reflection-common",
+   "version": "2.2.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "high",
+     "summary": "last release 2020-06-27 (6.2 years ago)",
+     "data": {
+      "last_release": "2020-06-27T09:03:43+00:00",
+      "last_version": "2.2.0",
+      "years": 6.2
+     }
+    }
+   ],
+   "chain": [
+    "invoiceninja/einvoice",
+    "phpdocumentor/reflection-docblock",
+    "phpdocumentor/reflection-common"
+   ],
+   "direct_dependents": [
+    "invoiceninja/einvoice"
+   ],
+   "evidence": "last release 2020-06-27 (6.2 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:34:42+00:00"
+  }
+ ]
+}

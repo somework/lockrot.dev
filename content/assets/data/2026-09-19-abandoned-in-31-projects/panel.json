@@ -1,0 +1,173 @@
+{
+ "lockrot": {
+  "version": "0.8.0",
+  "schema": 1
+ },
+ "generated_at": "2026-09-19T18:35:34+00:00",
+ "activity_cache_oldest_at": "2026-09-19T16:44:56+00:00",
+ "packages_checked": 109,
+ "include_dev": false,
+ "not_from_composer_repository": 0,
+ "network_failures": false,
+ "counts": {
+  "abandoned": 0,
+  "silent": 0,
+  "pinned": 0,
+  "left-behind": 0,
+  "old-promise": 1,
+  "stale": 3,
+  "unknown": 0,
+  "finished": 21,
+  "ok": 84
+ },
+ "priorities": {
+  "critical": 0,
+  "high": 0,
+  "medium": 3,
+  "low": 1,
+  "none": 105
+ },
+ "exposure": [
+  {
+   "package": "aws/aws-sdk-php",
+   "flagged": 1
+  },
+  {
+   "package": "laravel/framework",
+   "flagged": 1
+  },
+  {
+   "package": "league/flysystem-aws-s3-v3",
+   "flagged": 1
+  }
+ ],
+ "baseline": null,
+ "notes": [],
+ "findings": [
+  {
+   "package": "aws/aws-crt-php",
+   "version": "v1.2.7",
+   "verdict": "old-promise",
+   "priority": "medium",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S5",
+     "level": "warn",
+     "summary": "released 2024-10-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+     "data": {
+      "target_php": "8.4",
+      "ga_date": "2024-11-21",
+      "php_constraint": ">=5.5",
+      "released": "2024-10-18T22:15:13+00:00"
+     }
+    }
+   ],
+   "chain": [
+    "aws/aws-sdk-php",
+    "aws/aws-crt-php"
+   ],
+   "direct_dependents": [
+    "aws/aws-sdk-php",
+    "league/flysystem-aws-s3-v3"
+   ],
+   "evidence": "released 2024-10-18, before PHP 8.4 GA (2024-11-21); php constraint \">=5.5\" has no upper bound",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:34+00:00"
+  },
+  {
+   "package": "hashids/hashids",
+   "version": "5.0.2",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2023-02-23 (3.6 years ago)",
+     "data": {
+      "last_release": "2023-02-23T15:00:54+00:00",
+      "last_version": "5.0.2",
+      "years": 3.6
+     }
+    }
+   ],
+   "chain": [
+    "hashids/hashids"
+   ],
+   "direct_dependents": [
+    "hashids/hashids"
+   ],
+   "evidence": "last release 2023-02-23 (3.6 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:34+00:00"
+  },
+  {
+   "package": "s1lentium/iptools",
+   "version": "v1.2.0",
+   "verdict": "stale",
+   "priority": "medium",
+   "direct": true,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-08-17 (4.1 years ago)",
+     "data": {
+      "last_release": "2022-08-17T14:28:59+00:00",
+      "last_version": "v1.2.0",
+      "years": 4.1
+     }
+    }
+   ],
+   "chain": [
+    "s1lentium/iptools"
+   ],
+   "direct_dependents": [
+    "s1lentium/iptools"
+   ],
+   "evidence": "last release 2022-08-17 (4.1 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:34+00:00"
+  },
+  {
+   "package": "league/config",
+   "version": "v1.2.0",
+   "verdict": "stale",
+   "priority": "low",
+   "direct": false,
+   "dev": false,
+   "signals": [
+    {
+     "id": "S2",
+     "level": "warn",
+     "summary": "last release 2022-12-11 (3.8 years ago)",
+     "data": {
+      "last_release": "2022-12-11T20:36:23+00:00",
+      "last_version": "v1.2.0",
+      "years": 3.8
+     }
+    }
+   ],
+   "chain": [
+    "laravel/framework",
+    "league/commonmark",
+    "league/config"
+   ],
+   "direct_dependents": [
+    "laravel/framework"
+   ],
+   "evidence": "last release 2022-12-11 (3.8 years ago)",
+   "allowlist_reason": null,
+   "note": null,
+   "data_date": "2026-09-19T18:35:34+00:00"
+  }
+ ]
+}

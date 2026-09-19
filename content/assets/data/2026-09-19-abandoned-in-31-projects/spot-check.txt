@@ -1,0 +1,53 @@
+# Ten silent findings, drawn with random.seed(7) from the 46 distinct silent packages, checked on 2026-09-20
+# against https://repo.packagist.org/p2/<package>.json (newest stable tag's time) and https://api.github.com/repos/<repo> (pushed_at, archived).
+
+kartik-v/yii2-widget-spinner v1.0.1
+  lockrot: last release 2018-10-09 (7.9 years ago); last push 2019-05-25 (7.3 years ago)
+  packagist newest stable: 2018-10-09T11:54:03+00:00
+  github pushed_at: 2019-05-25T07:33:39Z  archived: False
+
+grandt/phpzipmerge 1.0.4
+  lockrot: last release 2015-08-18 (11.1 years ago); last push 2015-08-18 (11.1 years ago)
+  packagist newest stable: 2015-08-18T13:49:33+00:00
+  github pushed_at: 2015-08-18T13:57:56Z  archived: False
+
+martinlindhe/php-mb-helpers 0.1.7
+  lockrot: last release 2021-03-17 (5.5 years ago); last push 2021-03-17 (5.5 years ago)
+  packagist newest stable: 2021-03-17T22:34:41+00:00
+  github pushed_at: 2021-03-17T22:35:08Z  archived: False
+
+spomky-labs/base64url v2.0.4
+  lockrot: last release 2020-11-03 (5.9 years ago); last push 2020-11-03 (5.9 years ago)
+  packagist newest stable: 2020-11-03T09:10:25+00:00
+  github pushed_at: 2020-11-03T09:12:52Z  archived: False
+
+essence/dom 1.0.0
+  lockrot: last release 2015-07-23 (11.2 years ago); last push 2015-11-05 (10.9 years ago)
+  packagist newest stable: 2015-07-23T20:33:17+00:00
+  github pushed_at: 2015-11-05T01:28:18Z  archived: False
+
+essence/http 1.0.0
+  lockrot: last release 2015-07-23 (11.2 years ago); last push 2017-01-31 (9.6 years ago)
+  packagist newest stable: 2015-07-23T20:33:50+00:00
+  github pushed_at: 2017-01-31T15:17:45Z  archived: False
+
+phpzip/phpzip 2.0.8
+  lockrot: last release 2015-11-16 (10.8 years ago); last push 2015-11-16 (10.8 years ago)
+  packagist newest stable: 2015-11-16T16:30:51+00:00
+  github pushed_at: 2015-11-16T16:31:37Z  archived: False
+
+gaufrette/extras v0.1.0
+  lockrot: last release 2017-06-17 (9.3 years ago); last push 2017-11-30 (8.8 years ago)
+  packagist newest stable: 2017-06-17T15:28:53+00:00
+  github pushed_at: 2017-11-30T11:46:45Z  archived: False
+
+kartik-v/yii2-widgets v3.4.1
+  lockrot: last release 2018-10-09 (7.9 years ago); last push 2019-09-03 (7.0 years ago)
+  packagist newest stable: 2018-10-09T17:40:19+00:00
+  github pushed_at: 2019-09-03T03:11:12Z  archived: False
+
+tmilos/lexer 1.0.2
+  lockrot: last release 2016-12-21 (9.7 years ago); last push 2018-11-17 (7.8 years ago)
+  packagist newest stable: 2016-12-21T11:22:39+00:00
+  github pushed_at: 2018-11-17T00:00:42Z  archived: False
+
