@@ -104,11 +104,13 @@ shortest one, and each direct requirement says what it pulls in.
 
 It does: `Package X is abandoned, you should avoid using it` on every install, and
 `composer audit --abandoned` reports the same packages. Both read one field: the `abandoned` marker
-a maintainer sets by hand on Packagist. Most packages that stop being maintained never get it,
-because setting it is the last act of someone who has already walked away — so the field is
-accurate when it is there, and silent the rest of the time. `composer outdated` answers a different
-question, whether a newer version exists: a package can be fully up to date and dead, or two majors
-behind and fine.
+a maintainer sets by hand on Packagist, as Composer copied it into `composer.lock` the last time it
+resolved the package. Most packages that stop being maintained never get it, because setting it is
+the last act of someone who has already walked away — so the field is accurate when it is there,
+and silent the rest of the time. Across the lock files of 31 open-source PHP applications,
+[`composer audit --abandoned` reported 62 of 129 abandoned or silent packages](blog/posts/2026-09-20-composer-audit-abandoned-misses.md).
+`composer outdated` answers a different question, whether a newer version exists: a package can be
+fully up to date and dead, or two majors behind and fine.
 
 lockrot reads that field too, and then keeps going. It asks when the last stable release actually
 landed, when the repository was last pushed to, whether your lock file is holding a branch snapshot
