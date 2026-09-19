@@ -118,7 +118,9 @@ against. It reads `composer.lock` and `composer.json`, and it writes to neither.
 The security advisories `composer audit` reports are on lockrot's findings too, fetched through the
 same Composer advisory API. From 0.7.0 on, an advisory on an `abandoned`, `silent` or `left-behind`
 package that no listed release fixes reads `no fix expected` and raises the priority one step: the
-vulnerability is the same, the chance of a patch is not.
+vulnerability is the same, the chance of a patch is not. From 0.8.0 on, when the abandoned package's
+repository names a replacement, the line says where the fix lands instead — `no fix expected;
+migrate to symfony/mailer`.
 
 ## In CI
 
@@ -166,6 +168,15 @@ turns into a non-zero exit code on its own: the check that could not run is repo
 
 With a [baseline](baseline.md): `--generate-baseline` records what is there today, and CI then
 fails only on findings that are new or have got worse.
+
+### Why is this package flagged — or why is it not?
+
+From 0.8.0 on, `composer lockrot --explain=vendor/package` prints that one package with everything
+it was decided on: the verdict and priority, how the package is reached, every signal with its raw
+data and the dates behind it, the `composer.lock` entry, the release branches the repository lists
+with their dates, the repository activity, and the thresholds the run measured against. `composer why`
+answers who requires it; this answers why lockrot judged it so. Exit `0`, it does not gate —
+[Explaining one package](configuration.md#explaining-one-package).
 
 ### A package is finished, not abandoned. How do I say so?
 
