@@ -23,6 +23,7 @@ before laying `content/` over it. A change to a verdict, an option or a CLI flag
 | `LOCKROT_REF=main scripts/fetch-lockrot.sh` | Re-fetch lockrot at `main` (or any tag) to preview unreleased docs |
 | `rm -rf .lockrot && scripts/build.sh` | Back to the newest release tag |
 | `scripts/check-nav.sh` | Fail if a page in `.lockrot/docs/` is missing from `mkdocs.yml` `nav` |
+| `python3 -m unittest discover -s scripts -p 'test_*.py'` | Unit tests for the MkDocs hooks (CI runs them before the build) |
 | `pip-compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in` | Re-lock after editing `requirements.in` (needs `pip install pip-tools`, run under Python 3.12) |
 
 Dependencies: `requirements.in` names the three packages the site asks for; `requirements.txt` is
@@ -54,8 +55,9 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
   llms.txt             # page map for AI search; check-nav.sh fails if a reference page is missing
   robots.txt
 mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
-scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, faq_hook.py (MkDocs hook: the landing
-                       # page's Questions section becomes the FAQPage markup, read from the rendered HTML)
+scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, mkdocs_hooks.py (MkDocs hooks: the landing
+                       # page's Questions section becomes the FAQPage markup, read from the rendered HTML;
+                       # a post's og_image must exist) and its unit test test_mkdocs_hooks.py
 wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
                        # weekly, manual), links.yml (weekly external link check)
@@ -68,11 +70,12 @@ wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 
 ```yaml
 ---
-draft: false                # true while writing; drafts render only under `serve`
-date: 2026-09-20
+draft: true                 # while writing; drafts render only under `serve`. Remove the key to
+                            # publish: an explicit `draft: false` also switches off the future-date rule
+date: 2026-09-19
 authors: [igor]             # ids from content/blog/.authors.yml
 categories: [Dependency rot]  # one of the categories_allowed list in mkdocs.yml, or extend the list
-slug: composer-audit-abandoned-misses   # URL: /blog/2026/09/20/composer-audit-abandoned-misses/
+slug: composer-audit-abandoned-misses   # URL: /blog/2026/09/19/composer-audit-abandoned-misses/
 description: One sentence for search and the OpenGraph card; also the BlogPosting description.
 og_image: assets/og-composer-audit-abandoned.png   # optional 1200x630 card for this post; default og.png
 og_image_alt: "What the card shows, in one sentence."
@@ -80,8 +83,11 @@ og_image_alt: "What the card shows, in one sentence."
 ```
 
 Then a `# Title`, one or two paragraphs, `<!-- more -->` (required: `post_excerpt: required`), the
-rest. A post with a future `date` stays a draft on its own. Links to reference pages are relative
-to the post file: `../../configuration.md#the-allowlist`.
+rest. A post with a future `date` stays a draft on its own, but only while `draft` is not set to
+a boolean (Material's `draft_if_future_date` reads `draft` first); the date is compared in UTC, so
+a post dated "today" in UTC+8 is still tomorrow to a build run before 08:00. Links to reference
+pages are relative to the post file: `../../configuration.md#the-allowlist`. `og_image` must name
+a file in the build, or `scripts/mkdocs_hooks.py` fails the strict build.
 
 A post built on a data run (lockrot over other projects' lock files) keeps the run reproducible in
 the text: lockrot version and PHAR checksum, Composer and PHP versions, thresholds, the date, and a

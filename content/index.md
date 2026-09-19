@@ -108,7 +108,7 @@ a maintainer sets by hand on Packagist, as Composer copied it into `composer.loc
 resolved the package. Most packages that stop being maintained never get it, because setting it is
 the last act of someone who has already walked away — so the field is accurate when it is there,
 and silent the rest of the time. Across the lock files of 31 open-source PHP applications,
-[`composer audit --abandoned` reported 62 of 129 abandoned or silent packages](blog/posts/2026-09-20-composer-audit-abandoned-misses.md).
+[`composer audit --abandoned` reported 62 of 129 abandoned or silent packages](blog/posts/2026-09-19-composer-audit-abandoned-misses.md).
 `composer outdated` answers a different question, whether a newer version exists: a package can be
 fully up to date and dead, or two majors behind and fine.
 

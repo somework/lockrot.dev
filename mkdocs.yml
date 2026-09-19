@@ -77,10 +77,10 @@ markdown_extensions:
   - toc:
       permalink: true
 
-# Build-time hooks (plain Python, no plugin package): faq_hook lifts the landing page's Questions
+# Build-time hooks (plain Python, no plugin package): mkdocs_hooks lifts the landing page's Questions
 # section into page.meta.faq for the FAQPage structured data in overrides/partials/jsonld.html.
 hooks:
-  - scripts/faq_hook.py
+  - scripts/mkdocs_hooks.py
 
 plugins:
   - search
