@@ -33,21 +33,36 @@
   {%- if ref.startswith("v") -%}
     {%- set app = dict(app, softwareVersion=ref[1:]) -%}
   {%- endif -%}
-  {%- set ld = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": config.site_url ~ "#website",
-        "name": config.site_name,
-        "url": config.site_url,
-        "description": config.site_description,
-        "inLanguage": "en",
-        "about": {"@id": config.site_url ~ "#software"}
-      },
-      app
-    ]
-  } -%}
+  {%- set graph = [
+    {
+      "@type": "WebSite",
+      "@id": config.site_url ~ "#website",
+      "name": config.site_name,
+      "url": config.site_url,
+      "description": config.site_description,
+      "inLanguage": "en",
+      "about": {"@id": config.site_url ~ "#software"}
+    },
+    app
+  ] -%}
+  {#- The "Questions" section, lifted from the rendered page by scripts/faq_hook.py, so the FAQ
+      in the markup is always the one on the page. -#}
+  {%- if page.meta.faq -%}
+    {%- set ns = namespace(items=[]) -%}
+    {%- for item in page.meta.faq -%}
+      {%- set ns.items = ns.items + [{
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {"@type": "Answer", "text": item.answer}
+      }] -%}
+    {%- endfor -%}
+    {%- set graph = graph + [{
+      "@type": "FAQPage",
+      "@id": config.site_url ~ "#faq",
+      "mainEntity": ns.items
+    }] -%}
+  {%- endif -%}
+  {%- set ld = {"@context": "https://schema.org", "@graph": graph} -%}
   <script type="application/ld+json">{{ ld | tojson }}</script>
 {%- elif page and page.file and page.file.src_uri.startswith("blog/posts/") and page.meta.date -%}
   {#- A post: BlogPosting with the front matter's date and description, plus a three-step
@@ -60,7 +75,7 @@
     "datePublished": page.meta.date.isoformat() if page.meta.date.isoformat is defined else page.meta.date,
     "url": page.canonical_url,
     "mainEntityOfPage": page.canonical_url,
-    "image": config.site_url ~ "assets/og.png",
+    "image": config.site_url ~ (page.meta.og_image or "assets/og.png"),
     "inLanguage": "en",
     "author": author,
     "publisher": author
