@@ -9,3 +9,6 @@ __pycache__/
 .DS_Store
 # Browser-check leftovers (Playwright MCP snapshots).
 /.playwright-mcp/
+# IndexNow state and report, written by the action's image when it runs locally.
+/.indexnow/
+/state/
