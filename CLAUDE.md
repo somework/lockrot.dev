@@ -47,14 +47,15 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
   assets/              # extra.css (terminal sample, demo GIF box, link colour and underline), og.png
   overrides/main.html  # <title> rule and OpenGraph tags (Material's social plugin needs Cairo)
   overrides/partials/copyright.html  # footer: Material's partial plus "built from lockrot <ref>"
-  overrides/partials/jsonld.html     # JSON-LD: SoftwareApplication on the home page, BlogPosting on posts, breadcrumbs elsewhere
+  overrides/partials/jsonld.html     # JSON-LD: SoftwareApplication + FAQPage on the home page, BlogPosting on posts, breadcrumbs elsewhere
   _redirects           # /lockrot.phar -> GitHub latest release, 302 on purpose (see the file)
   _headers             # CSP and security headers; a new external origin must be added to the CSP
                        # (Cloudflare Web Analytics is injected at the edge and is already listed)
   llms.txt             # page map for AI search; check-nav.sh fails if a reference page is missing
   robots.txt
 mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
-scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh
+scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, faq_hook.py (MkDocs hook: the landing
+                       # page's Questions section becomes the FAQPage markup, read from the rendered HTML)
 wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
                        # weekly, manual), links.yml (weekly external link check)
@@ -73,6 +74,8 @@ authors: [igor]             # ids from content/blog/.authors.yml
 categories: [Dependency rot]  # one of the categories_allowed list in mkdocs.yml, or extend the list
 slug: composer-audit-abandoned-misses   # URL: /blog/2026/09/20/composer-audit-abandoned-misses/
 description: One sentence for search and the OpenGraph card; also the BlogPosting description.
+og_image: assets/og-composer-audit-abandoned.png   # optional 1200x630 card for this post; default og.png
+og_image_alt: "What the card shows, in one sentence."
 ---
 ```
 

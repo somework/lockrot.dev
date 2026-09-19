@@ -5,6 +5,8 @@ authors: [igor]
 categories: [Dependency rot]
 slug: composer-audit-abandoned-misses
 title: What composer audit --abandoned misses in 31 PHP projects
+og_image: assets/og-composer-audit-abandoned.png
+og_image_alt: "129 abandoned, archived or five years silent packages in 31 PHP projects; composer audit reports 62. A bar splits them into 62 reported, 11 marked on Packagist but not in the lock, 56 never marked."
 description: 129 packages in 31 open-source PHP projects are abandoned, archived or five years silent. composer audit --abandoned reports 62, and the lock file explains why.
 ---
 
