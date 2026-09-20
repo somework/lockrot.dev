@@ -24,6 +24,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # The sitemap's <lastmod> is the commit date of each page's source, so the build needs
+          # the history, not just the tip. See scripts/mkdocs_hooks.py.
+          fetch-depth: 0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version-file: .python-version
@@ -36,11 +39,12 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
       # Tell the IndexNow engines — Bing, Yandex, Naver, Seznam; Google does not take part — which
-      # pages this deploy changed. MkDocs stamps every page in the sitemap with the build date, so
-      # `lastmod` cannot say what actually moved; `new-only` keeps a small state file between runs
-      # and announces each page once per change. The sitemap is read from the checkout, so nothing
-      # waits for the deploy to propagate. A search engine that will not listen is not a failed
-      # deploy, hence `fail-on-error: false`.
+      # pages this deploy changed. `new-only` keeps a small state file between runs and announces a
+      # page when its URL or its `lastmod` is new to that file, which is why scripts/mkdocs_hooks.py
+      # puts the commit date of the page's source there instead of MkDocs' build date: a build date
+      # makes every page look changed on the first deploy of each day. The sitemap is read from the
+      # checkout, so nothing waits for the deploy to propagate. A search engine that will not listen
+      # is not a failed deploy, hence `fail-on-error: false`.
       #
       # `key` is not a secret: the protocol proves ownership by serving it at
       # https://lockrot.dev/<key>.txt, which is content/38ddaaca504b025498fe10e1b956d1d3.txt here.

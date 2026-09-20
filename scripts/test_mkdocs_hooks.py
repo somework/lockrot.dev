@@ -1,9 +1,10 @@
 """python3 -m unittest scripts/test_mkdocs_hooks.py — pins the rendered-HTML contract the FAQ
 hook depends on (toc permalinks, code tags, entities), which a Material or Python-Markdown upgrade
-can change without any other build error."""
+can change without any other build error, and the sitemap dates, where a wrong answer is invisible
+in the built site and only shows up as pages re-announced to the search engines."""
 import unittest
 
-from mkdocs_hooks import faq_from_html
+from mkdocs_hooks import dates_from_git_log, faq_from_html, last_modified
 
 PAGE = """
 <h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
@@ -39,6 +40,62 @@ class FaqFromHtml(unittest.TestCase):
 
     def test_page_without_section_gives_nothing(self):
         self.assertEqual(faq_from_html("<h2 id=\"faq\">FAQ</h2><h3 id=\"q\">Q?</h3><p>A.</p>"), [])
+
+
+GIT_LOG = """\
+\x002026-09-20T05:17:00Z
+
+content/blog/posts/2026-09-19-composer-audit-abandoned-misses.md
+content/index.md
+\x002026-09-18T11:02:00Z
+
+content/changelog.md
+content/index.md
+content/llms.txt
+"""
+
+DATES = {
+    "content/index.md": "2026-09-20T05:17:00Z",
+    "content/blog/posts/2026-09-19-composer-audit-abandoned-misses.md": "2026-09-20T05:17:00Z",
+    "content/llms.txt": "2026-09-18T11:02:00Z",
+}
+
+
+# Everything the log names except content/changelog.md, which that commit deleted.
+def on_disk(path: str) -> bool:
+    return path != "content/changelog.md"
+
+
+class DatesFromGitLog(unittest.TestCase):
+    def test_a_path_keeps_the_date_of_the_newest_commit_that_touched_it(self):
+        self.assertEqual(dates_from_git_log(GIT_LOG, on_disk), DATES)
+
+    def test_a_deleted_file_dates_nothing(self):
+        # It is still in the log, and the page of that name is now published from .lockrot/docs.
+        self.assertNotIn("content/changelog.md", dates_from_git_log(GIT_LOG, on_disk))
+
+    def test_nothing_to_read_is_no_dates_rather_than_an_error(self):
+        self.assertEqual(dates_from_git_log("", on_disk), {})
+
+
+REFERENCE = {"index.md", "verdicts.md", "changelog.md"}
+RELEASE = "2026-09-11T09:00:00Z"
+
+
+class LastModified(unittest.TestCase):
+    def test_a_page_this_repository_owns_gets_its_commit_date(self):
+        # index.md is in both places; the one in content/ is the one the build publishes.
+        self.assertEqual(last_modified("index.md", DATES, REFERENCE, RELEASE, "x"), "2026-09-20T05:17:00Z")
+
+    def test_a_reference_page_gets_the_lockrot_release_date(self):
+        self.assertEqual(last_modified("verdicts.md", DATES, REFERENCE, RELEASE, "x"), RELEASE)
+
+    def test_a_page_the_blog_plugin_generates_gets_the_newest_post_date(self):
+        newest = "2026-09-20T05:17:00Z"
+        self.assertEqual(last_modified("blog/archive/2026.md", DATES, REFERENCE, "", newest), newest)
+
+    def test_a_page_nothing_can_date_keeps_the_build_date(self):
+        self.assertEqual(last_modified("404.md", {}, set(), "", ""), "")
 
 
 if __name__ == "__main__":

@@ -19,6 +19,10 @@ fi
 
 rm -rf .lockrot
 git clone --quiet --depth 1 --branch "$REF" "$REPO" .lockrot
+# The date of the ref, read while there is still a .git to ask: the reference pages carry it as
+# their <lastmod> in the sitemap (see scripts/mkdocs_hooks.py). A shallow clone has one commit, so
+# this is the only date available for them, and it is the right one — they change on a release.
+TZ=UTC git -C .lockrot log -1 --format=%cd --date=iso-strict-local > .lockrot/REF_DATE
 rm -rf .lockrot/.git
 echo "$REF" > .lockrot/REF
 echo "fetch-lockrot: $REPO at $REF"
