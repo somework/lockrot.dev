@@ -138,12 +138,14 @@ deploy. The key is in the workflow and in `content/<key>.txt` on purpose: the pr
 
 `lastmod` therefore has to mean something. MkDocs stamps every page with the build date, which
 makes the whole sitemap look rewritten on the first deploy of each day, so `scripts/mkdocs_hooks.py`
-replaces it: a page this repository owns carries the date of the newest commit that touched its
-source under `content/`, a reference page carries the date of the lockrot release tag it was checked
-out at (`.lockrot/REF_DATE`, written by `fetch-lockrot.sh` before it deletes the shallow clone's
-`.git`), and the pages the blog plugin generates carry the newest post date. The build therefore
-needs the repository's history — both workflows check out with `fetch-depth: 0` — and says so with a
-warning, which `--strict` turns into a failure, when git cannot answer.
+replaces it with the date of the newest commit that touched the file the page is built from: under
+`content/` for the pages this repository owns, under `docs/` in the lockrot checkout for the
+reference pages (`changelog.md` follows the `CHANGELOG.md` it includes), and the newest post date
+for the blog index, archive and category lists, which the blog plugin generates. Both builds need
+history, so `fetch-lockrot.sh` clones `--filter=blob:none` and keeps the `.git` instead of a
+`--depth 1` clone (3 seconds and 5 MB, and a release that left a page alone no longer moves its
+date), and `ci.yml` and `deploy.yml` check out with `fetch-depth: 0`. When git cannot answer, the
+hook warns and `--strict` fails the build rather than quietly going back to build dates.
 
 Secrets on the `production` environment: `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit on the
 account), `CLOUDFLARE_ACCOUNT_ID`. Until the Cloudflare side is switched over, the old Workers
