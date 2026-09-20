@@ -59,7 +59,8 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
 mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
 scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, mkdocs_hooks.py (MkDocs hooks: the landing
                        # page's Questions section becomes the FAQPage markup, read from the rendered HTML;
-                       # a post's og_image must exist) and its unit test test_mkdocs_hooks.py
+                       # a post's og_image must exist; the sitemap's <lastmod> is the date the page
+                       # changed, not the build date) and its unit test test_mkdocs_hooks.py
 wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
                        # weekly, manual), links.yml (weekly external link check)
@@ -129,12 +130,20 @@ they go in — the reference pages there are the source of truth, not memory.
 `event_type: lockrot-release` (to be sent by lockrot's `phar.yml` after a release), a weekly
 schedule (the safety net for a dispatch that never arrived), or a manual run.
 After `wrangler deploy` the run announces the changed pages to the IndexNow engines — Bing,
-Yandex, Naver, Seznam; Google does not take part — with `indexnowkit/indexnow-action`. MkDocs
-stamps every page in the sitemap with the build date, so `lastmod` cannot say what moved; the
-action's `new-only` keeps a state file (cached between runs under `.indexnow`) and announces each
-page once per change. It reads `site/sitemap.xml` from the checkout, checks that
-`https://lockrot.dev/<key>.txt` is served before sending anything, and never fails the deploy.
-The key is in the workflow and in `content/<key>.txt` on purpose: the protocol publishes it.
+Yandex, Naver, Seznam; Google does not take part — with `indexnowkit/indexnow-action`. The
+action's `new-only` keeps a state file (cached between runs under `.indexnow`) and announces a page
+when its URL or its `lastmod` is new to that file. It reads `site/sitemap.xml` from the checkout,
+checks that `https://lockrot.dev/<key>.txt` is served before sending anything, and never fails the
+deploy. The key is in the workflow and in `content/<key>.txt` on purpose: the protocol publishes it.
+
+`lastmod` therefore has to mean something. MkDocs stamps every page with the build date, which
+makes the whole sitemap look rewritten on the first deploy of each day, so `scripts/mkdocs_hooks.py`
+replaces it: a page this repository owns carries the date of the newest commit that touched its
+source under `content/`, a reference page carries the date of the lockrot release tag it was checked
+out at (`.lockrot/REF_DATE`, written by `fetch-lockrot.sh` before it deletes the shallow clone's
+`.git`), and the pages the blog plugin generates carry the newest post date. The build therefore
+needs the repository's history — both workflows check out with `fetch-depth: 0` — and says so with a
+warning, which `--strict` turns into a failure, when git cannot answer.
 
 Secrets on the `production` environment: `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit on the
 account), `CLOUDFLARE_ACCOUNT_ID`. Until the Cloudflare side is switched over, the old Workers
