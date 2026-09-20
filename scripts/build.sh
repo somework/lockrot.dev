@@ -20,6 +20,7 @@ cp -R .lockrot/docs/assets build/docs/assets
 # Putting the file there keeps the page, and its front matter, lockrot's own.
 cp .lockrot/CHANGELOG.md build/CHANGELOG.md
 cp -R content/. build/docs/
+scripts/copy-schemas.sh
 
 export LOCKROT_REF="$(cat .lockrot/REF)"
 if [ "${1:-build}" = "serve" ]; then

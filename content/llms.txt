@@ -12,6 +12,7 @@ Install: `composer require --dev somework/lockrot`, or download https://lockrot.
 - [Configuration](https://lockrot.dev/configuration/): every `extra.lockrot` key, environment overrides, CLI options, caching, the allowlist, and `--explain=vendor/package` (from 0.8.0), which prints why one package got its verdict: every signal's raw data, the repository's release branches with their dates, the thresholds
 - [In CI](https://lockrot.dev/ci/): the GitHub Action, exit codes, and the github, sarif, gitlab, markdown and json formats
 - [Baseline](https://lockrot.dev/baseline/): accept today's findings, fail only on new and worsened ones
+- [JSON schemas](https://lockrot.dev/schema/): the published draft-04 schemas for the report, the explanation, the baseline file and `extra.lockrot` (from 0.9.0), what they type, the rule behind their version numbers, and how to validate a report in CI
 - [Install-time summary](https://lockrot.dev/install-time/): what the plugin prints during composer require, update and install
 - [PHAR and self-update](https://lockrot.dev/phar/): verified download, GPG signature, build provenance, PHIVE, Docker image, self-update
 - [How it fetches metadata](https://lockrot.dev/internals/): Composer repositories, the GitHub, GitLab and Bitbucket APIs, rate caps, credentials, caching, --offline

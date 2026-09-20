@@ -13,6 +13,13 @@
 # blocks it silently; check the console under `wrangler dev`.
 #
 # HSTS: .dev is on the browser preload list as a whole TLD, so the header only restates it.
+# The published JSON schemas are meant to be fetched by validators, editors and CI steps from
+# anywhere, so they carry CORS and a long cache: a file under one version number only ever gains
+# fields, never changes meaning, and a new meaning gets a new number and a new URL.
+/schema/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://api.github.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   Strict-Transport-Security: max-age=31536000; includeSubDomains
