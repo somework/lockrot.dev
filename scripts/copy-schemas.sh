@@ -27,9 +27,19 @@ for schema in .lockrot/resources/*.schema.json; do
       continue
       ;;
     https://lockrot.dev/schema/*.json)
-      target="build/docs/schema/${id#https://lockrot.dev/schema/}"
-      mkdir -p "$(dirname "$target")"
-      cp "$schema" "$target"
+      # The glob matches a slash as well, so what follows the prefix could still be a path rather
+      # than a name: a `..` segment in it would put the copy somewhere else in the build workspace
+      # entirely. Every schema is published under one flat name, so anything else is a mistake in
+      # the file upstream, and a mistake that writes outside build/docs/ is worth stopping for.
+      name="${id#https://lockrot.dev/schema/}"
+      case "$name" in
+        */*|.*)
+          echo "copy-schemas: $schema has id '$id', whose path is not a plain file name" >&2
+          exit 1
+          ;;
+      esac
+      mkdir -p build/docs/schema
+      cp "$schema" "build/docs/schema/$name"
       published=$((published + 1))
       ;;
     *)
