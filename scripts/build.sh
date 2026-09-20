@@ -5,7 +5,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-[ -d .lockrot/docs ] || scripts/fetch-lockrot.sh
+# .git as well as docs: scripts/mkdocs_hooks.py dates the reference pages from that history, and a
+# checkout left by an older fetch-lockrot.sh does not have it.
+{ [ -d .lockrot/docs ] && [ -d .lockrot/.git ]; } || scripts/fetch-lockrot.sh
 scripts/check-nav.sh
 
 rm -rf build/docs

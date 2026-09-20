@@ -10,9 +10,9 @@
 - `<lastmod>` in sitemap.xml is the date the page last changed, not the date of the build. MkDocs
   stamps every page with the build date (`Page.update_date`), which makes the whole sitemap look
   rewritten every morning: the IndexNow step in deploy.yml then announces all of it, and a crawler
-  reading `lastmod` learns nothing. Here a page's date is the newest commit that touched its source
-  in content/, or — for the reference pages, which are a checkout of a lockrot release with its
-  history stripped — the date of that release tag.
+  reading `lastmod` learns nothing. Here a page's date is the newest commit that touched the file it
+  is built from: in content/ for the pages this repository owns, in the lockrot checkout for the
+  reference pages.
 """
 import html
 import logging
@@ -27,7 +27,7 @@ log = logging.getLogger("mkdocs.hooks.lockrot")
 ROOT = Path(__file__).resolve().parent.parent
 
 # What on_config reads once and on_page_content spends: see last_modified().
-_LASTMOD: dict[str, object] = {"dates": {}, "reference": set(), "release_date": "", "blog_date": ""}
+_LASTMOD: dict[str, object] = {"own_dates": {}, "lockrot_dates": {}, "blog_date": ""}
 
 _SECTION = re.compile(r'<h2\b[^>]*\bid="questions"[^>]*>.*?</h2>(.*?)(?=<h2\b|\Z)', re.S)
 _ITEM = re.compile(r"<h3\b[^>]*>(.*?)</h3>(.*?)(?=<h3\b|\Z)", re.S)
@@ -71,69 +71,57 @@ def dates_from_git_log(output: str, exists: Callable[[str], bool]) -> dict[str, 
     return dates
 
 
-def git_dates(pathspec: str) -> dict[str, str]:
-    """The commit dates of everything under `pathspec`, in UTC; {} when git cannot say.
+def git_dates(repo: Path, pathspec: str) -> dict[str, str]:
+    """The commit dates of everything under `pathspec` in `repo`, in UTC; {} when git cannot say.
 
-    A shallow checkout answers for the few commits it has and nothing else, which is why every
-    caller has a fallback: a wrong date is worse than the build date.
+    `--name-only` reads trees, never blobs, so this answers as fast in .lockrot/ (a blobless clone,
+    see scripts/fetch-lockrot.sh) as it does here, and without a network round trip.
     """
     try:
         log_output = subprocess.run(
-            ["git", "-C", str(ROOT), "log", "--format=%x00%cd", "--date=iso-strict-local",
+            ["git", "-C", str(repo), "log", "--format=%x00%cd", "--date=iso-strict-local",
              "--name-only", "--no-renames", "--", pathspec],
             capture_output=True, text=True, timeout=60, check=True,
             env={**os.environ, "TZ": "UTC"},
         ).stdout
     except (OSError, subprocess.SubprocessError) as error:
-        log.warning("mkdocs_hooks: no git dates for %s (%s); pages there keep the build date", pathspec, error)
+        log.warning("mkdocs_hooks: no git dates in %s for %s (%s); those pages keep the build date", repo, pathspec, error)
         return {}
-    return dates_from_git_log(log_output, lambda path: (ROOT / path).is_file())
+    return dates_from_git_log(log_output, lambda path: (repo / path).is_file())
 
 
-def lockrot_release_date() -> str:
-    """The date of the lockrot tag the reference pages were checked out at, '' when unknown.
-
-    scripts/fetch-lockrot.sh writes it before it deletes the checkout's .git, which is the only
-    moment it can be read: .lockrot/ is a shallow clone with no history to ask afterwards.
-    """
-    try:
-        return (ROOT / ".lockrot" / "REF_DATE").read_text().strip()
-    except OSError:
-        log.warning("mkdocs_hooks: .lockrot/REF_DATE is missing; the reference pages keep the build date")
-        return ""
-
-
-def reference_pages() -> set[str]:
-    """The pages scripts/build.sh copies out of the lockrot checkout: `.lockrot/docs/*.md`."""
-    return {path.name for path in (ROOT / ".lockrot" / "docs").glob("*.md")}
-
-
-def last_modified(src_uri: str, dates: dict[str, str], reference: set[str], release_date: str, blog_date: str) -> str:
+def last_modified(src_uri: str, own_dates: dict[str, str], lockrot_dates: dict[str, str], blog_date: str) -> str:
     """The date a page last changed, '' when no source can answer for it.
 
     Three kinds of page, in the order they are ruled out: one this repository owns (a commit under
     content/ — index.md is in both places and content/ wins, as it does in the build), one copied
-    from the lockrot checkout (the release tag), and one the blog plugin generates — the blog index,
-    the archive and the category lists, which change when a post does.
+    from the lockrot checkout (a commit under its docs/, so a release that did not touch the page
+    does not move its date), and one the blog plugin generates — the blog index, the archive and the
+    category lists, which change when a post does.
+
+    changelog.md is the page that is not its own file: it includes lockrot's CHANGELOG.md, and the
+    release that writes a changelog entry usually leaves docs/changelog.md alone.
     """
-    own = dates.get(f"content/{src_uri}")
+    own = own_dates.get(f"content/{src_uri}")
     if own:
         return own
-    if src_uri in reference:
-        return release_date
+    reference = [lockrot_dates.get(f"docs/{src_uri}", "")]
+    if src_uri == "changelog.md":
+        reference.append(lockrot_dates.get("CHANGELOG.md", ""))
+    if max(reference):
+        return max(reference)
     if src_uri.startswith("blog/"):
         return blog_date
     return ""
 
 
 def on_config(config):
-    # Once per build (and once per rebuild under `serve`), not once per page: one git process.
-    dates = git_dates("content")
-    posts = [date for path, date in dates.items() if path.startswith("content/blog/posts/")]
+    # Twice per build (and per rebuild under `serve`), not once per page: two git processes.
+    own_dates = git_dates(ROOT, "content")
+    posts = [date for path, date in own_dates.items() if path.startswith("content/blog/posts/")]
     _LASTMOD.update(
-        dates=dates,
-        reference=reference_pages(),
-        release_date=lockrot_release_date(),
+        own_dates=own_dates,
+        lockrot_dates=git_dates(ROOT / ".lockrot", "."),
         blog_date=max(posts, default=""),
     )
     return config

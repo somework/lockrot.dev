@@ -78,24 +78,34 @@ class DatesFromGitLog(unittest.TestCase):
         self.assertEqual(dates_from_git_log("", on_disk), {})
 
 
-REFERENCE = {"index.md", "verdicts.md", "changelog.md"}
-RELEASE = "2026-09-11T09:00:00Z"
+LOCKROT = {
+    "docs/index.md": "2026-09-11T09:00:00Z",
+    "docs/verdicts.md": "2026-09-11T09:00:00Z",
+    "docs/ci.md": "2026-08-30T14:20:00Z",
+    "docs/changelog.md": "2026-07-01T07:00:00Z",
+    "CHANGELOG.md": "2026-09-11T09:00:00Z",
+}
 
 
 class LastModified(unittest.TestCase):
     def test_a_page_this_repository_owns_gets_its_commit_date(self):
         # index.md is in both places; the one in content/ is the one the build publishes.
-        self.assertEqual(last_modified("index.md", DATES, REFERENCE, RELEASE, "x"), "2026-09-20T05:17:00Z")
+        self.assertEqual(last_modified("index.md", DATES, LOCKROT, "x"), "2026-09-20T05:17:00Z")
 
-    def test_a_reference_page_gets_the_lockrot_release_date(self):
-        self.assertEqual(last_modified("verdicts.md", DATES, REFERENCE, RELEASE, "x"), RELEASE)
+    def test_a_reference_page_gets_the_date_of_its_own_file_in_lockrot(self):
+        # Not the release date: v0.8.0 left ci.md alone, so the page did not change with it.
+        self.assertEqual(last_modified("ci.md", DATES, LOCKROT, "x"), "2026-08-30T14:20:00Z")
+
+    def test_the_changelog_page_follows_the_changelog_it_includes(self):
+        # docs/changelog.md is a two-line include; the entries are in CHANGELOG.md next to it.
+        self.assertEqual(last_modified("changelog.md", DATES, LOCKROT, "x"), "2026-09-11T09:00:00Z")
 
     def test_a_page_the_blog_plugin_generates_gets_the_newest_post_date(self):
         newest = "2026-09-20T05:17:00Z"
-        self.assertEqual(last_modified("blog/archive/2026.md", DATES, REFERENCE, "", newest), newest)
+        self.assertEqual(last_modified("blog/archive/2026.md", DATES, LOCKROT, newest), newest)
 
     def test_a_page_nothing_can_date_keeps_the_build_date(self):
-        self.assertEqual(last_modified("404.md", {}, set(), "", ""), "")
+        self.assertEqual(last_modified("404.md", {}, {}, ""), "")
 
 
 if __name__ == "__main__":
