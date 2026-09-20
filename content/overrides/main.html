@@ -5,9 +5,17 @@
   landing page's title already opens with the name, so the suffix would repeat
   it. A page-level `title:` is taken verbatim; everything else keeps Material's
   own rule.
+
+  `head_title:` is for the page whose search-results title should differ from
+  the one the site itself shows: `title:` also names the page in the navigation
+  and in the breadcrumbs, so a long keyword-bearing title cannot live there.
+  The blog index is the case — "Blog" in the sidebar, the full line in <title>.
 -#}
+{% set head_title = page.meta.head_title if page and page.meta and page.meta.head_title else none %}
 {% block htmltitle %}
-  {%- if page.meta and page.meta.title -%}
+  {%- if head_title -%}
+    <title>{{ head_title | e }}</title>
+  {%- elif page.meta and page.meta.title -%}
     <title>{{ page.meta.title | e }}</title>
   {%- elif page.title and not page.is_homepage -%}
     <title>{{ page.title | striptags }} - {{ config.site_name }}</title>
@@ -22,7 +30,9 @@
   image. We ship one hand-made card instead and declare the tags here.
 -#}
 {% block extrahead %}
-  {%- if page.meta and page.meta.title -%}
+  {%- if head_title -%}
+    {%- set og_title = head_title -%}
+  {%- elif page.meta and page.meta.title -%}
     {%- set og_title = page.meta.title -%}
   {%- elif page.title and not page.is_homepage -%}
     {%- set og_title = (page.title | striptags) ~ " - " ~ config.site_name -%}
