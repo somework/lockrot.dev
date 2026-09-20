@@ -20,6 +20,33 @@
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=3600
 
+# The assets whose file name already carries the content hash: a changed file arrives under a new
+# URL, so a year of `immutable` can never serve a stale one. Without these rules they inherit
+# Cloudflare's default for static assets, `public, max-age=0, must-revalidate`, which costs a
+# conditional request per file on every repeat visit.
+#
+# `extra.css`, `lockrot-demo.gif`, the OpenGraph cards and the favicon keep their name across a
+# rebuild, so they are left out and stay on the default: a year of `immutable` on those would pin a
+# stale file in browsers that already hold it. A rule may hold only one `*`, which rules out
+# matching the hash inside a file name, so the two directories below are taken whole. Everything
+# they hold is hashed except Material's `javascripts/lunr/` language packs, which this site never
+# requests (`language: en` loads only the built-in English stemmer).
+/assets/stylesheets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/javascripts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The privacy plugin's copies of the Google Fonts stylesheet (hashed by the plugin) and of the font
+# files themselves (Google's own URLs are content-addressed, `.../v51/KFO5Cnq...woff2`).
+/assets/external/fonts.googleapis.com/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/external/fonts.gstatic.com/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Matching rules are cumulative, so the HTML pages below take the security headers and nothing else:
+# `/*` sets no Cache-Control, and they keep Cloudflare's revalidate-every-time default on purpose.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; connect-src 'self' https://api.github.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   Strict-Transport-Security: max-age=31536000; includeSubDomains
