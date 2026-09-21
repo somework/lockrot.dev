@@ -1,0 +1,233 @@
+name: Rot watch
+# Every Monday, lockrot's newest release reads two kinds of composer.lock: the one twenty
+# open-source PHP applications ship at their newest stable release, and the one fifteen projects
+# created that morning with `composer create-project` resolve to. The result becomes /watch/ and one
+# row per project in its history. The projects are data/watch/projects.json; the page is written by
+# scripts/build_watch_page.py.
+#
+# Three jobs rather than one loop, for reasons that are not style:
+#   plan     finds each project's newest stable release and the commit it points at, once, before
+#            anything runs. A release rather than a branch head: it is what people install, and it
+#            is the only version two weeks of this page can be compared across.
+#   run      one job per project, so a project that fails leaves the others alone, and the
+#            action's metadata cache is keyed by that project's own lock file.
+#   publish  assembles, writes the page, commits, and asks Deploy to run. A push made with
+#            GITHUB_TOKEN does not trigger another workflow — that is GitHub's recursion guard, not
+#            a bug — so the deploy is dispatched explicitly.
+on:
+  schedule:
+    # Monday, ahead of deploy.yml's own weekly run at 05:17, so a week where the dispatch below
+    # fails still publishes the new numbers rather than waiting seven days.
+    - cron: "23 3 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rot-watch
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      starters: ${{ steps.plan.outputs.starters }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: .python-version
+      - id: plan
+        env:
+          # Finding a release is several requests per project — the release, the tag's commit, and
+          # the two files at it — and the token keeps them off the anonymous limit that the
+          # runner's address shares with everyone else's.
+          ROT_WATCH_TOKEN: ${{ secrets.ROT_WATCH_TOKEN || github.token }}
+        run: python scripts/watch_plan.py
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: watch-manifest
+          path: data/reports/watch/manifest.json
+
+  run:
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # lockrot asks a repository host about every package old enough to be worth asking about, and
+      # every job in this matrix spends the same token's hourly allowance. Four at a time keeps a
+      # run inside it; the ceiling to watch when the list grows is the token's, not the runner's.
+      max-parallel: 4
+      matrix:
+        project: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: .python-version
+      # The project's own files at the release the plan pinned, and nothing else: no clone, no
+      # install, no code from the project ever executed. composer.json comes along because lockrot
+      # reads the requirements from it to work out how each package is reached. The commit is the
+      # one the tag points at, so this fetches the release even if the tag is moved afterwards.
+      - name: Fetch the lock file
+        env:
+          REPO: ${{ matrix.project.repo }}
+          COMMIT: ${{ matrix.project.commit }}
+          LOCK: ${{ matrix.project.lock }}
+        run: |
+          set -euo pipefail
+          mkdir -p work
+          base="https://raw.githubusercontent.com/$REPO/$COMMIT"
+          curl -sfL --retry 3 -o work/composer.lock "$base/$LOCK"
+          curl -sfL --retry 3 -o work/composer.json "$base/${LOCK%composer.lock}composer.json"
+      - uses: somework/lockrot-action@2b5dd2ed8cb841f171ec20667d0a1d16961494c9 # v1.0.11
+        with:
+          working-directory: work
+          # The newest release, verified against the sha256 published with it. This page says which
+          # version produced a number, so following the tag is the point rather than a risk.
+          version: latest
+          format: html
+          output: ${{ github.workspace }}/report.html
+          target-php: ${{ matrix.project.target_php }}
+          # A finding is the data, not a failure: this run reports, it does not gate.
+          fail-on: none
+          github-token: ${{ secrets.ROT_WATCH_TOKEN || github.token }}
+          summary: "false"
+      # The page carries the renderer, which is the same 110 KB on every one of them. Only the
+      # document and the two sentences lockrot wrote about the run are kept; the next build splices
+      # the renderer back in. See scripts/report_page.py.
+      - name: Store the report
+        env:
+          NAME: ${{ matrix.project.name }}
+        run: |
+          set -euo pipefail
+          mkdir -p capsules
+          python scripts/report_page.py report.html "capsules/$NAME.json"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: capsule-${{ matrix.project.name }}
+          path: capsules/${{ matrix.project.name }}.json
+
+  # The other half of the run: not what a project ships, but what someone starting a project gets
+  # today. These have no repository to read — Shopware, Sylius, Craft, Statamic, Pimcore and
+  # WordPress-through-Bedrock commit no lock file anywhere — so the lock is made here, by resolving
+  # the starter package's requirements and writing it out.
+  #
+  # Nothing from any package is executed: --no-install downloads no dependency, --no-scripts runs no
+  # hook the packages declare, and --no-plugins keeps every Composer plugin, including the
+  # project's own, from loading. What comes out is a lock file and nothing else.
+  starters:
+    needs: plan
+    if: needs.plan.outputs.starters != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        starter: ${{ fromJSON(needs.plan.outputs.starters) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: .python-version
+      # The runner's own PHP is whatever the image ships; the resolve has to happen on the PHP the
+      # lock is meant for, or a constraint on php itself would resolve differently here than on the
+      # reader's machine.
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.starter.target_php }}
+          tools: composer:v2
+          coverage: none
+      - name: Create the project
+        env:
+          PACKAGE: ${{ matrix.starter.package }}
+          VERSION: ${{ matrix.starter.version }}
+          # A space-separated list, or empty: `symfony new --webapp` is the skeleton plus a pack.
+          EXTRA: ${{ join(matrix.starter.require, ' ') }}
+          COMPOSER_NO_INTERACTION: "1"
+        run: |
+          set -euo pipefail
+          composer create-project --no-install --no-scripts --no-plugins "$PACKAGE:$VERSION" work
+          cd work
+          composer update --no-install --no-scripts --no-plugins --ignore-platform-reqs
+          if [ -n "$EXTRA" ]; then
+            # Word splitting is intended: EXTRA is a list of package names.
+            # shellcheck disable=SC2086
+            composer require --no-install --no-scripts --no-plugins --ignore-platform-reqs $EXTRA
+          fi
+      - uses: somework/lockrot-action@2b5dd2ed8cb841f171ec20667d0a1d16961494c9 # v1.0.11
+        with:
+          working-directory: work
+          version: latest
+          format: html
+          output: ${{ github.workspace }}/report.html
+          target-php: ${{ matrix.starter.target_php }}
+          fail-on: none
+          # Every checked package, not only the flagged ones. A fresh install is mostly `ok` by
+          # construction, and an advisory rides on an otherwise healthy package — without this the
+          # report would be an empty table and the advisory would not be in the document at all.
+          all: "true"
+          github-token: ${{ secrets.ROT_WATCH_TOKEN || github.token }}
+          summary: "false"
+      - name: Store the report
+        env:
+          NAME: ${{ matrix.starter.name }}
+        run: |
+          set -euo pipefail
+          mkdir -p capsules
+          python scripts/report_page.py report.html "capsules/$NAME.json"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: capsule-${{ matrix.starter.name }}
+          path: capsules/${{ matrix.starter.name }}.json
+
+  publish:
+    needs: [plan, run, starters]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # Only to dispatch Deploy below.
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: .python-version
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: watch-manifest
+          path: data/reports/watch
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: capsule-*
+          merge-multiple: true
+          path: data/reports/watch
+      # Fails if a project left no report: a page one project smaller, with a total that moved for
+      # a reason it does not state, is worse than a week without a page.
+      - run: python scripts/build_watch_page.py
+      - id: commit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/watch data/reports/watch content/watch.md content/assets/data/watch
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "rot-watch: nothing moved this week"
+            exit 0
+          fi
+          git commit -m "chore: the weekly rot watch, $(python -c 'import json;print(json.load(open("data/reports/watch/manifest.json"))["run"]["date"])')"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      # A push made with GITHUB_TOKEN triggers nothing, so Deploy is asked directly. Without this
+      # the new page waits for deploy.yml's own weekly run.
+      - if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main

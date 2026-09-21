@@ -211,6 +211,7 @@ anything else, add an entry with a reason to `extra.lockrot.ignore` —
 | [Example run](example-run.md) | The full 200-package report the sample above is cut from |
 | [How it fetches metadata](internals.md) | Composer repositories, the GitHub, GitLab and Bitbucket APIs, caching, `--offline` |
 | [Changelog](changelog.md) | What changed, release by release |
+| [Weekly watch](watch.md) | What lockrot finds in the newest release of twenty widely used PHP applications, and in fifteen projects created from scratch that morning |
 | [Blog](blog/index.md) | Notes from building lockrot: dependency rot, Composer internals, release engineering |
 
 Source and issues live on [GitHub](https://github.com/somework/lockrot); the package is

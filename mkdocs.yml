@@ -63,6 +63,8 @@ nav:
   - Example run: example-run.md
   - How it fetches metadata: internals.md
   - Changelog: changelog.md
+  # Written by scripts/build_watch_page.py from the weekly run, not by hand.
+  - Weekly watch: watch.md
   - Blog:
       - blog/index.md
 
