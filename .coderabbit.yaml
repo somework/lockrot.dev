@@ -1,0 +1,12 @@
+# What CodeRabbit is asked to read, and what it is not.
+#
+# The weekly run (.github/workflows/rot-watch.yml) commits one capsule per report — a hundred-odd
+# JSON documents a week, each a few hundred kilobytes of lockrot's own output. They are data: not
+# written by hand, not reviewable line by line, and regenerated whole on the next run. A review that
+# opens them finds nothing and misses the eight files that matter.
+#
+# Everything else stays in: the scripts that build the site, the workflows, the theme, the prose.
+reviews:
+  path_filters:
+    - "!data/reports/**"
+    - "!content/assets/data/**"
