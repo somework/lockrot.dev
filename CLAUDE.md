@@ -181,7 +181,7 @@ and the origin because the frame's origin is opaque and what `'self'` matches th
 specification — Chrome was measured accepting `'self'`, which is also what lets the viewer run
 under `wrangler dev`.
 
-The viewer's host also serves the site's **published reports**, at `/reports/<run>/<project>.html`:
+The viewer's host also serves the site's **published reports**, at `/reports/<run>/<project>`:
 whole `--format=html` pages, built by `scripts/build_reports.py` and linked from the post and from
 `/watch/`. They are here and not on lockrot.dev for the frame's reason — the renderer draws
 documents built from other people's lock files — and their `/reports/*` rule keeps the two

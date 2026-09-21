@@ -21,6 +21,8 @@ import json
 import sys
 from pathlib import Path
 
+# Cloudflare serves reports/<name>.html at reports/<name> and redirects the .html form there
+# (`html_handling: auto-trailing-slash` in wrangler.viewer.jsonc), so the link skips the 307.
 VIEWER = "https://viewer.lockrot.dev/reports/watch"
 
 HISTORY_FIELDS = [
@@ -229,7 +231,7 @@ def table(rows_: list[dict]) -> str:
         lines.append(
             f"| [{row['repo']}]({repo_url}) "
             f"| [{row['tag']}]({tag_url})&nbsp;· [`{row['commit'][:7]}`]({commit_url}) "
-            f"| {row['packages']} | {cells} | [open]({VIEWER}/{row['name']}.html) |"
+            f"| {row['packages']} | {cells} | [open]({VIEWER}/{row['name']}) |"
         )
     totals = {c: sum(int(r[c]) for r in rows_) for c in COLUMNS}
     lines.append(
@@ -261,7 +263,7 @@ def starter_table(rows_: list[dict]) -> str:
         advisories_cell = f"**{row['advisories']}**" if row["advisories"] else "0"
         lines.append(
             f"| {row['title']} | [{package} {row['version']}]({url}) | {row['packages']} "
-            f"| {advisories_cell} | {cells} | [open]({VIEWER}/{row['name']}.html) |"
+            f"| {advisories_cell} | {cells} | [open]({VIEWER}/{row['name']}) |"
         )
     totals = {c: sum(int(r[c]) for r in rows_) for c in COLUMNS}
     lines.append(
