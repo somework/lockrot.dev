@@ -10,8 +10,11 @@
  *     from the reader's browser and their network, so the choice is theirs;
  *   - what the reader pastes is never written into the address bar, and a link carrying a document
  *     is built only when asked and never copied to the clipboard on its own;
- *   - every input is capped before it is parsed, and the compressed one is capped while it is
- *     being decompressed, because a few kilobytes of gzip expand to gigabytes.
+ *   - every input is capped before it is parsed, and anything that arrives from elsewhere is
+ *     capped *while* it is being read, never after: a few kilobytes of gzip expand to gigabytes,
+ *     and a host answering a #url= sends as many bytes as it likes;
+ *   - a #url= is fetched with redirects refused, because the reader approved one address and a
+ *     redirect would spend that approval on another.
  */
 (function () {
   "use strict";
@@ -19,7 +22,10 @@
   // A 200-package report is about 160 KB of JSON, and the single-file page around 250 KB. These
   // are far above anything real and far below what hurts to hold in memory.
   var MAX_TEXT = 24 * 1024 * 1024;
-  var MAX_INFLATED = 8 * 1024 * 1024;
+  // Tighter, and for a different reason: this bounds what arrives from somewhere the reader did
+  // not choose — a compressed link, or a host answering a #url=. A file they picked themselves is
+  // theirs; bytes a stranger sends are not.
+  var MAX_REMOTE = 8 * 1024 * 1024;
   // Slack and Telegram cut a message around 4,000 characters, and a browser's own limit is far
   // higher but not infinite. Past this a link is worth warning about rather than forbidding.
   var LINK_COMFORTABLE = 4000;
@@ -28,6 +34,12 @@
   // second is generous. This exists because the alternative to a message is an empty stage and no
   // explanation, which is what a blocked script or a renderer that threw would otherwise look like.
   var RENDER_PATIENCE = 8000;
+
+  function sizeText(bytes) {
+    if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + " MB";
+    if (bytes >= 1024) return Math.ceil(bytes / 1024) + " KB";
+    return bytes + " bytes";
+  }
 
   var el = function (id) { return document.getElementById(id); };
   var frame = el("frame");
@@ -158,8 +170,8 @@
   function fromText(text, where) {
     clearProblem();
     if (text.length > MAX_TEXT) {
-      problem("that input is " + Math.round(text.length / 1048576) + " MB, which is far larger " +
-        "than any lockrot report; nothing was parsed");
+      problem("that input is " + sizeText(text.length) + ", which is far larger than any " +
+        "lockrot report; nothing was parsed");
       return;
     }
     try {
@@ -172,8 +184,8 @@
   function fromFile(file) {
     if (!file) return;
     if (file.size > MAX_TEXT) {
-      problem("that file is " + Math.round(file.size / 1048576) + " MB, which is far larger than " +
-        "any lockrot report; it was not read");
+      problem("that file is " + sizeText(file.size) + ", which is far larger than any lockrot " +
+        "report; it was not read");
       return;
     }
     file.text().then(function (text) {
@@ -253,15 +265,12 @@
     });
   }
 
-  // Read the decompressed document a chunk at a time and stop at the cap. Decompressing first and
-  // measuring afterwards is how a few kilobytes of gzip become gigabytes of memory.
-  function gunzip(bytes) {
-    if (typeof DecompressionStream !== "function") {
-      return Promise.reject(new Error("this browser cannot read a compressed link"));
-    }
-    var reader = new Blob([bytes]).stream()
-      .pipeThrough(new DecompressionStream("gzip"))
-      .getReader();
+  // Read a byte stream as text a chunk at a time and stop at the cap, rather than taking the whole
+  // thing and measuring afterwards. Both callers need it and for the same reason: what arrives is
+  // chosen by someone other than the reader. A few kilobytes of gzip expand to gigabytes, and a
+  // host that answers a #url= can send as many bytes as it likes.
+  function readCapped(stream, limit, tooBig) {
+    var reader = stream.getReader();
     var decoder = new TextDecoder();
     var text = "";
     var size = 0;
@@ -273,18 +282,27 @@
           return text;
         }
         size += step.value.length;
-        if (size > MAX_INFLATED) {
+        if (size > limit) {
           reader.cancel();
-          throw new Error(
-            "the document in that link expands past " + (MAX_INFLATED / 1048576) +
-            " MB, which no lockrot report does; it was not read to the end"
-          );
+          throw new Error(tooBig);
         }
         text += decoder.decode(step.value, { stream: true });
         return pump();
       });
     }
     return pump();
+  }
+
+  function gunzip(bytes) {
+    if (typeof DecompressionStream !== "function") {
+      return Promise.reject(new Error("this browser cannot read a compressed link"));
+    }
+    return readCapped(
+      new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip")),
+      MAX_REMOTE,
+      "the document in that link expands past " + sizeText(MAX_REMOTE) +
+      ", which no lockrot report does; it was not read to the end"
+    );
   }
 
   el("share").addEventListener("click", function () {
@@ -358,18 +376,39 @@
       el("ask").hidden = true;
       // No credentials, no referrer: the target learns nothing about the reader beyond the request
       // itself, and a report behind a session is not silently pulled out of it.
-      fetch(url.href, { credentials: "omit", referrerPolicy: "no-referrer", redirect: "follow" })
+      //
+      // redirect: "error" is the consent control. What the reader approved is one address, shown
+      // to them in full; following a redirect would spend that approval on a second address they
+      // never saw, chosen by the same person who chose the first. CORS does not stand in for
+      // consent here — the sender owns both ends and can answer with whatever headers suit.
+      fetch(url.href, { credentials: "omit", referrerPolicy: "no-referrer", redirect: "error" })
         .then(function (response) {
           if (!response.ok) throw new Error(url.host + " answered " + response.status);
-          return response.text();
+          // Only an early rejection: a server may omit it or lie, so the stream is capped anyway.
+          var declared = Number(response.headers.get("content-length"));
+          if (declared > MAX_REMOTE) {
+            throw new Error(url.host + " offers " + sizeText(declared) + ", which is far larger " +
+              "than any lockrot report; nothing was read");
+          }
+          if (!response.body) return response.text();
+          return readCapped(response.body, MAX_REMOTE,
+            url.host + " sent more than " + sizeText(MAX_REMOTE) +
+            ", which no lockrot report is; the rest was not read");
         })
         .then(function (text) {
           fromText(text, "Fetched by your browser from " + url.host + ", after you asked for it.");
         })
         .catch(function (err) {
           el("intro").hidden = false;
-          problem("that document could not be fetched: " + err.message +
-            ". A host that does not send CORS headers cannot be read by a browser, whoever asks.");
+          if (!(err instanceof TypeError)) {
+            // This page decided, and it already said why.
+            problem(err.message);
+            return;
+          }
+          problem("that document could not be fetched from " + url.host + ". Two ordinary " +
+            "reasons: the host does not send CORS headers, which stops any browser whoever asks; " +
+            "or the address redirects somewhere else, which is refused here because you approved " +
+            "this address and not the one it points at. Open it yourself and paste the document in.");
         });
     }, { once: true });
 
@@ -390,6 +429,13 @@
   if (data) {
     fromLinkData(data);
   } else if (remote) {
-    askFor(decodeURIComponent(remote));
+    var decoded;
+    try {
+      decoded = decodeURIComponent(remote);
+    } catch (err) {
+      problem("the address in that link is not readable: its encoding is damaged");
+      decoded = null;
+    }
+    if (decoded !== null) askFor(decoded);
   }
 })();
