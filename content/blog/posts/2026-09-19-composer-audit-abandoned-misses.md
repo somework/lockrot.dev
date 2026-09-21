@@ -38,26 +38,26 @@ page `--format=html` writes, which needs no server and no upload.
 
 | Project | Packages | abandoned + silent | Marked | `composer audit` | Report |
 |---|---:|---:|---:|---:|---|
-| wallabag/wallabag | 200 | 27 | 19 | 16 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/wallabag.html) |
-| akaunting/akaunting | 183 | 16 | 16 | 16 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/akaunting.html) |
-| concretecms/concretecms | 158 | 13 | 11 | 10 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/concretecms.html) |
-| humhub/humhub | 210 | 12 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/humhub.html) |
-| PrestaShop/PrestaShop | 228 | 7 | 4 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/prestashop.html) |
-| phpbb/phpbb | 86 | 7 | 5 | 5 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/phpbb.html) |
-| salesagility/SuiteCRM-Core | 210 | 7 | 5 | 3 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/suitecrm-core.html) |
-| snipe/snipe-it | 167 | 6 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/snipe-it.html) |
-| chamilo/chamilo-lms | 271 | 6 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/chamilo-lms.html) |
-| matomo-org/matomo | 52 | 4 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/matomo.html) |
-| magento/magento2 | 148 | 4 | 4 | 4 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/magento2.html) |
-| mautic/mautic | 193 | 4 | 2 | 2 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/mautic.html) |
-| pixelfed/pixelfed | 147 | 4 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/pixelfed.html) |
-| librenms/librenms | 138 | 4 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/librenms.html) |
-| monicahq/monica | 165 | 2 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/monica.html) |
-| joomla/joomla-cms | 93 | 2 | 2 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/joomla-cms.html) |
-| firefly-iii/firefly-iii | 132 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/firefly-iii.html) |
-| moodle/moodle | 61 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/moodle.html) |
-| drupal/drupal | 64 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/drupal.html) |
-| espocrm/espocrm | 125 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/espocrm.html) |
+| wallabag/wallabag | 200 | 27 | 19 | 16 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/wallabag) |
+| akaunting/akaunting | 183 | 16 | 16 | 16 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/akaunting) |
+| concretecms/concretecms | 158 | 13 | 11 | 10 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/concretecms) |
+| humhub/humhub | 210 | 12 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/humhub) |
+| PrestaShop/PrestaShop | 228 | 7 | 4 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/prestashop) |
+| phpbb/phpbb | 86 | 7 | 5 | 5 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/phpbb) |
+| salesagility/SuiteCRM-Core | 210 | 7 | 5 | 3 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/suitecrm-core) |
+| snipe/snipe-it | 167 | 6 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/snipe-it) |
+| chamilo/chamilo-lms | 271 | 6 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/chamilo-lms) |
+| matomo-org/matomo | 52 | 4 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/matomo) |
+| magento/magento2 | 148 | 4 | 4 | 4 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/magento2) |
+| mautic/mautic | 193 | 4 | 2 | 2 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/mautic) |
+| pixelfed/pixelfed | 147 | 4 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/pixelfed) |
+| librenms/librenms | 138 | 4 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/librenms) |
+| monicahq/monica | 165 | 2 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/monica) |
+| joomla/joomla-cms | 93 | 2 | 2 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/joomla-cms) |
+| firefly-iii/firefly-iii | 132 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/firefly-iii) |
+| moodle/moodle | 61 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/moodle) |
+| drupal/drupal | 64 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/drupal) |
+| espocrm/espocrm | 125 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/espocrm) |
 | 11 projects with none | 1,078 | 0 | 0 | 0 | |
 | **31 projects** | **4,109** | **129** | **73** | **62** | |
 

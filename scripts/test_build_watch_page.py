@@ -72,7 +72,7 @@ class TableTest(unittest.TestCase):
 
         self.assertIn("| **2 projects** | | **17** |", table)
         self.assertIn("**7**", table)
-        self.assertIn(f"{bw.VIEWER}/one.html", table)
+        self.assertIn(f"{bw.VIEWER}/one", table)
 
     def test_names_the_release_and_the_commit_it_read(self):
         rows = bw.rows(manifest("one", tag="2.6.15"), {"one": report()})
@@ -127,7 +127,7 @@ class StarterTest(unittest.TestCase):
         table = bw.starter_table(bw.rows(starter_manifest(), {"new-laravel": report()}))
 
         self.assertIn("[laravel/laravel v13.10.1](https://packagist.org/packages/laravel/laravel)", table)
-        self.assertIn(f"{bw.VIEWER}/new-laravel.html", table)
+        self.assertIn(f"{bw.VIEWER}/new-laravel", table)
         self.assertIn("| Laravel |", table)
 
 
