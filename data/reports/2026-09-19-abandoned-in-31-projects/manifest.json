@@ -1,0 +1,224 @@
+{
+    "run": {
+        "date": "2026-09-22"
+    },
+    "projects": [
+        {
+            "name": "akaunting",
+            "repo": "akaunting/akaunting",
+            "commit": "55669f7cc427f15bd8abf110e3cb2c0cdc422467",
+            "commit_url": "https://github.com/akaunting/akaunting/tree/55669f7cc427f15bd8abf110e3cb2c0cdc422467",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "ampache",
+            "repo": "ampache/ampache",
+            "commit": "14d52c92973d11a649ebeabc2712b990dc9dca9a",
+            "commit_url": "https://github.com/ampache/ampache/tree/14d52c92973d11a649ebeabc2712b990dc9dca9a",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "bookstack",
+            "repo": "BookStackApp/BookStack",
+            "commit": "cf133540b13073e18e08f10b65a2aff2be0f155e",
+            "commit_url": "https://github.com/BookStackApp/BookStack/tree/cf133540b13073e18e08f10b65a2aff2be0f155e",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "cachet",
+            "repo": "cachethq/cachet",
+            "commit": "188d8c81878fe942aeae3c74b6bed81d3cae9288",
+            "commit_url": "https://github.com/cachethq/cachet/tree/188d8c81878fe942aeae3c74b6bed81d3cae9288",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "chamilo-lms",
+            "repo": "chamilo/chamilo-lms",
+            "commit": "cd3efcb74dcf4244d3a18a94fefa585523f18d66",
+            "commit_url": "https://github.com/chamilo/chamilo-lms/tree/cd3efcb74dcf4244d3a18a94fefa585523f18d66",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "concretecms",
+            "repo": "concretecms/concretecms",
+            "commit": "66d3f3d614e26e4b7955b967fed133a8acdb6820",
+            "commit_url": "https://github.com/concretecms/concretecms/tree/66d3f3d614e26e4b7955b967fed133a8acdb6820",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "demo",
+            "repo": "symfony/demo",
+            "commit": "8d2e2ef75c3e18df173d8bf2379a14abb58c4c31",
+            "commit_url": "https://github.com/symfony/demo/tree/8d2e2ef75c3e18df173d8bf2379a14abb58c4c31",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "drupal",
+            "repo": "drupal/drupal",
+            "commit": "c0277ee2f7b0c402d7cd7eb35e8b8f193efe6543",
+            "commit_url": "https://github.com/drupal/drupal/tree/c0277ee2f7b0c402d7cd7eb35e8b8f193efe6543",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "espocrm",
+            "repo": "espocrm/espocrm",
+            "commit": "8499172c1b631e6fff57093445e11e2440788d6f",
+            "commit_url": "https://github.com/espocrm/espocrm/tree/8499172c1b631e6fff57093445e11e2440788d6f",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "firefly-iii",
+            "repo": "firefly-iii/firefly-iii",
+            "commit": "99f9b7477d064b1d1729a4348e43fffef1b385ce",
+            "commit_url": "https://github.com/firefly-iii/firefly-iii/tree/99f9b7477d064b1d1729a4348e43fffef1b385ce",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "humhub",
+            "repo": "humhub/humhub",
+            "commit": "cf51cf811d36d5c1ab59e2fd1e098d67786121ab",
+            "commit_url": "https://github.com/humhub/humhub/tree/cf51cf811d36d5c1ab59e2fd1e098d67786121ab",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "invoiceninja",
+            "repo": "invoiceninja/invoiceninja",
+            "commit": "f1ffa5f9989afbed4e7dc80b5c0cc18944335ffc",
+            "commit_url": "https://github.com/invoiceninja/invoiceninja/tree/f1ffa5f9989afbed4e7dc80b5c0cc18944335ffc",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "joomla-cms",
+            "repo": "joomla/joomla-cms",
+            "commit": "a8bd3564ef52e830069aeb91286c2fd67bb3872d",
+            "commit_url": "https://github.com/joomla/joomla-cms/tree/a8bd3564ef52e830069aeb91286c2fd67bb3872d",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "kanboard",
+            "repo": "kanboard/kanboard",
+            "commit": "cf53b54597b67b60140586c09c2fe6132ead013c",
+            "commit_url": "https://github.com/kanboard/kanboard/tree/cf53b54597b67b60140586c09c2fe6132ead013c",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "koel",
+            "repo": "koel/koel",
+            "commit": "51698046353dfc7dd4ee466580f9120d5a1f6762",
+            "commit_url": "https://github.com/koel/koel/tree/51698046353dfc7dd4ee466580f9120d5a1f6762",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "librenms",
+            "repo": "librenms/librenms",
+            "commit": "4381e1a98a83a7b72599045095f6d5ef37bda2e6",
+            "commit_url": "https://github.com/librenms/librenms/tree/4381e1a98a83a7b72599045095f6d5ef37bda2e6",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "magento2",
+            "repo": "magento/magento2",
+            "commit": "874f1f5cdf3bc52b61c3d66becf159cc16345d7a",
+            "commit_url": "https://github.com/magento/magento2/tree/874f1f5cdf3bc52b61c3d66becf159cc16345d7a",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "matomo",
+            "repo": "matomo-org/matomo",
+            "commit": "49225bef3528bf825b7fe1a986a219a82f0dd606",
+            "commit_url": "https://github.com/matomo-org/matomo/tree/49225bef3528bf825b7fe1a986a219a82f0dd606",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "mautic",
+            "repo": "mautic/mautic",
+            "commit": "7912edbd7ede249ddbb2721abd6def94bee52f3e",
+            "commit_url": "https://github.com/mautic/mautic/tree/7912edbd7ede249ddbb2721abd6def94bee52f3e",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "monica",
+            "repo": "monicahq/monica",
+            "commit": "e08e91734170b6bbd582cb578532c3948196124e",
+            "commit_url": "https://github.com/monicahq/monica/tree/e08e91734170b6bbd582cb578532c3948196124e",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "moodle",
+            "repo": "moodle/moodle",
+            "commit": "e68a1418bea512dd5992c29eb9e36570a3844e94",
+            "commit_url": "https://github.com/moodle/moodle/tree/e68a1418bea512dd5992c29eb9e36570a3844e94",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "opencart",
+            "repo": "opencart/opencart",
+            "commit": "c78dd969319ba2c7ea86ab3c0bd292d830b92df2",
+            "commit_url": "https://github.com/opencart/opencart/tree/c78dd969319ba2c7ea86ab3c0bd292d830b92df2",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "panel",
+            "repo": "pterodactyl/panel",
+            "commit": "113ea43d0d48f48d567c9d91e4a7d5b5bb8876e3",
+            "commit_url": "https://github.com/pterodactyl/panel/tree/113ea43d0d48f48d567c9d91e4a7d5b5bb8876e3",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "phpbb",
+            "repo": "phpbb/phpbb",
+            "commit": "ccb3ac2e92a0f8f89fc3350ba136746db2578ed1",
+            "commit_url": "https://github.com/phpbb/phpbb/tree/ccb3ac2e92a0f8f89fc3350ba136746db2578ed1",
+            "lock": "phpBB/composer.lock"
+        },
+        {
+            "name": "phpmyadmin",
+            "repo": "phpmyadmin/phpmyadmin",
+            "commit": "21ef436eff4013f6fa2200e072916eca4fc865bb",
+            "commit_url": "https://github.com/phpmyadmin/phpmyadmin/tree/21ef436eff4013f6fa2200e072916eca4fc865bb",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "pixelfed",
+            "repo": "pixelfed/pixelfed",
+            "commit": "29877111d2fa9f28087de0d4eee144b2bdee63d6",
+            "commit_url": "https://github.com/pixelfed/pixelfed/tree/29877111d2fa9f28087de0d4eee144b2bdee63d6",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "prestashop",
+            "repo": "PrestaShop/PrestaShop",
+            "commit": "e5515d88ead3761a342c72bffb91446ba213ba13",
+            "commit_url": "https://github.com/PrestaShop/PrestaShop/tree/e5515d88ead3761a342c72bffb91446ba213ba13",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "snipe-it",
+            "repo": "snipe/snipe-it",
+            "commit": "4b16384c9289b0c4f1df0235bf6f1b58e08d3f0f",
+            "commit_url": "https://github.com/snipe/snipe-it/tree/4b16384c9289b0c4f1df0235bf6f1b58e08d3f0f",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "suitecrm-core",
+            "repo": "salesagility/SuiteCRM-Core",
+            "commit": "2cd77380bc838b8bd6c80f9fbe25855d73ef860c",
+            "commit_url": "https://github.com/salesagility/SuiteCRM-Core/tree/2cd77380bc838b8bd6c80f9fbe25855d73ef860c",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "typo3",
+            "repo": "typo3/typo3",
+            "commit": "d74c1343dcd2b442dca896140e2be6258503abcc",
+            "commit_url": "https://github.com/typo3/typo3/tree/d74c1343dcd2b442dca896140e2be6258503abcc",
+            "lock": "composer.lock"
+        },
+        {
+            "name": "wallabag",
+            "repo": "wallabag/wallabag",
+            "commit": "ac82cd088f21f34435376602e2d7ce291a0135dc",
+            "commit_url": "https://github.com/wallabag/wallabag/tree/ac82cd088f21f34435376602e2d7ce291a0135dc",
+            "lock": "composer.lock"
+        }
+    ]
+}

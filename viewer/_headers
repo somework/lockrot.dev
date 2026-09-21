@@ -41,3 +41,21 @@
 /frame/*
   Content-Security-Policy: default-src 'none'; script-src 'self' https://viewer.lockrot.dev; style-src 'self' https://viewer.lockrot.dev 'unsafe-inline'; img-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'self' https://viewer.lockrot.dev
   X-Robots-Tag: noindex
+
+# The site's own published reports, one page per project of a data run. These are `--format=html`
+# pages, which carry the renderer and the document inside them, so 'unsafe-inline' is what the
+# format is — there is nothing to load from a file and no per-request nonce on a static asset.
+#
+# What matters is what is not here. `connect-src 'none'` and `img-src 'none'` are the same two
+# directives that make the frame safe: the documents are built from other people's lock files, and
+# a flaw in a thousand lines of string concatenation cannot carry what it renders anywhere. The
+# page is not sandboxed the way the frame is, so a flaw could deface this origin — which holds no
+# cookie, no storage and no credential of anyone's, and is the reason these pages are here and not
+# on lockrot.dev.
+#
+# noindex: these are twenty near-identical shells whose content lives in a JSON script tag and is
+# rewritten every week. The page meant to be found is the site's own, which carries the same
+# findings as text. scripts/report_page.py writes the same directive into the page itself.
+/reports/*
+  Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Robots-Tag: noindex
