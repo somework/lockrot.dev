@@ -21,6 +21,10 @@ cp -R .lockrot/docs/assets build/docs/assets
 cp .lockrot/CHANGELOG.md build/CHANGELOG.md
 cp -R content/. build/docs/
 scripts/copy-schemas.sh
+# The JSON behind each published report, unpacked from the capsules in data/reports/ so that git
+# holds one copy of a run and not two. A post links these; the pages that render them are built by
+# scripts/build-viewer.sh onto the viewer's host.
+python3 scripts/build_reports.py --capsules data/reports --json-out build/docs/assets/data
 
 export LOCKROT_REF="$(cat .lockrot/REF)"
 if [ "${1:-build}" = "serve" ]; then

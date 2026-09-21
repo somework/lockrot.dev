@@ -45,6 +45,14 @@ python3 scripts/build_frame.py "$REPORT_SRC/report.html" "$REPORT_SRC/report.css
 cp "$REPORT_SRC/lib.js" "$REPORT_SRC/report.js" viewer-site/frame/
 cp viewer/frame.js viewer-site/frame/frame.js
 
+# The published reports: one page per project of a data run, built from the capsules in
+# data/reports/ with the renderer of the release this build is running against. They sit on this
+# host rather than on lockrot.dev for the same reason the frame does — the renderer draws documents
+# derived from other people's lock files, and lockrot.dev's header rules cannot be narrowed per
+# path. See scripts/build_reports.py and the /reports/* rule in viewer/_headers.
+python3 scripts/build_reports.py --capsules data/reports --renderer "$REPORT_SRC" \
+  --html-out viewer-site/reports
+
 cp viewer/app.html viewer-site/index.html
 cp viewer/app.css viewer/app.js viewer-site/
 cp viewer/_headers viewer-site/_headers

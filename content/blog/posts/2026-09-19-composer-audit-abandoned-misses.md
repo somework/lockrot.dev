@@ -26,38 +26,40 @@ does not report them, because it never asks Packagist.
 ## The numbers
 
 Every lock file is the project's default branch as of 2026-09-19, read with `--no-dev`, so only
-what runs in production counts. The middle column is lockrot 0.8.0's [`abandoned` and `silent`
+what runs in production counts. The middle column is lockrot's [`abandoned` and `silent`
 verdicts](../../verdicts.md#the-nine-verdicts) together (lockrot is the tool this site documents: it reads `composer.lock` and asks
 Packagist and the repository host about each package). `abandoned` is the Packagist marker or an
 archived repository; `silent` is no stable release *and* no push to any branch for five years, the
-default thresholds. "Marked" is the subset with the marker. The last column is what
+default thresholds. "Marked" is the subset with the marker. The `composer audit` column is what
 `composer audit --abandoned=report --no-dev --locked` (Composer 2.10.3) printed for the same file;
-it never named a package outside the middle column.
+it never named a package outside the middle column. The last column opens that project's whole
+report — every finding with its dates, its requirement chain and the advisories against it — as the
+page `--format=html` writes, which needs no server and no upload.
 
-| Project | Packages | abandoned + silent | Marked | `composer audit` |
-|---|---:|---:|---:|---:|
-| wallabag/wallabag | 200 | 27 | 19 | 16 |
-| akaunting/akaunting | 183 | 16 | 16 | 16 |
-| concretecms/concretecms | 158 | 13 | 11 | 10 |
-| humhub/humhub | 210 | 12 | 1 | 1 |
-| PrestaShop/PrestaShop | 228 | 7 | 4 | 0 |
-| phpbb/phpbb | 86 | 7 | 5 | 5 |
-| salesagility/SuiteCRM-Core | 210 | 7 | 5 | 3 |
-| snipe/snipe-it | 167 | 6 | 1 | 1 |
-| chamilo/chamilo-lms | 271 | 6 | 0 | 0 |
-| matomo-org/matomo | 52 | 4 | 1 | 1 |
-| magento/magento2 | 148 | 4 | 4 | 4 |
-| mautic/mautic | 193 | 4 | 2 | 2 |
-| pixelfed/pixelfed | 147 | 4 | 0 | 0 |
-| librenms/librenms | 138 | 4 | 1 | 1 |
-| monicahq/monica | 165 | 2 | 1 | 1 |
-| joomla/joomla-cms | 93 | 2 | 2 | 1 |
-| firefly-iii/firefly-iii | 132 | 1 | 0 | 0 |
-| moodle/moodle | 61 | 1 | 0 | 0 |
-| drupal/drupal | 64 | 1 | 0 | 0 |
-| espocrm/espocrm | 125 | 1 | 0 | 0 |
-| 11 projects with none | 1,078 | 0 | 0 | 0 |
-| **31 projects** | **4,109** | **129** | **73** | **62** |
+| Project | Packages | abandoned + silent | Marked | `composer audit` | Report |
+|---|---:|---:|---:|---:|---|
+| wallabag/wallabag | 200 | 27 | 19 | 16 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/wallabag.html) |
+| akaunting/akaunting | 183 | 16 | 16 | 16 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/akaunting.html) |
+| concretecms/concretecms | 158 | 13 | 11 | 10 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/concretecms.html) |
+| humhub/humhub | 210 | 12 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/humhub.html) |
+| PrestaShop/PrestaShop | 228 | 7 | 4 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/prestashop.html) |
+| phpbb/phpbb | 86 | 7 | 5 | 5 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/phpbb.html) |
+| salesagility/SuiteCRM-Core | 210 | 7 | 5 | 3 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/suitecrm-core.html) |
+| snipe/snipe-it | 167 | 6 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/snipe-it.html) |
+| chamilo/chamilo-lms | 271 | 6 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/chamilo-lms.html) |
+| matomo-org/matomo | 52 | 4 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/matomo.html) |
+| magento/magento2 | 148 | 4 | 4 | 4 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/magento2.html) |
+| mautic/mautic | 193 | 4 | 2 | 2 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/mautic.html) |
+| pixelfed/pixelfed | 147 | 4 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/pixelfed.html) |
+| librenms/librenms | 138 | 4 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/librenms.html) |
+| monicahq/monica | 165 | 2 | 1 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/monica.html) |
+| joomla/joomla-cms | 93 | 2 | 2 | 1 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/joomla-cms.html) |
+| firefly-iii/firefly-iii | 132 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/firefly-iii.html) |
+| moodle/moodle | 61 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/moodle.html) |
+| drupal/drupal | 64 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/drupal.html) |
+| espocrm/espocrm | 125 | 1 | 0 | 0 | [report](https://viewer.lockrot.dev/reports/2026-09-19-abandoned-in-31-projects/espocrm.html) |
+| 11 projects with none | 1,078 | 0 | 0 | 0 | |
+| **31 projects** | **4,109** | **129** | **73** | **62** | |
 
 The eleven with none are BookStack, koel, Cachet, Invoice Ninja, Kanboard, Pterodactyl, OpenCart,
 phpMyAdmin, Ampache, symfony/demo and TYPO3. The commit each lock file was read at, the per-project
@@ -198,22 +200,29 @@ next; the [CI page](../../ci.md) has the GitHub Action and the GitLab recipe.
 
 ## Reproducing this
 
-lockrot 0.8.0 (`lockrot.phar`, sha256 verified against the release), Composer 2.10.3, PHP 8.5.10,
-default thresholds (`release-high-years` and `push-high-years` both 5), `--no-dev`, run on
-2026-09-19 with `GITHUB_TOKEN` set. Each project's `composer.json` and `composer.lock` were taken
+Composer 2.10.3, PHP 8.5.10, default thresholds (`release-high-years` and `push-high-years` both
+5), `--no-dev`, `GITHUB_TOKEN` set. Each project's `composer.json` and `composer.lock` were taken
 from the commit named in
 [`manifest.json`](../../assets/data/2026-09-19-abandoned-in-31-projects/manifest.json); nothing was
 installed. `--target-php=8.4` was passed but affects only the `old-promise` verdict, which this
-post does not count. The per-project reports (`--format=json`, with the `ok` and `finished` rows
-removed) and a
+post does not count. The per-project reports and a
 [`summary.csv`](../../assets/data/2026-09-19-abandoned-in-31-projects/summary.csv) are next to
 the manifest.
+
+The table was first produced by lockrot 0.8.0 on 2026-09-19. The linked reports are from
+**lockrot 0.10.0**, which read the same thirty-one lock files at the same commits on 2026-09-22 —
+so the only things that could have moved are what lockrot measures and what Packagist and the
+repository hosts say. Nothing did: on all thirty-one rows, every column lockrot writes came back
+with the same number, and the new `summary.csv` is byte for byte the file the first run wrote. The
+`composer audit` column is the one thing that was not re-run — it reads the lock file and nothing
+else, and the lock file is the same file — so it was carried over. Both runs are in the manifest,
+each with the sha256 of the PHAR it used.
 
 129 is a floor. Of the 4,109 packages, 77 came from path or VCS repositories (58 of them
 HumHub's) and were not checked: 63 of those returned no data from any repository and are reported
 `unknown`, the other 14 are branch snapshots and reported `pinned`; none of the 77 is counted
-here. Ten of the 46 distinct `silent` packages, drawn at random, were re-checked against Packagist's
-metadata and the GitHub repository API
+here. Ten of the 46 distinct `silent` packages, drawn at random, were re-checked by hand on
+2026-09-19 against Packagist's metadata and the GitHub repository API
 ([`spot-check.txt`](../../assets/data/2026-09-19-abandoned-in-31-projects/spot-check.txt)); all
 ten release and push dates matched.
 

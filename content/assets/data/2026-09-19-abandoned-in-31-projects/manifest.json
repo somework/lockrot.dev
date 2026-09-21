@@ -1,13 +1,20 @@
 {
  "run": {
-  "date": "2026-09-19",
-  "lockrot": "0.8.0",
-  "lockrot_phar_sha256": "8e074a234e0115ad0998c37301db4805568c6797d827562097c0ce509d93bf92",
+  "date": "2026-09-22",
+  "lockrot": "0.10.0",
+  "lockrot_phar_sha256": "e0f7e783a1344fec6f43340f4f0712031facf7e064a4a3cec3ace98e82eb3d45",
   "composer": "2.10.3",
   "php": "8.5.10",
-  "lockrot_command": "php lockrot.phar --target-php=8.4 --format=json (GITHUB_TOKEN set, packages-dev excluded)",
+  "lockrot_command": "php lockrot.phar --target-php=8.4 --format=html (GITHUB_TOKEN set, packages-dev excluded)",
   "audit_command": "composer audit --abandoned=report --no-dev --locked --format=json",
-  "note": "Each report is lockrot's JSON with the findings whose verdict is ok or finished removed; counts and priorities are the full run's."
+  "note": "Every lock file is the commit named below, the one the first run read, so what could move between the two runs is lockrot and what Packagist and the repository hosts say about the packages — not the projects. Nothing moved: summary.csv is byte for byte the file the first run wrote. The reports here are complete; the first run's had the ok and finished rows removed to keep them small.",
+  "first_run": {
+   "date": "2026-09-19",
+   "lockrot": "0.8.0",
+   "lockrot_phar_sha256": "8e074a234e0115ad0998c37301db4805568c6797d827562097c0ce509d93bf92",
+   "lockrot_command": "php lockrot.phar --target-php=8.4 --format=json (GITHUB_TOKEN set, packages-dev excluded)",
+   "note": "Each report is lockrot's JSON with the findings whose verdict is ok or finished removed; counts and priorities are the full run's."
+  }
  },
  "projects": [
   {
