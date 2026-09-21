@@ -1,0 +1,397 @@
+{
+    "run": {
+        "date": "2026-09-21",
+        "target_php": "8.4"
+    },
+    "projects": [
+        {
+            "kind": "release",
+            "name": "coolify",
+            "repo": "coollabsio/coolify",
+            "tag": "v4.3.23",
+            "tag_url": "https://github.com/coollabsio/coolify/releases/tag/v4.3.23",
+            "commit": "e2e2d4010bcd590084b66d6f748f3eec8e2bbee9",
+            "commit_url": "https://github.com/coollabsio/coolify/tree/e2e2d4010bcd590084b66d6f748f3eec8e2bbee9",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "appwrite",
+            "repo": "appwrite/appwrite",
+            "tag": "2.2.0",
+            "tag_url": "https://github.com/appwrite/appwrite/releases/tag/2.2.0",
+            "commit": "51055258e99ba4b96398c7fc1180afb281fe3402",
+            "commit_url": "https://github.com/appwrite/appwrite/tree/51055258e99ba4b96398c7fc1180afb281fe3402",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "bagisto",
+            "repo": "bagisto/bagisto",
+            "tag": "v2.4.11",
+            "tag_url": "https://github.com/bagisto/bagisto/releases/tag/v2.4.11",
+            "commit": "9beff85ece6fe13378a97e6f84765b50647d3327",
+            "commit_url": "https://github.com/bagisto/bagisto/tree/9beff85ece6fe13378a97e6f84765b50647d3327",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "monica",
+            "repo": "monicahq/monica",
+            "tag": "v4.1.2",
+            "tag_url": "https://github.com/monicahq/monica/releases/tag/v4.1.2",
+            "commit": "32028ce3ce79cef38df5d27a297e5b20680f0065",
+            "commit_url": "https://github.com/monicahq/monica/tree/32028ce3ce79cef38df5d27a297e5b20680f0065",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "firefly-iii",
+            "repo": "firefly-iii/firefly-iii",
+            "tag": "v6.7.3",
+            "tag_url": "https://github.com/firefly-iii/firefly-iii/releases/tag/v6.7.3",
+            "commit": "99f9b7477d064b1d1729a4348e43fffef1b385ce",
+            "commit_url": "https://github.com/firefly-iii/firefly-iii/tree/99f9b7477d064b1d1729a4348e43fffef1b385ce",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "matomo",
+            "repo": "matomo-org/matomo",
+            "tag": "5.13.0",
+            "tag_url": "https://github.com/matomo-org/matomo/releases/tag/5.13.0",
+            "commit": "04c528673024239d858998eebc34e1f8afa1acf3",
+            "commit_url": "https://github.com/matomo-org/matomo/tree/04c528673024239d858998eebc34e1f8afa1acf3",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "bookstack",
+            "repo": "BookStackApp/BookStack",
+            "tag": "v26.05.5",
+            "tag_url": "https://github.com/BookStackApp/BookStack/releases/tag/v26.05.5",
+            "commit": "771a2d04927dab0ce07edc5874aeb18896f830c4",
+            "commit_url": "https://github.com/BookStackApp/BookStack/tree/771a2d04927dab0ce07edc5874aeb18896f830c4",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "snipe-it",
+            "repo": "grokability/snipe-it",
+            "tag": "v8.7.2",
+            "tag_url": "https://github.com/grokability/snipe-it/releases/tag/v8.7.2",
+            "commit": "f3f1dd722b167587c7819f3c518cc5b14475f89f",
+            "commit_url": "https://github.com/grokability/snipe-it/tree/f3f1dd722b167587c7819f3c518cc5b14475f89f",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "wallabag",
+            "repo": "wallabag/wallabag",
+            "tag": "2.6.14",
+            "tag_url": "https://github.com/wallabag/wallabag/releases/tag/2.6.14",
+            "commit": "74cbfd945bc316b5cf0308ba56e32fd2ed3443c0",
+            "commit_url": "https://github.com/wallabag/wallabag/tree/74cbfd945bc316b5cf0308ba56e32fd2ed3443c0",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "magento2",
+            "repo": "magento/magento2",
+            "tag": "2.4.9",
+            "tag_url": "https://github.com/magento/magento2/releases/tag/2.4.9",
+            "commit": "755e34dd689021c5165db9d35ecff74f7dc51527",
+            "commit_url": "https://github.com/magento/magento2/tree/755e34dd689021c5165db9d35ecff74f7dc51527",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "mautic",
+            "repo": "mautic/mautic",
+            "tag": "7.2.0",
+            "tag_url": "https://github.com/mautic/mautic/releases/tag/7.2.0",
+            "commit": "504af18cf90d8fbe701fde55cb1a94603db9e21a",
+            "commit_url": "https://github.com/mautic/mautic/tree/504af18cf90d8fbe701fde55cb1a94603db9e21a",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "akaunting",
+            "repo": "akaunting/akaunting",
+            "tag": "3.2.4",
+            "tag_url": "https://github.com/akaunting/akaunting/releases/tag/3.2.4",
+            "commit": "3940b76b12cb86592dcb44147e8912742945a4c9",
+            "commit_url": "https://github.com/akaunting/akaunting/tree/3940b76b12cb86592dcb44147e8912742945a4c9",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "invoiceninja",
+            "repo": "invoiceninja/invoiceninja",
+            "tag": "v5.13.43",
+            "tag_url": "https://github.com/invoiceninja/invoiceninja/releases/tag/v5.13.43",
+            "commit": "382020072bc79e8c7ede49f7e9ce91b0aeb1a051",
+            "commit_url": "https://github.com/invoiceninja/invoiceninja/tree/382020072bc79e8c7ede49f7e9ce91b0aeb1a051",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "prestashop",
+            "repo": "PrestaShop/PrestaShop",
+            "tag": "9.1.5",
+            "tag_url": "https://github.com/PrestaShop/PrestaShop/releases/tag/9.1.5",
+            "commit": "aee413eedd5fdc5053f28fb998da4b7e286cf641",
+            "commit_url": "https://github.com/PrestaShop/PrestaShop/tree/aee413eedd5fdc5053f28fb998da4b7e286cf641",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "moodle",
+            "repo": "moodle/moodle",
+            "tag": "v5.2.3",
+            "tag_url": "https://github.com/moodle/moodle/releases/tag/v5.2.3",
+            "commit": "344232c15336c71b80f9aca8359ce0e0a9f3d116",
+            "commit_url": "https://github.com/moodle/moodle/tree/344232c15336c71b80f9aca8359ce0e0a9f3d116",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "phpmyadmin",
+            "repo": "phpmyadmin/phpmyadmin",
+            "tag": "RELEASE_5_2_3",
+            "tag_url": "https://github.com/phpmyadmin/phpmyadmin/releases/tag/RELEASE_5_2_3",
+            "commit": "962857e4f63d42e38f11ff4d63f5e722018add76",
+            "commit_url": "https://github.com/phpmyadmin/phpmyadmin/tree/962857e4f63d42e38f11ff4d63f5e722018add76",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "phpbb",
+            "repo": "phpbb/phpbb",
+            "tag": "release-3.3.17",
+            "tag_url": "https://github.com/phpbb/phpbb/releases/tag/release-3.3.17",
+            "commit": "3508484fdc18cd97eeab229da830055c79fcc59e",
+            "commit_url": "https://github.com/phpbb/phpbb/tree/3508484fdc18cd97eeab229da830055c79fcc59e",
+            "lock": "phpBB/composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "joomla-cms",
+            "repo": "joomla/joomla-cms",
+            "tag": "6.1.3",
+            "tag_url": "https://github.com/joomla/joomla-cms/releases/tag/6.1.3",
+            "commit": "0f2d4de4729eb951e0878fec98c7990da07915b2",
+            "commit_url": "https://github.com/joomla/joomla-cms/tree/0f2d4de4729eb951e0878fec98c7990da07915b2",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "drupal",
+            "repo": "drupal/drupal",
+            "tag": "11.4.7",
+            "tag_url": "https://github.com/drupal/drupal/releases/tag/11.4.7",
+            "commit": "e0e7bfbc2d29f74e97ce98fd33df79aa97bed4e4",
+            "commit_url": "https://github.com/drupal/drupal/tree/e0e7bfbc2d29f74e97ce98fd33df79aa97bed4e4",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "release",
+            "name": "typo3",
+            "repo": "TYPO3/typo3",
+            "tag": "v14.3.7",
+            "tag_url": "https://github.com/TYPO3/typo3/releases/tag/v14.3.7",
+            "commit": "07f4dc8267d1824a3021c00cd36c5ad8ee7f84a1",
+            "commit_url": "https://github.com/TYPO3/typo3/tree/07f4dc8267d1824a3021c00cd36c5ad8ee7f84a1",
+            "lock": "composer.lock",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-laravel",
+            "title": "Laravel",
+            "package": "laravel/laravel",
+            "version": "v13.10.1",
+            "packagist_url": "https://packagist.org/packages/laravel/laravel",
+            "require": [],
+            "command": "composer create-project laravel/laravel:v13.10.1 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-symfony",
+            "title": "Symfony (skeleton)",
+            "package": "symfony/skeleton",
+            "version": "v8.1.99",
+            "packagist_url": "https://packagist.org/packages/symfony/skeleton",
+            "require": [],
+            "command": "composer create-project symfony/skeleton:v8.1.99 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-symfony-webapp",
+            "title": "Symfony (--webapp)",
+            "package": "symfony/skeleton",
+            "version": "v8.1.99",
+            "packagist_url": "https://packagist.org/packages/symfony/skeleton",
+            "require": [
+                "symfony/webapp-pack"
+            ],
+            "command": "composer create-project symfony/skeleton:v8.1.99 . && composer require symfony/webapp-pack",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-api-platform",
+            "title": "API Platform",
+            "package": "symfony/skeleton",
+            "version": "v8.1.99",
+            "packagist_url": "https://packagist.org/packages/symfony/skeleton",
+            "require": [
+                "api-platform/symfony"
+            ],
+            "command": "composer create-project symfony/skeleton:v8.1.99 . && composer require api-platform/symfony",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-drupal",
+            "title": "Drupal",
+            "package": "drupal/recommended-project",
+            "version": "11.4.7",
+            "packagist_url": "https://packagist.org/packages/drupal/recommended-project",
+            "require": [],
+            "command": "composer create-project drupal/recommended-project:11.4.7 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-wordpress",
+            "title": "WordPress (Bedrock)",
+            "package": "roots/bedrock",
+            "version": "1.31.5",
+            "packagist_url": "https://packagist.org/packages/roots/bedrock",
+            "require": [],
+            "command": "composer create-project roots/bedrock:1.31.5 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-shopware",
+            "title": "Shopware",
+            "package": "shopware/production",
+            "version": "v6.7.14.1",
+            "packagist_url": "https://packagist.org/packages/shopware/production",
+            "require": [],
+            "command": "composer create-project shopware/production:v6.7.14.1 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-sylius",
+            "title": "Sylius",
+            "package": "sylius/sylius-standard",
+            "version": "v2.2.4",
+            "packagist_url": "https://packagist.org/packages/sylius/sylius-standard",
+            "require": [],
+            "command": "composer create-project sylius/sylius-standard:v2.2.4 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-typo3",
+            "title": "TYPO3",
+            "package": "typo3/cms-base-distribution",
+            "version": "v14.3.0",
+            "packagist_url": "https://packagist.org/packages/typo3/cms-base-distribution",
+            "require": [],
+            "command": "composer create-project typo3/cms-base-distribution:v14.3.0 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-craft",
+            "title": "Craft CMS",
+            "package": "craftcms/craft",
+            "version": "5.8.0",
+            "packagist_url": "https://packagist.org/packages/craftcms/craft",
+            "require": [],
+            "command": "composer create-project craftcms/craft:5.8.0 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-statamic",
+            "title": "Statamic",
+            "package": "statamic/statamic",
+            "version": "v6.5.1",
+            "packagist_url": "https://packagist.org/packages/statamic/statamic",
+            "require": [],
+            "command": "composer create-project statamic/statamic:v6.5.1 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-pimcore",
+            "title": "Pimcore",
+            "package": "pimcore/skeleton",
+            "version": "v2026.2.0",
+            "packagist_url": "https://packagist.org/packages/pimcore/skeleton",
+            "require": [],
+            "command": "composer create-project pimcore/skeleton:v2026.2.0 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-slim",
+            "title": "Slim",
+            "package": "slim/slim-skeleton",
+            "version": "4.5.0",
+            "packagist_url": "https://packagist.org/packages/slim/slim-skeleton",
+            "require": [],
+            "command": "composer create-project slim/slim-skeleton:4.5.0 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-cakephp",
+            "title": "CakePHP",
+            "package": "cakephp/app",
+            "version": "5.4.0",
+            "packagist_url": "https://packagist.org/packages/cakephp/app",
+            "require": [],
+            "command": "composer create-project cakephp/app:5.4.0 .",
+            "target_php": "8.4"
+        },
+        {
+            "kind": "starter",
+            "name": "new-yii2",
+            "title": "Yii 2",
+            "package": "yiisoft/yii2-app-basic",
+            "version": "2.0.55",
+            "packagist_url": "https://packagist.org/packages/yiisoft/yii2-app-basic",
+            "require": [],
+            "command": "composer create-project yiisoft/yii2-app-basic:2.0.55 .",
+            "target_php": "8.4"
+        }
+    ]
+}

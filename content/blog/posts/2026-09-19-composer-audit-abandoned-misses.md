@@ -234,6 +234,11 @@ $ GITHUB_TOKEN=... php lockrot.phar --fail-on=silent
 $ composer audit --abandoned=report --no-dev --locked --format=json | jq '.abandoned | keys'
 ```
 
+Seventeen of these thirty-one projects are now read again every Monday, at their newest stable release
+rather than at a commit on a branch, and the numbers land on [the weekly watch](../../watch.md)
+beside fifteen projects created from scratch that morning. This post is one day; that page is the
+line the day sits on.
+
 Without a token, GitHub allows 60 requests an hour and lockrot checks repository activity for at
 most 50 packages per host per run, among those already old on release age, so a large lock
 reports fewer `silent` findings than it has; see

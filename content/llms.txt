@@ -22,6 +22,10 @@ Install: `composer require --dev somework/lockrot`, or download https://lockrot.
 
 - [Example run](https://lockrot.dev/example-run/): a complete report on a public 200-package composer.lock, as a table and as JSON
 
+## Data
+
+- [Weekly watch](https://lockrot.dev/watch/): every Monday lockrot's newest release reads two kinds of composer.lock — the one shipped by the newest stable release of 20 widely used open-source PHP applications (Coolify, Appwrite, Bagisto, Monica, Firefly III, Matomo, BookStack, Snipe-IT, wallabag, Magento 2, Mautic, Akaunting, Invoice Ninja, PrestaShop, Moodle, phpMyAdmin, phpBB, Joomla, Drupal, TYPO3), and the one a project created that morning gets from composer create-project (Laravel, Symfony skeleton and --webapp, API Platform, Drupal, WordPress via Bedrock, Shopware, Sylius, TYPO3, Craft CMS, Statamic, Pimcore, Slim, CakePHP, Yii 2). Each row names the release tag and commit, or the starter package and version, and links the full rendered report; security advisories on fresh installs are counted; every run is kept in history.csv
+
 ## Blog
 
 - [What composer audit --abandoned misses in 31 PHP projects](https://lockrot.dev/blog/2026/09/19/composer-audit-abandoned-misses/): 129 of 4,109 production packages in 31 open-source PHP applications are marked abandoned, archived or five years silent; composer audit --abandoned reports 62, because it reads the abandoned field from composer.lock rather than Packagist; data and lock-file commits linked

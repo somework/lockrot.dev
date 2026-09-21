@@ -32,6 +32,11 @@ the run was told to do: the project's name, the target PHP, the thresholds and t
 reports can therefore be compared without wondering whether they differ because the locks differ or
 because the settings did.
 
+Every report this site publishes is that page and nothing else: the thirty-five in the
+[weekly watch](watch.md) and the thirty-one behind
+[what `composer audit --abandoned` misses](blog/posts/2026-09-19-composer-audit-abandoned-misses.md)
+open with no server, no upload and no viewer in front of them.
+
 ## The verdict is not the whole answer
 
 A finding has a verdict and a priority, and they answer different questions. The verdict says what
