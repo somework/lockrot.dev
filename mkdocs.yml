@@ -55,6 +55,7 @@ nav:
   - What it reports: verdicts.md
   - Configuration: configuration.md
   - In CI: ci.md
+  - Reading a report: viewer.md
   - Baseline: baseline.md
   - JSON schemas: schema.md
   - Install-time summary: install-time.md

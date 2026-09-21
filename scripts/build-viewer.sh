@@ -48,5 +48,6 @@ cp viewer/frame.js viewer-site/frame/frame.js
 cp viewer/app.html viewer-site/index.html
 cp viewer/app.css viewer/app.js viewer-site/
 cp viewer/_headers viewer-site/_headers
+cp viewer/robots.txt viewer-site/robots.txt
 
 echo "build-viewer: viewer-site/ built from lockrot $(cat .lockrot/REF 2>/dev/null || echo '?')"

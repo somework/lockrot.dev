@@ -350,3 +350,30 @@ iframe {
 @media (max-width: 600px) {
   iframe { height: 78vh; min-height: 420px; }
 }
+
+/* ---------- the invitation, after the document and not before it ---------- */
+
+.after {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.after h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  letter-spacing: -.01em;
+}
+
+.after p { margin: 0 0 14px; max-width: 72ch; color: var(--ink-2); }
+
+.after-act {
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.after-act .button { text-decoration: none; display: inline-block; }

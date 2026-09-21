@@ -139,7 +139,8 @@ what you have is the JSON instead, the [report viewer](https://viewer.lockrot.de
 same way: paste it, or drop either file in. Nothing is uploaded — the rendering happens in your
 browser, in a sandbox with no way to reach the network — and it is on a host of its own rather than
 this one, because a page that draws documents written by strangers does not belong on the domain
-that hands out the archive.
+that hands out the archive. [Reading a report](viewer.md) is what the verdicts and the priorities
+in one mean.
 
 ## Questions
 
@@ -203,6 +204,7 @@ anything else, add an entry with a reason to `extra.lockrot.ignore` —
 | [What it reports](verdicts.md) | The nine verdicts, the signals behind them, and how priority is assigned |
 | [Configuration](configuration.md) | `extra.lockrot`, every option, and the command-line flags |
 | [In CI](ci.md) | GitHub Actions, GitLab CI, SARIF, PR comments |
+| [Reading a report](viewer.md) | What a report says, and the viewer that opens one |
 | [Baseline](baseline.md) | Accept today's findings, fail on new and worsened ones |
 | [Install-time summary](install-time.md) | What the plugin prints during `install`/`update`, and how to silence it |
 | [PHAR and self-update](phar.md) | Verified and signed download, PHIVE, `self-update`, the global-plugin alternative |

@@ -5,7 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>lockrot report viewer</title>
 <meta name="description" content="Open a lockrot report someone sent you. The document is rendered in a sandbox on a host of its own; nothing you paste leaves your browser.">
+<link rel="canonical" href="https://viewer.lockrot.dev/">
+
+<!--
+  A report is shared far more often than it is searched for, so these tags earn their keep in
+  Slack, Telegram and pull requests rather than in a search result. They say what the page is and
+  never what is in the document: the fragment that carries it never reaches a server, so an unfurl
+  that claimed to summarise the report would be guessing, and would be wrong for most links.
+-->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="lockrot">
+<meta property="og:url" content="https://viewer.lockrot.dev/">
+<meta property="og:title" content="A lockrot report someone shared with you">
+<meta property="og:description" content="lockrot reads composer.lock and says which dependencies have stopped moving. Open the report here — it renders in your browser, in a sandbox that cannot reach the network.">
+<meta property="og:image" content="https://lockrot.dev/assets/og.png">
+<meta property="og:image:alt" content="lockrot — the dependency rot report for composer.lock">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A lockrot report someone shared with you">
+<meta name="twitter:description" content="lockrot reads composer.lock and says which dependencies have stopped moving. Open the report here — it renders in your browser, in a sandbox that cannot reach the network.">
+
 <link rel="stylesheet" href="app.css">
+
+<!--
+  A data block, not a script: `type` is not a JavaScript MIME type, so the browser never executes
+  it and `script-src 'self'` does not apply — the same reason the frame's #lockrot-data element is
+  allowed under a policy with no 'unsafe-inline'. It exists because the viewer sits on a host of
+  its own, and without it nothing tells a search engine that this subdomain and lockrot.dev are
+  one thing.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "lockrot report viewer",
+  "url": "https://viewer.lockrot.dev/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any browser",
+  "browserRequirements": "Requires JavaScript",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "Opens a lockrot report — the JSON or the single-file page lockrot writes for a composer.lock — and renders it in a sandbox in the reader's own browser.",
+  "isPartOf": { "@type": "WebSite", "name": "lockrot", "url": "https://lockrot.dev/" },
+  "about": {
+    "@type": "SoftwareApplication",
+    "name": "lockrot",
+    "url": "https://lockrot.dev/",
+    "applicationCategory": "DeveloperApplication"
+  }
+}
+</script>
 </head>
 <body>
 
@@ -94,6 +141,26 @@
         referrerpolicy="no-referrer"
         src="frame/"></iframe>
     </div>
+
+    <!--
+      Most people reach this page from a link a colleague sent and have never heard of the tool.
+      They have just read a real report about a real project, which is the one moment an
+      explanation is worth anything, so it comes after the document and not before it.
+    -->
+    <aside class="after">
+      <h2>What produced this</h2>
+      <p>
+        lockrot reads a <code>composer.lock</code> and says which dependencies have stopped moving:
+        a package whose last release is years old, one whose branch was left behind, one pinned to a
+        version nobody ships any more. It reads release dates and repository activity and shows the
+        dates it decided on, so every verdict can be argued with.
+      </p>
+      <p class="after-act">
+        <a class="button primary" href="https://lockrot.dev/">What lockrot is</a>
+        <a class="button" href="https://lockrot.dev/verdicts/">How a verdict is decided</a>
+        <a class="button" href="https://lockrot.dev/ci/">Run it in CI</a>
+      </p>
+    </aside>
   </section>
 
 </main>
