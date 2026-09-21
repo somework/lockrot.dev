@@ -1,0 +1,13 @@
+# Without this file the host answers robots.txt with Cloudflare's injected Content Signals
+# preamble, which is 1,248 bytes of comments and not one directive — nothing is said, and the
+# slot is taken.
+#
+# /frame/ is deliberately NOT disallowed. It already answers with `X-Robots-Tag: noindex`, and a
+# crawler has to fetch a page to read that header: disallowing the path would hide the header and
+# still leave the URL indexable by reference, listed without a description. Allow the crawl, keep
+# the noindex. It is the opposite of the intuitive move and it is the one that works.
+#
+# No Sitemap line: this host is one page. The page that search should find is
+# https://lockrot.dev/viewer/, which is in that site's sitemap and explains what a report is.
+User-agent: *
+Allow: /

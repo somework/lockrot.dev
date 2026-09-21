@@ -14,3 +14,6 @@ __pycache__/
 /state/
 # The assembled viewer site (scripts/build-viewer.sh writes it).
 /viewer-site/
+# wrangler writes the Cloudflare account id here after a local deploy. Not a secret the way a
+# token is, but it is an account identifier in a public repository, and it is a build artefact.
+/.wrangler/
