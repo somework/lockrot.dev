@@ -132,6 +132,15 @@ Actions, `uses: somework/lockrot-action@v1` is the whole step. Recipes for that,
 comments are in [In CI](ci.md); a [baseline](baseline.md) lets you accept what you have today and
 fail only on what arrives tomorrow.
 
+## Reading a report someone sent you
+
+`--format=html` writes the whole run as one page that opens from a file and needs no server. When
+what you have is the JSON instead, the [report viewer](https://viewer.lockrot.dev/) draws it the
+same way: paste it, or drop either file in. Nothing is uploaded — the rendering happens in your
+browser, in a sandbox with no way to reach the network — and it is on a host of its own rather than
+this one, because a page that draws documents written by strangers does not belong on the domain
+that hands out the archive.
+
 ## Questions
 
 ### Does it change `composer.json` or `composer.lock`?

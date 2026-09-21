@@ -1,0 +1,28 @@
+// Cloudflare Workers configuration for the report viewer, which is deployed separately from
+// lockrot.dev and to a host of its own.
+//
+// It is not a subdirectory of the main site because response headers decide it. Cloudflare emits
+// every _headers rule that matches a path rather than letting a narrow rule override a broad one,
+// so a /viewer/* rule would arrive alongside lockrot.dev's /* rule and the browser would enforce
+// the intersection: the frame forbidden to its own embedder by `frame-ancestors 'none'`, and no
+// way to widen `connect-src` for the one page that has to fetch a document from a host the reader
+// names. Measured on a local worker before this file existed; see scripts/build-viewer.sh.
+//
+// Nothing here is served from lockrot.dev's origin on purpose. A viewer renders documents written
+// by strangers, and the domain that hands out the PHAR should not be where that happens.
+{
+    "$schema": "https://developers.cloudflare.com/schemas/wrangler.json",
+    "name": "lockrot-viewer",
+    "compatibility_date": "2026-09-16",
+    // One address, not two. The frame's Content-Security-Policy names viewer.lockrot.dev, and the
+    // whole point of the host is that there is a single place this runs; a second reachable name
+    // on workers.dev would be the same code under a policy written for somewhere else.
+    "workers_dev": false,
+    "assets": {
+        "directory": "./viewer-site",
+        // Not single-page-application: that answers every unknown path with index.html, which
+        // would serve the viewer page under /frame/… and hand it the frame's header rules.
+        "html_handling": "auto-trailing-slash",
+        "not_found_handling": "none"
+    }
+}

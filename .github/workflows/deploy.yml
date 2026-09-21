@@ -38,6 +38,23 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+      # The report viewer, on a host of its own. It is a second Worker because response headers
+      # decide it, not taste: see wrangler.viewer.jsonc. Built from the same lockrot checkout the
+      # site was built from, so the renderer in it is the one that release ships.
+      - run: scripts/build-viewer.sh
+      - id: viewer
+        run: |
+          set -eu
+          if [ -d viewer-site ]; then echo "built=true" >> "$GITHUB_OUTPUT"; else echo "built=false" >> "$GITHUB_OUTPUT"; fi
+      # A lockrot older than 0.10.0 ships no renderer, and build-viewer.sh says so and writes
+      # nothing rather than failing. Deploying an empty directory over a working viewer would be
+      # the worse answer, so the step is skipped instead.
+      - if: steps.viewer.outputs.built == 'true'
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.viewer.jsonc
       # Tell the IndexNow engines — Bing, Yandex, Naver, Seznam; Google does not take part — which
       # pages this deploy changed. `new-only` keeps a small state file between runs and announces a
       # page when its URL or its `lastmod` is new to that file, which is why scripts/mkdocs_hooks.py

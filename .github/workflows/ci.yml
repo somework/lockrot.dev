@@ -24,6 +24,10 @@ jobs:
       # the site would actually publish.
       - run: python -m unittest discover -s scripts -p 'test_*.py'
       - run: scripts/build.sh
+      # The viewer is deployed separately but assembled from the same lockrot checkout, and it
+      # substitutes into markup this repository does not own: a release that reshapes report.html
+      # should fail here rather than in a browser.
+      - run: scripts/build-viewer.sh
       # Internal links only: an external link check belongs to a scheduled job, not to every PR.
       - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:

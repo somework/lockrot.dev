@@ -57,14 +57,19 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
   38ddaaca....txt      # IndexNow key file: the protocol proves ownership by serving the key at
                        # its own URL, so it is public by design, not a secret (see Deploy)
 mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
-scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, mkdocs_hooks.py (MkDocs hooks: the landing
+scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, build-viewer.sh, build_frame.py, mkdocs_hooks.py (MkDocs hooks: the landing
                        # page's Questions section becomes the FAQPage markup, read from the rendered HTML;
                        # a post's og_image must exist; the sitemap's <lastmod> is the date the page
                        # changed, not the build date) and its unit test test_mkdocs_hooks.py
+viewer/                # the report viewer, deployed to viewer.lockrot.dev, not to this site
+  app.html app.css app.js  # the page: takes a document, hands it to the frame, owns the address
+  frame.js             # the only code inside the frame that is not lockrot's
+  _headers             # the frame's Content-Security-Policy; read the comments before touching
 wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
+wrangler.viewer.jsonc  # Cloudflare Worker "lockrot-viewer", static assets from ./viewer-site
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
                        # weekly, manual), links.yml (weekly external link check)
-.lockrot/ build/ site/ # generated, git-ignored, safe to delete
+.lockrot/ build/ site/ viewer-site/ # generated, git-ignored, safe to delete
 ```
 
 ## Writing a post
@@ -124,9 +129,54 @@ they go in — the reference pages there are the source of truth, not memory.
   change in lockrot appears here after the next release. `LOCKROT_REF=main` is for previewing,
   never for deploying.
 
+## The viewer
+
+`viewer-site/` is a second site, built by `scripts/build-viewer.sh` and deployed to its own host by
+`wrangler.viewer.jsonc`. It takes a lockrot report — pasted, dropped, carried in a `#data=` link or
+fetched from a `#url=` the reader approves — and renders it with lockrot's own `report.js`, inside
+a sandboxed frame.
+
+**It is a separate host because response headers decide it, not taste.** Cloudflare emits every
+`_headers` rule that matches a path instead of letting a narrow rule override a broad one: measured
+on a local worker, a request under both a `/*` rule and a `/frame/*` rule came back carrying two
+`Content-Security-Policy` headers and two `X-Frame-Options`. A browser enforces two policies as
+their intersection, so lockrot.dev's `frame-ancestors 'none'` would forbid the frame and its
+`connect-src` could never be widened for the one page that has to fetch a document from a host the
+reader names. Re-measure before concluding otherwise.
+
+What the pieces do:
+
+- `scripts/build_frame.py` fills lockrot's `report.html` for a frame instead of for a report: no
+  document baked in, the renderer loaded from files so `script-src` needs no `'unsafe-inline'`, and
+  a `noindex` the report template leaves to whoever publishes it. Every substitution is asserted,
+  and `scripts/test_build_frame.py` covers them: a release that reshapes `report.html` fails the
+  build here rather than in a browser.
+- `viewer/frame.js` is the only code in the frame that is not lockrot's. `report.js` reads
+  `#lockrot-data` once, at load, and renders immediately — there is no second pass — so the
+  document has to be in the DOM before it runs, and another document means reloading the frame.
+- `viewer/app.js` owns the address and the input. It treats readiness as the frame's `load` event
+  as well as its greeting: the greeting is sent once, and on a warm cache the frame can speak
+  before `app.js` is parsed.
+
+Rules that are not style choices, from the threat model:
+
+- never `allow-same-origin` beside `allow-scripts`;
+- never fetch a `#url=` without the reader acting, and never over `http://`;
+- never write what the reader pasted into the address bar, and never copy a document to the
+  clipboard on its own;
+- cap every input before parsing it, and cap the compressed one *while* decompressing;
+- the provenance band stays: the page says, permanently, that the document is not lockrot's.
+
+`viewer/_headers` carries the reasoning for each directive. The frame's policy lists both `'self'`
+and the origin because the frame's origin is opaque and what `'self'` matches there is thin in the
+specification — Chrome was measured accepting `'self'`, which is also what lets the viewer run
+under `wrangler dev`.
+
 ## Deploy
 
-`deploy.yml` builds and runs `wrangler deploy` on: a push to `main`, a `repository_dispatch` with
+`deploy.yml` builds and runs `wrangler deploy` twice — the site, then the viewer with
+`--config wrangler.viewer.jsonc`, skipped when a lockrot older than 0.10.0 left no renderer to
+build one from — on: a push to `main`, a `repository_dispatch` with
 `event_type: lockrot-release` (to be sent by lockrot's `phar.yml` after a release), a weekly
 schedule (the safety net for a dispatch that never arrived), or a manual run.
 After `wrangler deploy` the run announces the changed pages to the IndexNow engines — Bing,
