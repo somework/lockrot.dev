@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>lockrot report viewer</title>
+<meta name="description" content="Open a lockrot report someone sent you. The document is rendered in a sandbox on a host of its own; nothing you paste leaves your browser.">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="chrome" id="chrome">
+  <div class="bar">
+    <span class="mark" aria-hidden="true"></span>
+    <p class="wordmark"><a href="https://lockrot.dev/">lockrot</a> <span>report viewer</span></p>
+    <a class="quiet" href="https://lockrot.dev/ci/">How reports are made</a>
+  </div>
+</header>
+
+<main>
+
+  <section class="intro" id="intro">
+    <h1>Open a report someone sent you</h1>
+    <p class="lede">
+      A lockrot report is a JSON document, or the single-file page <code>--format=html</code> writes.
+      Drop either one here and it renders the same way it would on the machine that produced it.
+    </p>
+    <p class="privacy">
+      What you paste or drop stays in this tab. It is not uploaded, stored or logged &mdash; the
+      rendering happens in your browser, in a sandbox that is not allowed to reach the network at
+      all. A link of the form <code>#url=</code> is the one exception: that document is fetched, by
+      your browser, from the host the link names, and only after you say so.
+    </p>
+
+    <div class="inputs">
+      <div class="drop" id="drop">
+        <p class="drop-title">Drop <code>report.json</code> or <code>report.html</code></p>
+        <p class="drop-or">or</p>
+        <p><button type="button" class="button" id="pick">Choose a file</button></p>
+        <input type="file" id="file" accept=".json,.html,application/json,text/html" hidden>
+      </div>
+      <div class="paste">
+        <label for="json">Paste the JSON</label>
+        <textarea id="json" spellcheck="false" placeholder="composer lockrot --format=json"></textarea>
+        <p><button type="button" class="button primary" id="render">Render it</button></p>
+      </div>
+    </div>
+
+    <p class="problem" id="problem" role="alert" hidden></p>
+  </section>
+
+  <section class="ask" id="ask" hidden>
+    <h2>This link wants to fetch a document</h2>
+    <p>
+      The link you followed asks this page to download a report from
+      <strong class="host" id="askHost"></strong>. Nothing has been requested yet.
+    </p>
+    <p class="ask-note">
+      The request would be made by your browser, from your network, to an address chosen by whoever
+      sent you the link. Open it only if you trust both.
+    </p>
+    <p class="ask-url"><code id="askUrl"></code></p>
+    <p>
+      <button type="button" class="button primary" id="askGo">Fetch it</button>
+      <button type="button" class="button" id="askNo">No</button>
+    </p>
+  </section>
+
+  <section class="report" id="report" hidden>
+    <div class="origin" id="origin">
+      <p class="origin-what">
+        <strong>This document was given to this page.</strong> lockrot did not produce it, has not
+        checked it, and does not vouch for anything in it. Everything below &mdash; package names,
+        advisory titles, counts &mdash; is text chosen by whoever sent it.
+      </p>
+      <p class="origin-where" id="originWhere"></p>
+      <p class="origin-act">
+        <button type="button" class="button" id="again">Open another</button>
+        <button type="button" class="button" id="share">Make a link to this</button>
+      </p>
+    </div>
+
+    <div class="share" id="sharePanel" hidden>
+      <p class="share-warn" id="shareWarn"></p>
+      <label class="share-label" for="shareUrl">Select and copy</label>
+      <input type="text" id="shareUrl" readonly spellcheck="false">
+    </div>
+
+    <div class="stage">
+      <iframe
+        id="frame"
+        title="The report"
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+        referrerpolicy="no-referrer"
+        src="frame/"></iframe>
+    </div>
+  </section>
+
+</main>
+
+<footer class="chrome">
+  <div class="bar">
+    <p class="small">
+      The renderer is lockrot's own, taken from the release this site was built from. The viewer
+      adds no analysis of its own &mdash; it only draws what the document says.
+    </p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

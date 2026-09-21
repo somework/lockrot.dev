@@ -6,3 +6,10 @@
 # "trust GitHub and whoever holds lockrot.dev".
 /lockrot.phar https://github.com/somework/lockrot/releases/latest/download/lockrot.phar 302
 /lockrot.phar.sha256 https://github.com/somework/lockrot/releases/latest/download/lockrot.phar.sha256 302
+
+# The viewer is a Worker of its own on viewer.lockrot.dev (see wrangler.viewer.jsonc for why it
+# cannot be a path on this site). /viewer is the address people guess, so it is sent there. 302,
+# like the two above: where the viewer lives is a deployment detail, not a permanent fact worth
+# pinning in every visitor's browser cache.
+/viewer https://viewer.lockrot.dev/ 302
+/viewer/* https://viewer.lockrot.dev/:splat 302

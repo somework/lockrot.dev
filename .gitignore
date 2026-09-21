@@ -12,3 +12,5 @@ __pycache__/
 # IndexNow state and report, written by the action's image when it runs locally.
 /.indexnow/
 /state/
+# The assembled viewer site (scripts/build-viewer.sh writes it).
+/viewer-site/

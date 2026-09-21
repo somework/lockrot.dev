@@ -1,0 +1,43 @@
+# Response headers for the viewer's own host. Cloudflare reads this file from the root of the
+# assets directory, the same way it reads lockrot.dev's content/_headers.
+#
+# There is deliberately no Content-Security-Policy and no X-Frame-Options under /*. Cloudflare
+# emits every rule that matches a path rather than letting a narrow one override a broad one:
+# measured on a local worker, a request for /frame/ came back carrying both rules' headers, two
+# Content-Security-Policy values and two X-Frame-Options. A browser enforces two policies as their
+# intersection, so a catch-all here would quietly narrow both policies below into one neither page
+# can run under — the frame would be forbidden to its own embedder and forbidden its own scripts.
+# The headers under /* are the ones that mean the same thing twice.
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# The viewer page. `connect-src https:` is the one wide directive and it is the feature: a link of
+# the form #url=… asks this page to fetch a document from a host the sender named, and the fetch is
+# made only after the reader is shown that host and presses the button. It is why the viewer is not
+# on lockrot.dev, whose connect-src names three origins and cannot be widened for one path.
+# frame-ancestors 'none': this page embeds, it is never embedded.
+/
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src https:; frame-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+
+# The renderer. This is the prize: a document that arrives from a stranger is rendered by a
+# thousand lines of string concatenation, and here that code has no way to reach the network at
+# all. connect-src 'none' and img-src 'none' mean a flaw in it cannot carry the reader's
+# dependency inventory anywhere; what is left is a page defacing itself, which belongs to whoever
+# sent the document already.
+#
+# 'self' and the origin are both listed, which is not belt and braces for its own sake. The frame
+# is sandboxed without allow-same-origin, so its origin is opaque, and whether 'self' still matches
+# the document's own URL there is a question the specification leaves thin. Chrome was measured
+# doing it — the frame's script ran and greeted the page under `script-src 'self'` — but one
+# browser is not the web, and a browser that reads it the other way would leave the renderer
+# unable to load its own two files. Naming the origin as well costs nothing and cannot be wrong;
+# keeping 'self' is what lets the viewer run under `wrangler dev` on localhost.
+#
+# style-src needs 'unsafe-inline': the renderer's stylesheet is inlined in the template and the
+# markup uses style= attributes, which fall under the same directive. It buys no script execution.
+/frame/*
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://viewer.lockrot.dev; style-src 'self' https://viewer.lockrot.dev 'unsafe-inline'; img-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'self' https://viewer.lockrot.dev
+  X-Robots-Tag: noindex
