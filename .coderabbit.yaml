@@ -5,8 +5,16 @@
 # written by hand, not reviewable line by line, and regenerated whole on the next run. A review that
 # opens them finds nothing and misses the eight files that matter.
 #
+# content/watch.md is the same thing in prose: scripts/build_watch_page.py writes it, the next run
+# overwrites it, and a comment on a line of it has nowhere to go. The prose is reviewed where it is
+# written, in the script.
+#
+# Their pull request merges itself once `build` is green, and main requires every review thread
+# resolved — so a comment on a generated file does not delay a page, it strands it.
+#
 # Everything else stays in: the scripts that build the site, the workflows, the theme, the prose.
 reviews:
   path_filters:
     - "!data/reports/**"
     - "!content/assets/data/**"
+    - "!content/watch.md"

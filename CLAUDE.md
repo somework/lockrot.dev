@@ -24,7 +24,7 @@ before laying `content/` over it. A change to a verdict, an option or a CLI flag
 | `rm -rf .lockrot && scripts/build.sh` | Back to the newest release tag |
 | `scripts/check-nav.sh` | Fail if a page in `.lockrot/docs/` is missing from `mkdocs.yml` `nav` |
 | `python3 -m unittest discover -s scripts -p 'test_*.py'` | Unit tests for the MkDocs hooks and the report and watch scripts (CI runs them before the build) |
-| `gh workflow run rot-watch.yml` | Run the weekly watch now: twenty releases plus fifteen fresh installs, then a commit and a deploy |
+| `gh workflow run rot-watch.yml` | Run the weekly watch now: twenty releases plus fifteen fresh installs, then a pull request that merges itself and deploys |
 | `pip-compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in` | Re-lock after editing `requirements.in` (needs `pip install pip-tools`, run under Python 3.12) |
 
 Dependencies: `requirements.in` names the three packages the site asks for; `requirements.txt` is
@@ -77,7 +77,7 @@ wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 wrangler.viewer.jsonc  # Cloudflare Worker "lockrot-viewer", static assets from ./viewer-site
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
                        # weekly, manual), links.yml (weekly external link check),
-                       # rot-watch.yml (Monday: twenty releases and fifteen create-project runs, commits and deploys)
+                       # rot-watch.yml (Monday: twenty releases and fifteen create-project runs, opens a self-merging PR)
 .lockrot/ build/ site/ viewer-site/ # generated, git-ignored, safe to delete
 ```
 
@@ -231,9 +231,19 @@ releases and fifteen starters in `data/watch/projects.json` and rewrites `/watch
   `scripts/build_watch_page.py`; do not hand-edit the page. It is committed because `lastmod` is the
   commit date of the file a page is built from, and a page whose numbers change weekly while its
   file does not would tell every crawler it had not moved.
-- **`gh workflow run deploy.yml` at the end.** A push made with `GITHUB_TOKEN` triggers no
-  workflow — GitHub's recursion guard — so the deploy is asked for explicitly. The cron is set
-  before deploy.yml's own weekly run so a failed dispatch still publishes within hours.
+- **The run publishes through a pull request that merges itself, on `ROT_WATCH_PUSH_TOKEN`.** The
+  `main` ruleset requires a pull request and a green `build`, and its bypass list is empty — a
+  repository owned by a user account is offered no GitHub Actions bypass to put there, so the
+  direct push the first run attempted is not a permission to be granted. `publish` therefore
+  commits to `rot-watch/<date>`, opens a pull request and enables auto-merge. None of that can be
+  done with `GITHUB_TOKEN`: a branch it pushes and a pull request it opens trigger no workflow —
+  GitHub's recursion guard — so `ci.yml` would never run and the required `build` would never
+  report. `ROT_WATCH_PUSH_TOKEN` is a fine-grained token on this repository with Contents: write and
+  Pull requests: write; because the merge is then made by an account, the push to `main` triggers
+  Deploy on its own and nothing is dispatched. The cron is still set before deploy.yml's own weekly
+  run, which stays the safety net. `content/watch.md` is filtered out of CodeRabbit for the same
+  reason the data is: main requires every review thread resolved, and a comment on a generated file
+  would strand the page rather than delay it.
 - **`content/assets/data/watch/history.csv` is append-only**, keyed by date and repository, and
   every row carries the lockrot version that produced it. A number moves when a project changes,
   when Packagist changes, or when the tool learns something; a trend that cannot tell those apart
