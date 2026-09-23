@@ -1,6 +1,6 @@
 {
     "run": {
-        "date": "2026-09-21",
+        "date": "2026-09-23",
         "target_php": "8.4"
     },
     "projects": [
@@ -30,10 +30,10 @@
             "kind": "release",
             "name": "bagisto",
             "repo": "bagisto/bagisto",
-            "tag": "v2.4.11",
-            "tag_url": "https://github.com/bagisto/bagisto/releases/tag/v2.4.11",
-            "commit": "9beff85ece6fe13378a97e6f84765b50647d3327",
-            "commit_url": "https://github.com/bagisto/bagisto/tree/9beff85ece6fe13378a97e6f84765b50647d3327",
+            "tag": "v2.4.12",
+            "tag_url": "https://github.com/bagisto/bagisto/releases/tag/v2.4.12",
+            "commit": "805b67013134ebc53f1da1285f0aa6632f5dde62",
+            "commit_url": "https://github.com/bagisto/bagisto/tree/805b67013134ebc53f1da1285f0aa6632f5dde62",
             "lock": "composer.lock",
             "target_php": "8.4"
         },
@@ -63,10 +63,10 @@
             "kind": "release",
             "name": "matomo",
             "repo": "matomo-org/matomo",
-            "tag": "5.13.0",
-            "tag_url": "https://github.com/matomo-org/matomo/releases/tag/5.13.0",
-            "commit": "04c528673024239d858998eebc34e1f8afa1acf3",
-            "commit_url": "https://github.com/matomo-org/matomo/tree/04c528673024239d858998eebc34e1f8afa1acf3",
+            "tag": "5.14.0",
+            "tag_url": "https://github.com/matomo-org/matomo/releases/tag/5.14.0",
+            "commit": "9499b8a35efce4bb2d655ca24d9153576dcae39c",
+            "commit_url": "https://github.com/matomo-org/matomo/tree/9499b8a35efce4bb2d655ca24d9153576dcae39c",
             "lock": "composer.lock",
             "target_php": "8.4"
         },
@@ -288,10 +288,10 @@
             "name": "new-wordpress",
             "title": "WordPress (Bedrock)",
             "package": "roots/bedrock",
-            "version": "1.31.5",
+            "version": "1.31.6",
             "packagist_url": "https://packagist.org/packages/roots/bedrock",
             "require": [],
-            "command": "composer create-project roots/bedrock:1.31.5 .",
+            "command": "composer create-project roots/bedrock:1.31.6 .",
             "target_php": "8.4"
         },
         {
@@ -299,10 +299,10 @@
             "name": "new-shopware",
             "title": "Shopware",
             "package": "shopware/production",
-            "version": "v6.7.14.1",
+            "version": "v6.7.14.2",
             "packagist_url": "https://packagist.org/packages/shopware/production",
             "require": [],
-            "command": "composer create-project shopware/production:v6.7.14.1 .",
+            "command": "composer create-project shopware/production:v6.7.14.2 .",
             "target_php": "8.4"
         },
         {
