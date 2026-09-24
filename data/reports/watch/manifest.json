@@ -1,6 +1,6 @@
 {
     "run": {
-        "date": "2026-09-23",
+        "date": "2026-09-24",
         "target_php": "8.4"
     },
     "projects": [
@@ -19,10 +19,10 @@
             "kind": "release",
             "name": "appwrite",
             "repo": "appwrite/appwrite",
-            "tag": "2.2.0",
-            "tag_url": "https://github.com/appwrite/appwrite/releases/tag/2.2.0",
-            "commit": "51055258e99ba4b96398c7fc1180afb281fe3402",
-            "commit_url": "https://github.com/appwrite/appwrite/tree/51055258e99ba4b96398c7fc1180afb281fe3402",
+            "tag": "2.3.0",
+            "tag_url": "https://github.com/appwrite/appwrite/releases/tag/2.3.0",
+            "commit": "d66a7eff038e75f0066b3232d6a4e1b9eac7a64e",
+            "commit_url": "https://github.com/appwrite/appwrite/tree/d66a7eff038e75f0066b3232d6a4e1b9eac7a64e",
             "lock": "composer.lock",
             "target_php": "8.4"
         },
@@ -118,10 +118,10 @@
             "kind": "release",
             "name": "mautic",
             "repo": "mautic/mautic",
-            "tag": "7.2.0",
-            "tag_url": "https://github.com/mautic/mautic/releases/tag/7.2.0",
-            "commit": "504af18cf90d8fbe701fde55cb1a94603db9e21a",
-            "commit_url": "https://github.com/mautic/mautic/tree/504af18cf90d8fbe701fde55cb1a94603db9e21a",
+            "tag": "7.2.1",
+            "tag_url": "https://github.com/mautic/mautic/releases/tag/7.2.1",
+            "commit": "8cbb7ef874d52a411ae5a884f979acf6cc320181",
+            "commit_url": "https://github.com/mautic/mautic/tree/8cbb7ef874d52a411ae5a884f979acf6cc320181",
             "lock": "composer.lock",
             "target_php": "8.4"
         },
@@ -184,10 +184,10 @@
             "kind": "release",
             "name": "phpbb",
             "repo": "phpbb/phpbb",
-            "tag": "release-3.3.17",
-            "tag_url": "https://github.com/phpbb/phpbb/releases/tag/release-3.3.17",
-            "commit": "3508484fdc18cd97eeab229da830055c79fcc59e",
-            "commit_url": "https://github.com/phpbb/phpbb/tree/3508484fdc18cd97eeab229da830055c79fcc59e",
+            "tag": "release-3.3.18",
+            "tag_url": "https://github.com/phpbb/phpbb/releases/tag/release-3.3.18",
+            "commit": "99ed94dc28be582b77b9c8753ffa8cc8a5e1b069",
+            "commit_url": "https://github.com/phpbb/phpbb/tree/99ed94dc28be582b77b9c8753ffa8cc8a5e1b069",
             "lock": "phpBB/composer.lock",
             "target_php": "8.4"
         },
