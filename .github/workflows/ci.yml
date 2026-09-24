@@ -28,6 +28,10 @@ jobs:
       # substitutes into markup this repository does not own: a release that reshapes report.html
       # should fail here rather than in a browser.
       - run: scripts/build-viewer.sh
+        env:
+          # fetch-renderer.sh verifies the renderer release's build provenance with
+          # `gh attestation verify`, which asks GitHub for the attestation.
+          GH_TOKEN: ${{ github.token }}
       # Internal links only: an external link check belongs to a scheduled job, not to every PR.
       - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:

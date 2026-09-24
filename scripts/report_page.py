@@ -32,6 +32,7 @@ DESCRIPTION = "{{DESCRIPTION}}"
 CSS = "{{CSS}}"
 JS = "{{JS}}"
 DATA = "{{DATA}}"
+PLACEHOLDER = re.compile(r"\{\{[A-Z]+\}\}")
 
 # This site is the publisher of these pages, and the report template leaves the robots directive to
 # whoever publishes. The pages are twenty near-identical shells whose content lives in a JSON
@@ -82,20 +83,30 @@ def extract(page: str) -> dict:
     return {"title": title, "description": description, "data": data}
 
 
-def render(capsule: dict, template: str, css: str, js: str, provenance: dict | None = None) -> str:
-    """The capsule, the template and this release's renderer, back into one self-contained page."""
+def render(
+    capsule: dict, template: str, css: str | None, js: str | None, provenance: dict | None = None
+) -> str:
+    """The capsule, the template and this release's renderer, back into one self-contained page.
+
+    `css` and `js` are the hand-written renderer's sources, and None for a released renderer, whose
+    template already carries both. Which one this is follows from the template: one that still has
+    {{JS}} splices the renderer in.
+    """
     for key in ("title", "description", "data"):
         if key not in capsule:
             raise SystemExit(f"report_page: the capsule has no {key}")
 
+    spliced = JS in template
+    if spliced and (css is None or js is None):
+        raise SystemExit("report_page: this template splices the renderer in, and none was given")
+
+    fills = [(TITLE, capsule["title"]), (DESCRIPTION, capsule["description"])]
+    if spliced:
+        fills += [(CSS, css), (JS, js)]
+    fills.append((DATA, payload(capsule["data"])))
+
     out = template
-    for placeholder, value in (
-        (TITLE, capsule["title"]),
-        (DESCRIPTION, capsule["description"]),
-        (CSS, css),
-        (JS, js),
-        (DATA, payload(capsule["data"])),
-    ):
+    for placeholder, value in fills:
         if placeholder not in out:
             raise SystemExit(f"report_page: the template has no {placeholder}")
         out = out.replace(placeholder, value)
@@ -107,14 +118,16 @@ def render(capsule: dict, template: str, css: str, js: str, provenance: dict | N
     if provenance is not None:
         if BODY_ANCHOR not in out:
             raise SystemExit("report_page: the template has no <body> to anchor the band to")
-        out = out.replace(BODY_ANCHOR, BODY_ANCHOR + "\n" + band(provenance), 1)
+        out = out.replace(BODY_ANCHOR, BODY_ANCHOR + "\n" + band(provenance, inline=spliced), 1)
 
-    if "{{" in out:
+    # A placeholder is {{NAME}}. Anything else with two braces is the renderer's own code or a
+    # comment in its stylesheet, which a released template carries inline.
+    if PLACEHOLDER.search(out):
         raise SystemExit("report_page: a placeholder was left unfilled")
     return out
 
 
-def band(provenance: dict) -> str:
+def band(provenance: dict, inline: bool = False) -> str:
     """One line above the report saying what it was read from, and by whom.
 
     Two shapes, because there are two kinds of report here. One was read from a project's own
@@ -123,9 +136,13 @@ def band(provenance: dict) -> str:
     has no repository to name: it is a project created by `composer create-project` on the day of
     the run, and what it can be checked against is the command. Everything printed is escaped; a
     tag name and a package name are both written upstream.
+
+    `inline` styles the band with style attributes, for the hand-written renderer. A released
+    renderer's page refuses those under its Content-Security-Policy, and styles the
+    `lockrot-provenance` class itself instead.
     """
     if provenance.get("command"):
-        return _starter_band(provenance)
+        return _starter_band(provenance, inline)
 
     for key in ("repo", "commit", "date"):
         if not provenance.get(key):
@@ -133,24 +150,25 @@ def band(provenance: dict) -> str:
 
     repo = provenance["repo"]
     commit = provenance["commit"]
-    where = _link(f"https://github.com/{repo}", repo)
+    where = _link(f"https://github.com/{repo}", repo, inline)
     if provenance.get("tag"):
         tag_url = provenance.get("tag_url") or f"https://github.com/{repo}/releases/tag/{provenance['tag']}"
-        where += " " + _link(tag_url, provenance["tag"])
+        where += " " + _link(tag_url, provenance["tag"], inline)
     where += " (" + _link(
         provenance.get("commit_url") or f"https://github.com/{repo}/tree/{commit}",
         f"<code>{html.escape(commit[:7])}</code>",
+        inline,
     ) + ")"
 
     return (
-        f'<div style="{BAND_STYLE}">This report was produced by '
-        f'{_link("https://lockrot.dev/watch/", "lockrot.dev")} on {html.escape(provenance["date"])}, '
+        f"{_open(inline)}This report was produced by "
+        f'{_link("https://lockrot.dev/watch/", "lockrot.dev", inline)} on {html.escape(provenance["date"])}, '
         f"reading {where}. It is lockrot's output, published by this site; the project did not "
         "write it.</div>"
     )
 
 
-def _starter_band(provenance: dict) -> str:
+def _starter_band(provenance: dict, inline: bool) -> str:
     """The band for a report on a project that did not exist before the run created it."""
     for key in ("package", "date", "command"):
         if not provenance.get(key):
@@ -159,20 +177,26 @@ def _starter_band(provenance: dict) -> str:
     package = _link(
         provenance.get("packagist_url") or f"https://packagist.org/packages/{provenance['package']}",
         provenance["package"],
+        inline,
     )
     return (
-        f'<div style="{BAND_STYLE}">This report was produced by '
-        f'{_link("https://lockrot.dev/watch/", "lockrot.dev")} on {html.escape(provenance["date"])} '
+        f"{_open(inline)}This report was produced by "
+        f'{_link("https://lockrot.dev/watch/", "lockrot.dev", inline)} on {html.escape(provenance["date"])} '
         f"from a project created that day out of {package}, with "
         f"<code>{html.escape(provenance['command'])}</code> — nothing was installed, and no script "
         "or plugin from any package was run. It is lockrot's output, published by this site.</div>"
     )
 
 
-def _link(url: str, text: str) -> str:
+def _open(inline: bool) -> str:
+    return f'<div style="{BAND_STYLE}">' if inline else '<div class="lockrot-provenance">'
+
+
+def _link(url: str, text: str, inline: bool) -> str:
+    style = ' style="color:var(--accent)"' if inline else ""
     return (
-        f'<a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener noreferrer" '
-        f'style="color:var(--accent)">{text if text.startswith("<code>") else html.escape(text)}</a>'
+        f'<a href="{html.escape(url, quote=True)}" target="_blank" rel="noopener noreferrer"'
+        f'{style}>{text if text.startswith("<code>") else html.escape(text)}</a>'
     )
 
 
