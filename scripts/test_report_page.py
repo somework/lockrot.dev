@@ -155,5 +155,46 @@ class BandTest(unittest.TestCase):
         self.assertNotIn("This report was produced by", out)
 
 
+# The released renderer's template (somework/lockrot-report): script and stylesheet inline already,
+# pinned by the page's own Content-Security-Policy, so only three placeholders are left.
+RELEASED = (
+    "<!doctype html>\n<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'\">\n"
+    "<title>{{TITLE}}</title>\n"
+    '<meta name="description" content="{{DESCRIPTION}}">\n'
+    "<body>\n"
+    '<script id="lockrot-data" type="application/json">{{DATA}}</script>\n'
+    "<style>/* inline */</style>\n<script>/* inline */</script>\n"
+)
+
+
+class ReleasedRendererTest(unittest.TestCase):
+    def test_fills_the_three_placeholders_and_needs_no_renderer_sources(self):
+        out = rp.render(rp.extract(page(title="lockrot: 1 of 2")), RELEASED, None, None)
+
+        self.assertIn("<title>lockrot: 1 of 2</title>", out)
+        self.assertIn('{"report":{"findings":[]}}', out)
+        self.assertNotIn("{{", out)
+
+    def test_the_band_is_a_class_the_page_styles_not_an_inline_style(self):
+        # The page's policy refuses style attributes; an inline-styled band would render unstyled
+        # and log a violation on every published report.
+        out = rp.render(rp.extract(page()), RELEASED, None, None, PROVENANCE)
+
+        self.assertIn('<body>\n<div class="lockrot-provenance">', out)
+        self.assertNotIn("style=", out)
+
+    def test_braces_in_the_renderer_s_own_code_are_not_a_placeholder(self):
+        # The released page carries its stylesheet inline, comments included, and one of them
+        # quotes JSX: style={{flexGrow}}.
+        template = RELEASED.replace("/* inline */</style>", "/* style={{flexGrow}} */</style>")
+        out = rp.render(rp.extract(page()), template, None, None)
+
+        self.assertIn("style={{flexGrow}}", out)
+
+    def test_a_splicing_template_without_renderer_sources_is_refused(self):
+        with self.assertRaises(SystemExit):
+            rp.render(rp.extract(page()), TEMPLATE, None, None)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -63,7 +63,7 @@ data/                  # run data, not published as it stands (see "The weekly w
   reports/<run>/*.json # one capsule per report: the document and its two sentences, no renderer
   reports/<run>/manifest.json  # what each report was read from: repository, release tag, commit
 mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
-scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, build-viewer.sh, build_frame.py, mkdocs_hooks.py (MkDocs hooks: the landing
+scripts/               # fetch-lockrot.sh, fetch-renderer.sh, check-nav.sh, build.sh, build-viewer.sh, build_frame.py, mkdocs_hooks.py (MkDocs hooks: the landing
                        # page's Questions section becomes the FAQPage markup, read from the rendered HTML;
                        # a post's og_image must exist; the sitemap's <lastmod> is the date the page
                        # changed, not the build date) and its unit test test_mkdocs_hooks.py
@@ -71,6 +71,7 @@ scripts/               # fetch-lockrot.sh, check-nav.sh, build.sh, build-viewer.
                        # together), watch_plan.py, build_watch_page.py — all with test_*.py beside them
 viewer/                # the report viewer, deployed to viewer.lockrot.dev, not to this site
   app.html app.css app.js  # the page: takes a document, hands it to the frame, owns the address
+  frame.html           # the frame page for a released renderer (lockrot 0.12.0+)
   frame.js             # the only code inside the frame that is not lockrot's
   _headers             # the frame's Content-Security-Policy; read the comments before touching
 wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
@@ -78,7 +79,7 @@ wrangler.viewer.jsonc  # Cloudflare Worker "lockrot-viewer", static assets from 
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
                        # weekly, manual), links.yml (weekly external link check),
                        # rot-watch.yml (Monday: twenty releases and fifteen create-project runs, opens a self-merging PR)
-.lockrot/ build/ site/ viewer-site/ # generated, git-ignored, safe to delete
+.lockrot/ .renderer/ build/ site/ viewer-site/ # generated, git-ignored, safe to delete
 ```
 
 ## Writing a post
@@ -155,14 +156,23 @@ reader names. Re-measure before concluding otherwise.
 
 What the pieces do:
 
-- `scripts/build_frame.py` fills lockrot's `report.html` for a frame instead of for a report: no
-  document baked in, the renderer loaded from files so `script-src` needs no `'unsafe-inline'`, and
-  a `noindex` the report template leaves to whoever publishes it. Every substitution is asserted,
-  and `scripts/test_build_frame.py` covers them: a release that reshapes `report.html` fails the
-  build here rather than in a browser.
-- `viewer/frame.js` is the only code in the frame that is not lockrot's. `report.js` reads
-  `#lockrot-data` once, at load, and renders immediately — there is no second pass — so the
-  document has to be in the DOM before it runs, and another document means reloading the frame.
+- The renderer is the page lockrot writes. From lockrot 0.12.0 it is a release of
+  [somework/lockrot-report](https://github.com/somework/lockrot-report) that lockrot vendors
+  (`resources/report/report.html` + `manifest.json`). `scripts/fetch-renderer.sh` downloads the
+  release the checked-out lockrot names into `.renderer/`, verifies each file's build provenance
+  (`gh attestation verify`, so the build needs `GH_TOKEN`) and sha256, and checks the page is the
+  one lockrot vendored. Older lockrot tags carry the hand-written renderer (four files) instead, and
+  `build-viewer.sh` takes the old path for them; that path can go once no supported tag needs it.
+- The frame, for a released renderer, is `viewer/frame.html`: this site's page, not lockrot's.
+  The released `report.html` pins its inline script by hash in its own Content-Security-Policy,
+  which would refuse the files the frame loads. `scripts/test_frame_template.py` asserts what the
+  page must carry. For the old renderer, `scripts/build_frame.py` still fills lockrot's
+  `report.html` for a frame, and `scripts/test_build_frame.py` covers it.
+- `viewer/frame.js` is the only code in the frame that is not lockrot's. The renderer reads
+  `#lockrot-data` when it loads, so the document has to be in the DOM before it runs; frame.js
+  writes it, then appends the renderer its own `<script>` tag names in `data-renderer`
+  (`lockrot-report.js`; without the attribute, the old `lib.js` then `report.js`). Another
+  document means reloading the frame.
 - `viewer/app.js` owns the address and the input. It treats readiness as the frame's `load` event
   as well as its greeting: the greeting is sent once, and on a warm cache the frame can speak
   before `app.js` is parsed.
@@ -189,6 +199,12 @@ directives that matter, `connect-src 'none'` and `img-src 'none'`, so a flaw in 
 carry what it renders anywhere. It cannot keep the sandbox: a self-contained page is
 `script-src 'unsafe-inline'` by construction. They are `noindex`, in the header and in the page: the
 page meant to be found is `/watch/`, which says the same thing in text.
+
+A released renderer's page carries its own Content-Security-Policy, and a browser enforces the
+intersection with the header's: the `/reports/*` rule's `'unsafe-inline'` narrows to the page's
+hashes. That policy refuses style attributes, so the provenance band is a
+`<div class="lockrot-provenance">` the renderer styles, not an inline-styled div
+(`report_page.band`, which still writes inline styles for the old renderer).
 
 ## The weekly watch
 

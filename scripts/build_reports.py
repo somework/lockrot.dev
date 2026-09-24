@@ -37,10 +37,13 @@ MANIFEST = "manifest.json"
 
 def build(capsules: Path, renderer: Path, html_out: Path | None, json_out: Path | None) -> int:
     template = _read(renderer / "report.html")
-    css = _read(renderer / "report.css")
-    # report.js reads LockrotLib at the top, so the DOM-free half comes first — the order
-    # HtmlFormatter::SCRIPTS fixes.
-    js = _read(renderer / "lib.js") + "\n" + _read(renderer / "report.js")
+    css = js = None
+    if report_page.JS in template:
+        # The hand-written renderer of lockrot 0.11.0 and older, spliced in at build time. report.js
+        # reads LockrotLib at the top, so the DOM-free half comes first — the order
+        # HtmlFormatter::SCRIPTS fixed. A released renderer's report.html carries both inline.
+        css = _read(renderer / "report.css")
+        js = _read(renderer / "lib.js") + "\n" + _read(renderer / "report.js")
 
     files = sorted(f for f in capsules.glob("*/*.json") if f.name != MANIFEST)
     if not files:
@@ -119,6 +122,8 @@ def _write(path: Path, text: str) -> None:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--capsules", type=Path, default=Path("data/reports"))
+    # A renderer release (.renderer/, scripts/fetch-renderer.sh) or an older lockrot's
+    # hand-written one (.lockrot/resources/report/); report.html says which.
     parser.add_argument("--renderer", type=Path, default=Path(".lockrot/resources/report"))
     parser.add_argument("--html-out", type=Path)
     parser.add_argument("--json-out", type=Path)

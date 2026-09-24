@@ -17,3 +17,5 @@ __pycache__/
 # wrangler writes the Cloudflare account id here after a local deploy. Not a secret the way a
 # token is, but it is an account identifier in a public repository, and it is a build artefact.
 /.wrangler/
+# The report renderer release scripts/fetch-renderer.sh downloads.
+/.renderer/

@@ -42,6 +42,10 @@ jobs:
       # decide it, not taste: see wrangler.viewer.jsonc. Built from the same lockrot checkout the
       # site was built from, so the renderer in it is the one that release ships.
       - run: scripts/build-viewer.sh
+        env:
+          # fetch-renderer.sh verifies the renderer release's build provenance with
+          # `gh attestation verify`, which asks GitHub for the attestation.
+          GH_TOKEN: ${{ github.token }}
       - id: viewer
         run: |
           set -eu
