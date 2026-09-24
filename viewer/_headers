@@ -9,30 +9,32 @@
 # can run under — the frame would be forbidden to its own embedder and forbidden its own scripts.
 # The headers under /* are the ones that mean the same thing twice.
 #
-# Cache-Control keeps Cloudflare's revalidate-every-time default and adds no-transform, which tells
-# the proxy not to rewrite a response. Web Analytics is on for the lockrot.dev zone, and its
-# automatic setup injects a beacon script into every HTML response on every host of the zone —
-# this one included: the viewer page, the frame and every published report arrived with a script
-# tag this repository never wrote, which each page's policy then refused, one console error per
-# load. The viewer's rule is that nothing but its own code runs next to a document from a stranger
-# and nothing it renders can be sent anywhere, so the fix is to stop the rewrite, not to allow the
-# beacon. Cloudflare documents that no-transform disables the injection
-# (developers.cloudflare.com/web-analytics/faq/). It must stay the only Cache-Control rule here: a
-# second one on a narrower path would be sent alongside it, not instead of it.
+# Cloudflare Web Analytics is on for the lockrot.dev zone, and its automatic setup injects a beacon
+# script (static.cloudflareinsights.com, reporting to cloudflareinsights.com) into every HTML
+# response of every host in the zone, this one included. Where it is welcome, the page's policy
+# lets it in (/reports/*); where a stranger's document sits, the response says no-transform and
+# the proxy leaves it alone (/ and /frame/, the two HTML pages, never their assets). no-transform
+# also stops compression, which is why it is on those two small pages and nowhere else. Cloudflare
+# documents that no-transform disables the injection (developers.cloudflare.com/web-analytics/faq/).
+# Every rule that matches a path is sent, so a path must get Cache-Control from one rule only:
+# scripts/test_viewer_headers.py checks both.
 /*
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Cache-Control: public, max-age=0, must-revalidate, no-transform
 
 # The viewer page. `connect-src https:` is the one wide directive and it is the feature: a link of
 # the form #url=… asks this page to fetch a document from a host the sender named, and the fetch is
 # made only after the reader is shown that host and presses the button. It is why the viewer is not
 # on lockrot.dev, whose connect-src names three origins and cannot be widened for one path.
 # frame-ancestors 'none': this page embeds, it is never embedded.
+# no-transform keeps the analytics beacon out: this page holds what the reader pasted, and nothing
+# but its own code runs beside that. The beacon strips the fragment before it reports a URL, so a
+# #data= link would not leak through it; what it would still have is the page's DOM.
 /
   Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src https:; frame-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
 
 # The renderer. This is the prize: a document that arrives from a stranger is rendered by a
 # thousand lines of string concatenation, and here that code has no way to reach the network at
@@ -54,20 +56,28 @@
   Content-Security-Policy: default-src 'none'; script-src 'self' https://viewer.lockrot.dev; style-src 'self' https://viewer.lockrot.dev 'unsafe-inline'; img-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'self' https://viewer.lockrot.dev
   X-Robots-Tag: noindex
 
+# The frame's page itself, not its assets: no-transform keeps the analytics beacon out of the one
+# place a stranger's document is rendered. The renderer files under /frame/ stay compressed.
+/frame/
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
 # The site's own published reports, one page per project of a data run. These are `--format=html`
 # pages, which carry the renderer and the document inside them, so 'unsafe-inline' is what the
 # format is — there is nothing to load from a file and no per-request nonce on a static asset.
 #
-# What matters is what is not here. `connect-src 'none'` and `img-src 'none'` are the same two
-# directives that make the frame safe: the documents are built from other people's lock files, and
-# a flaw in a thousand lines of string concatenation cannot carry what it renders anywhere. The
-# page is not sandboxed the way the frame is, so a flaw could deface this origin — which holds no
-# cookie, no storage and no credential of anyone's, and is the reason these pages are here and not
-# on lockrot.dev.
+# What matters is what is not here. `img-src 'none'` and a connect-src that names one origin: the
+# documents are built from other people's lock files, and a flaw in the renderer can carry what it
+# renders nowhere but to Cloudflare's analytics endpoint. That one origin is there on purpose —
+# these are the site's own pages about public projects, and which of them get read is worth
+# knowing — so the beacon Cloudflare injects is let in (script-src) and allowed to report
+# (connect-src). A released renderer's page carries its own policy as well, and the browser enforces
+# both, so scripts/report_page.py adds the same two origins to that one. The page is not sandboxed
+# the way the frame is, so a flaw could deface this origin — which holds no cookie, no storage and
+# no credential of anyone's, and is the reason these pages are here and not on lockrot.dev.
 #
 # noindex: these are twenty near-identical shells whose content lives in a JSON script tag and is
 # rewritten every week. The page meant to be found is the site's own, which carries the same
 # findings as text. scripts/report_page.py writes the same directive into the page itself.
 /reports/*
-  Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'unsafe-inline'; img-src 'none'; connect-src https://cloudflareinsights.com; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
   X-Robots-Tag: noindex

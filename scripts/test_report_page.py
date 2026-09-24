@@ -191,6 +191,29 @@ class ReleasedRendererTest(unittest.TestCase):
 
         self.assertIn("style={{flexGrow}}", out)
 
+    def test_the_pages_own_policy_lets_the_analytics_beacon_in(self):
+        out = rp.render(rp.extract(page()), RELEASED, None, None)
+        policy = rp.POLICY_TAG.findall(out)[0]
+
+        self.assertIn("default-src 'none'", policy)
+        self.assertIn("script-src https://static.cloudflareinsights.com", policy)
+        self.assertIn("connect-src https://cloudflareinsights.com", policy)
+
+    def test_a_directive_keeps_what_it_had_and_loses_only_none(self):
+        template = RELEASED.replace(
+            "default-src 'none'", "default-src 'none'; script-src 'sha256-abc='; connect-src 'none'"
+        )
+        policy = rp.POLICY_TAG.findall(rp.render(rp.extract(page()), template, None, None))[0]
+
+        self.assertIn("script-src 'sha256-abc=' https://static.cloudflareinsights.com", policy)
+        self.assertIn("connect-src https://cloudflareinsights.com", policy)
+        self.assertNotIn("connect-src 'none'", policy)
+
+    def test_the_old_renderer_has_no_policy_of_its_own_to_touch(self):
+        out = rp.render(rp.extract(page()), TEMPLATE, "", "")
+
+        self.assertNotIn("Content-Security-Policy", out)
+
     def test_a_splicing_template_without_renderer_sources_is_refused(self):
         with self.assertRaises(SystemExit):
             rp.render(rp.extract(page()), TEMPLATE, None, None)
