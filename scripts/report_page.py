@@ -34,6 +34,13 @@ JS = "{{JS}}"
 DATA = "{{DATA}}"
 PLACEHOLDER = re.compile(r"\{\{[A-Z]+\}\}")
 
+# A released renderer's page carries its own Content-Security-Policy, and the browser enforces it
+# together with the header's. Cloudflare Web Analytics injects its beacon into these pages at the
+# edge, and viewer/_headers lets it in for /reports/*; the page's own policy has to say the same,
+# or it refuses the beacon on its own. These are the two origins lockrot.dev's policy names too.
+POLICY_TAG = re.compile(r'<meta http-equiv="Content-Security-Policy" content="([^"]*)">')
+ANALYTICS = {"script-src": "https://static.cloudflareinsights.com", "connect-src": "https://cloudflareinsights.com"}
+
 # This site is the publisher of these pages, and the report template leaves the robots directive to
 # whoever publishes. The pages are twenty near-identical shells whose content lives in a JSON
 # script tag and changes every week; the page that carries the same findings as text, and is meant
@@ -115,6 +122,9 @@ def render(
         raise SystemExit("report_page: the template has no <title> to anchor the robots meta to")
     out = out.replace(HEAD_ANCHOR, ROBOTS + "\n" + HEAD_ANCHOR, 1)
 
+    if not spliced:
+        out = allow_analytics(out)
+
     if provenance is not None:
         if BODY_ANCHOR not in out:
             raise SystemExit("report_page: the template has no <body> to anchor the band to")
@@ -125,6 +135,30 @@ def render(
     if PLACEHOLDER.search(out):
         raise SystemExit("report_page: a placeholder was left unfilled")
     return out
+
+
+def allow_analytics(page: str) -> str:
+    """The page with the analytics beacon's two origins added to its own policy."""
+    found = POLICY_TAG.findall(page)
+    if len(found) != 1:
+        raise SystemExit(
+            f"report_page: the page carries {len(found)} Content-Security-Policy meta tags, expected one"
+        )
+
+    directives = [d.strip() for d in found[0].split(";") if d.strip()]
+    names = [d.split(" ", 1)[0] for d in directives]
+    for name, origin in ANALYTICS.items():
+        if name in names:
+            i = names.index(name)
+            # A directive that allows nothing, 'none', cannot take a source beside it.
+            sources = [v for v in directives[i].split(" ")[1:] if v != "'none'"]
+            directives[i] = " ".join([name, *sources, origin])
+        else:
+            directives.append(f"{name} {origin}")
+            names.append(name)
+
+    policy = "; ".join(directives)
+    return POLICY_TAG.sub(lambda _: f'<meta http-equiv="Content-Security-Policy" content="{policy}">', page, count=1)
 
 
 def band(provenance: dict, inline: bool = False) -> str:

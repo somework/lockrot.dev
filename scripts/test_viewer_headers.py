@@ -25,21 +25,63 @@ def rules() -> dict[str, list[str]]:
     return out
 
 
+def matching(path: str) -> list[str]:
+    """Every rule pattern Cloudflare applies to a request path: exact, or a splat prefix."""
+    out = []
+    for pattern in rules():
+        if pattern.endswith("*"):
+            if path.startswith(pattern[:-1]):
+                out.append(pattern)
+        elif pattern == path:
+            out.append(pattern)
+    return out
+
+
+def header(pattern: str, name: str) -> list[str]:
+    return [h.split(":", 1)[1].strip() for h in rules()[pattern] if h.lower().startswith(name.lower() + ":")]
+
+
+# Paths that stand for each kind of response the host serves.
+PAGES_WITH_A_STRANGERS_DOCUMENT = ["/", "/frame/"]
+EVERYTHING_ELSE = ["/app.js", "/frame/lockrot-report.js", "/frame/lib.js", "/reports/run/project"]
+
+
 class ViewerHeadersTest(unittest.TestCase):
-    def test_every_response_forbids_the_proxy_to_rewrite_it(self):
-        # Without no-transform, Cloudflare Web Analytics injects its beacon script into the viewer,
-        # the frame and every published report.
-        cache = [h for h in rules()["/*"] if h.lower().startswith("cache-control:")]
-
-        self.assertEqual(1, len(cache))
-        self.assertIn("no-transform", cache[0])
-
-    def test_no_narrower_rule_sends_a_second_cache_control(self):
-        for path, headers in rules().items():
-            if path == "/*":
-                continue
+    def test_no_path_gets_cache_control_from_two_rules(self):
+        # Cloudflare sends every matching rule's headers, so two rules would mean two headers.
+        for path in PAGES_WITH_A_STRANGERS_DOCUMENT + EVERYTHING_ELSE:
             with self.subTest(path=path):
-                self.assertFalse(any(h.lower().startswith("cache-control:") for h in headers))
+                sources = [p for p in matching(path) if header(p, "Cache-Control")]
+                self.assertLessEqual(len(sources), 1, sources)
+
+    def test_the_pages_holding_a_strangers_document_keep_the_beacon_out(self):
+        # no-transform stops Cloudflare Web Analytics injecting its script beside that document.
+        for path in PAGES_WITH_A_STRANGERS_DOCUMENT:
+            with self.subTest(path=path):
+                values = [v for p in matching(path) for v in header(p, "Cache-Control")]
+                self.assertEqual(1, len(values))
+                self.assertIn("no-transform", values[0])
+
+    def test_everything_else_stays_compressible(self):
+        # no-transform also stops compression: a published report went from ~30 KB to 137 KB.
+        for path in EVERYTHING_ELSE:
+            with self.subTest(path=path):
+                values = [v for p in matching(path) for v in header(p, "Cache-Control")]
+                self.assertFalse(any("no-transform" in v for v in values), values)
+
+    def test_published_reports_let_the_beacon_in_and_nothing_else(self):
+        policy = header("/reports/*", "Content-Security-Policy")[0]
+        directives = dict(d.strip().split(" ", 1) for d in policy.split(";") if d.strip())
+
+        self.assertIn("https://static.cloudflareinsights.com", directives["script-src"])
+        self.assertEqual("https://cloudflareinsights.com", directives["connect-src"])
+        self.assertEqual("'none'", directives["img-src"])
+
+    def test_the_frame_still_reaches_nothing(self):
+        policy = header("/frame/*", "Content-Security-Policy")[0]
+
+        self.assertIn("connect-src 'none'", policy)
+        self.assertNotIn("cloudflareinsights", policy)
 
 
 if __name__ == "__main__":
