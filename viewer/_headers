@@ -8,11 +8,23 @@
 # intersection, so a catch-all here would quietly narrow both policies below into one neither page
 # can run under — the frame would be forbidden to its own embedder and forbidden its own scripts.
 # The headers under /* are the ones that mean the same thing twice.
+#
+# Cache-Control keeps Cloudflare's revalidate-every-time default and adds no-transform, which tells
+# the proxy not to rewrite a response. Web Analytics is on for the lockrot.dev zone, and its
+# automatic setup injects a beacon script into every HTML response on every host of the zone —
+# this one included: the viewer page, the frame and every published report arrived with a script
+# tag this repository never wrote, which each page's policy then refused, one console error per
+# load. The viewer's rule is that nothing but its own code runs next to a document from a stranger
+# and nothing it renders can be sent anywhere, so the fix is to stop the rewrite, not to allow the
+# beacon. Cloudflare documents that no-transform disables the injection
+# (developers.cloudflare.com/web-analytics/faq/). It must stay the only Cache-Control rule here: a
+# second one on a narrower path would be sent alongside it, not instead of it.
 /*
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
 
 # The viewer page. `connect-src https:` is the one wide directive and it is the feature: a link of
 # the form #url=… asks this page to fetch a document from a host the sender named, and the fetch is
