@@ -11,11 +11,11 @@
 #
 # Cloudflare Web Analytics is on for the lockrot.dev zone, and its automatic setup injects a beacon
 # script (static.cloudflareinsights.com, reporting to cloudflareinsights.com) into every HTML
-# response of every host in the zone, this one included. Where it is welcome, the page's policy
-# lets it in (/reports/*); where a stranger's document sits, the response says no-transform and
-# the proxy leaves it alone (/ and /frame/, the two HTML pages, never their assets). no-transform
-# also stops compression, which is why it is on those two small pages and nowhere else. Cloudflare
-# documents that no-transform disables the injection (developers.cloudflare.com/web-analytics/faq/).
+# response of every host in the zone, this one included. The viewer page and the published reports
+# let it in through their policies. The frame's page says no-transform, and the proxy leaves it
+# alone (see /frame/ below). no-transform also stops compression, which is why it is on that one
+# small page and nowhere else. Cloudflare documents that no-transform disables the injection
+# (developers.cloudflare.com/web-analytics/faq/).
 # Every rule that matches a path is sent, so a path must get Cache-Control from one rule only:
 # scripts/test_viewer_headers.py checks both.
 /*
@@ -29,12 +29,12 @@
 # made only after the reader is shown that host and presses the button. It is why the viewer is not
 # on lockrot.dev, whose connect-src names three origins and cannot be widened for one path.
 # frame-ancestors 'none': this page embeds, it is never embedded.
-# no-transform keeps the analytics beacon out: this page holds what the reader pasted, and nothing
-# but its own code runs beside that. The beacon strips the fragment before it reports a URL, so a
-# #data= link would not leak through it; what it would still have is the page's DOM.
+# The analytics beacon is let in (script-src; connect-src https: already covers where it reports):
+# how many people use the viewer is the number worth having. It adds no party to trust — Cloudflare
+# serves this page and could change it anyway — and the beacon strips the fragment and the query
+# before it reports a URL, so a #data= link does not travel with it (checked in beacon 2026.9.1).
 /
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src https:; frame-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
-  Cache-Control: public, max-age=0, must-revalidate, no-transform
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'none'; connect-src https:; frame-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
 
 # The renderer. This is the prize: a document that arrives from a stranger is rendered by a
 # thousand lines of string concatenation, and here that code has no way to reach the network at
@@ -57,7 +57,12 @@
   X-Robots-Tag: noindex
 
 # The frame's page itself, not its assets: no-transform keeps the analytics beacon out of the one
-# place a stranger's document is rendered. The renderer files under /frame/ stay compressed.
+# place a stranger's document is rendered. Letting it in would take connect-src
+# https://cloudflareinsights.com, and that endpoint takes a report under anyone's site token: a
+# document that found a flaw in the renderer could post what it renders there under its sender's
+# own token and read it in the sender's dashboard. The frame exists to have connect-src 'none'.
+# Its page views would only repeat the viewer page's anyway. The renderer files under /frame/ stay
+# compressed.
 /frame/
   Cache-Control: public, max-age=0, must-revalidate, no-transform
 

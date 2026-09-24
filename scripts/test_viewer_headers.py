@@ -42,8 +42,8 @@ def header(pattern: str, name: str) -> list[str]:
 
 
 # Paths that stand for each kind of response the host serves.
-PAGES_WITH_A_STRANGERS_DOCUMENT = ["/", "/frame/"]
-EVERYTHING_ELSE = ["/app.js", "/frame/lockrot-report.js", "/frame/lib.js", "/reports/run/project"]
+PAGES_WITH_A_STRANGERS_DOCUMENT = ["/frame/"]
+EVERYTHING_ELSE = ["/", "/app.js", "/frame/lockrot-report.js", "/frame/lib.js", "/reports/run/project"]
 
 
 class ViewerHeadersTest(unittest.TestCase):
@@ -76,6 +76,14 @@ class ViewerHeadersTest(unittest.TestCase):
         self.assertIn("https://static.cloudflareinsights.com", directives["script-src"])
         self.assertEqual("https://cloudflareinsights.com", directives["connect-src"])
         self.assertEqual("'none'", directives["img-src"])
+
+    def test_the_viewer_page_lets_the_beacon_in(self):
+        policy = header("/", "Content-Security-Policy")[0]
+        directives = dict(d.strip().split(" ", 1) for d in policy.split(";") if d.strip())
+
+        self.assertIn("https://static.cloudflareinsights.com", directives["script-src"])
+        # Where the beacon reports; the page's own feature (#url= fetches) already needs https:.
+        self.assertEqual("https:", directives["connect-src"])
 
     def test_the_frame_still_reaches_nothing(self):
         policy = header("/frame/*", "Content-Security-Policy")[0]

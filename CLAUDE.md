@@ -207,12 +207,16 @@ hashes. That policy refuses style attributes, so the provenance band is a
 (`report_page.band`, which still writes inline styles for the old renderer).
 
 Cloudflare Web Analytics is on for the zone, and the edge injects its beacon into every HTML
-response of every host, the viewer's included. The published reports let it in — `/reports/*`
-names `static.cloudflareinsights.com` and `cloudflareinsights.com` in its policy, and
-`report_page.allow_analytics` adds the same two to a released page's own policy. The viewer page
-and the frame's page keep it out with `Cache-Control: no-transform`, which stops the injection; it
-also stops compression, so it is on those two small HTML pages only, never on `/*` or the frame's
-assets (it was once on `/*`, and a published report went from ~30 KB to 137 KB on the wire).
+response of every host, the viewer's included. The viewer page and the published reports let it
+in: `/` names `static.cloudflareinsights.com` in `script-src` (its `connect-src https:` covers the
+report), `/reports/*` names it and `cloudflareinsights.com`, and `report_page.allow_analytics` adds
+the same two to a released page's own policy. The beacon strips the fragment and query before it
+reports a URL, so a `#data=` link does not travel with it. Only the frame's page keeps it out, with
+`Cache-Control: no-transform`: letting it in would need `connect-src https://cloudflareinsights.com`
+in the frame, and that endpoint accepts a report under anyone's site token — a channel out for a
+document that found a flaw in the renderer. no-transform also stops compression, so it is on that
+one small HTML page only, never on `/*` or the frame's assets (it was once on `/*`, and a published
+report went from ~30 KB to 137 KB on the wire).
 `scripts/test_viewer_headers.py` holds all of this. The beacon only appears for requests that look
 like a browser's — check with a browser User-Agent and `Accept: text/html`, not plain curl.
 
