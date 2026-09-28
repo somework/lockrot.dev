@@ -5,7 +5,7 @@ description: >-
   Every week lockrot reads the composer.lock of the newest release of 20 widely used
   open-source PHP applications, and of 15 projects created that day with composer
   create-project: what is abandoned, silent for years, pinned to a branch or carrying an advisory.
-  Last run 2026-09-24.
+  Last run 2026-09-28.
 ---
 
 # Dependency rot in 20 PHP applications, and in 15 fresh installs
@@ -13,7 +13,7 @@ description: >-
 Every Monday lockrot 0.12.0 reads two kinds of `composer.lock` and reports the packages in them
 that stopped being maintained: the lock the **newest stable release** of 20 open-source PHP
 applications ships, and the lock 15 **new projects** get when they are created that morning
-with `composer create-project`. This page is the last run, 2026-09-24. Nothing is installed, no script
+with `composer create-project`. This page is the last run, 2026-09-28. Nothing is installed, no script
 or plugin from any package is run, and no project is contacted: the run reads lock files, then asks
 Packagist and the repository host about the packages in them.
 
@@ -21,27 +21,27 @@ Packagist and the repository host about the packages in them.
 
 | Project | Release | Packages | `abandoned` | `silent` | `pinned` | `left-behind` | `old-promise` | `stale` | Report |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| [coollabsio/coolify](https://github.com/coollabsio/coolify) | [v4.3.23](https://github.com/coollabsio/coolify/releases/tag/v4.3.23)&nbsp;· [`e2e2d40`](https://github.com/coollabsio/coolify/tree/e2e2d4010bcd590084b66d6f748f3eec8e2bbee9) | 161 | 0 | 2 | 0 | 0 | 0 | 5 | [open](https://viewer.lockrot.dev/reports/watch/coolify) |
+| [coollabsio/coolify](https://github.com/coollabsio/coolify) | [v4.3.23](https://github.com/coollabsio/coolify/releases/tag/v4.3.23)&nbsp;· [`e2e2d40`](https://github.com/coollabsio/coolify/tree/e2e2d4010bcd590084b66d6f748f3eec8e2bbee9) | 161 | 0 | 2 | 0 | 0 | 0 | 4 | [open](https://viewer.lockrot.dev/reports/watch/coolify) |
 | [appwrite/appwrite](https://github.com/appwrite/appwrite) | [2.3.0](https://github.com/appwrite/appwrite/releases/tag/2.3.0)&nbsp;· [`d66a7ef`](https://github.com/appwrite/appwrite/tree/d66a7eff038e75f0066b3232d6a4e1b9eac7a64e) | 84 | 2 | 1 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/appwrite) |
 | [bagisto/bagisto](https://github.com/bagisto/bagisto) | [v2.4.12](https://github.com/bagisto/bagisto/releases/tag/v2.4.12)&nbsp;· [`805b670`](https://github.com/bagisto/bagisto/tree/805b67013134ebc53f1da1285f0aa6632f5dde62) | 167 | 0 | 0 | 0 | 2 | 1 | 6 | [open](https://viewer.lockrot.dev/reports/watch/bagisto) |
-| [monicahq/monica](https://github.com/monicahq/monica) | [v4.1.2](https://github.com/monicahq/monica/releases/tag/v4.1.2)&nbsp;· [`32028ce`](https://github.com/monicahq/monica/tree/32028ce3ce79cef38df5d27a297e5b20680f0065) | 181 | 7 | 2 | 1 | 16 | 2 | 6 | [open](https://viewer.lockrot.dev/reports/watch/monica) |
-| [firefly-iii/firefly-iii](https://github.com/firefly-iii/firefly-iii) | [v6.7.3](https://github.com/firefly-iii/firefly-iii/releases/tag/v6.7.3)&nbsp;· [`99f9b74`](https://github.com/firefly-iii/firefly-iii/tree/99f9b7477d064b1d1729a4348e43fffef1b385ce) | 132 | 0 | 1 | 1 | 0 | 0 | 6 | [open](https://viewer.lockrot.dev/reports/watch/firefly-iii) |
+| [monicahq/monica](https://github.com/monicahq/monica) | [v4.1.2](https://github.com/monicahq/monica/releases/tag/v4.1.2)&nbsp;· [`32028ce`](https://github.com/monicahq/monica/tree/32028ce3ce79cef38df5d27a297e5b20680f0065) | 181 | 7 | 2 | 1 | 16 | 2 | 5 | [open](https://viewer.lockrot.dev/reports/watch/monica) |
+| [firefly-iii/firefly-iii](https://github.com/firefly-iii/firefly-iii) | [v6.7.6](https://github.com/firefly-iii/firefly-iii/releases/tag/v6.7.6)&nbsp;· [`7879e01`](https://github.com/firefly-iii/firefly-iii/tree/7879e01a0f6aab52e9b5ae00d04b3f7e4c912079) | 132 | 0 | 1 | 1 | 0 | 0 | 6 | [open](https://viewer.lockrot.dev/reports/watch/firefly-iii) |
 | [matomo-org/matomo](https://github.com/matomo-org/matomo) | [5.14.0](https://github.com/matomo-org/matomo/releases/tag/5.14.0)&nbsp;· [`9499b8a`](https://github.com/matomo-org/matomo/tree/9499b8a35efce4bb2d655ca24d9153576dcae39c) | 55 | 1 | 4 | 2 | 6 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/matomo) |
-| [BookStackApp/BookStack](https://github.com/BookStackApp/BookStack) | [v26.05.5](https://github.com/BookStackApp/BookStack/releases/tag/v26.05.5)&nbsp;· [`771a2d0`](https://github.com/BookStackApp/BookStack/tree/771a2d04927dab0ce07edc5874aeb18896f830c4) | 113 | 0 | 0 | 0 | 0 | 0 | 3 | [open](https://viewer.lockrot.dev/reports/watch/bookstack) |
+| [BookStackApp/BookStack](https://github.com/BookStackApp/BookStack) | [v26.09](https://github.com/BookStackApp/BookStack/releases/tag/v26.09)&nbsp;· [`b5638a1`](https://github.com/BookStackApp/BookStack/tree/b5638a1c72f483c1cab535a78dcdb2977b5dc106) | 112 | 0 | 0 | 0 | 0 | 0 | 3 | [open](https://viewer.lockrot.dev/reports/watch/bookstack) |
 | [grokability/snipe-it](https://github.com/grokability/snipe-it) | [v8.7.2](https://github.com/grokability/snipe-it/releases/tag/v8.7.2)&nbsp;· [`f3f1dd7`](https://github.com/grokability/snipe-it/tree/f3f1dd722b167587c7819f3c518cc5b14475f89f) | 166 | 1 | 5 | 1 | 5 | 1 | 5 | [open](https://viewer.lockrot.dev/reports/watch/snipe-it) |
-| [wallabag/wallabag](https://github.com/wallabag/wallabag) | [2.6.14](https://github.com/wallabag/wallabag/releases/tag/2.6.14)&nbsp;· [`74cbfd9`](https://github.com/wallabag/wallabag/tree/74cbfd945bc316b5cf0308ba56e32fd2ed3443c0) | 210 | 27 | 10 | 1 | 54 | 3 | 7 | [open](https://viewer.lockrot.dev/reports/watch/wallabag) |
+| [wallabag/wallabag](https://github.com/wallabag/wallabag) | [2.6.14](https://github.com/wallabag/wallabag/releases/tag/2.6.14)&nbsp;· [`74cbfd9`](https://github.com/wallabag/wallabag/tree/74cbfd945bc316b5cf0308ba56e32fd2ed3443c0) | 210 | 27 | 10 | 1 | 54 | 3 | 6 | [open](https://viewer.lockrot.dev/reports/watch/wallabag) |
 | [magento/magento2](https://github.com/magento/magento2) | [2.4.9](https://github.com/magento/magento2/releases/tag/2.4.9)&nbsp;· [`755e34d`](https://github.com/magento/magento2/tree/755e34dd689021c5165db9d35ecff74f7dc51527) | 148 | 4 | 0 | 0 | 1 | 1 | 5 | [open](https://viewer.lockrot.dev/reports/watch/magento2) |
 | [mautic/mautic](https://github.com/mautic/mautic) | [7.2.1](https://github.com/mautic/mautic/releases/tag/7.2.1)&nbsp;· [`8cbb7ef`](https://github.com/mautic/mautic/tree/8cbb7ef874d52a411ae5a884f979acf6cc320181) | 196 | 2 | 2 | 1 | 10 | 2 | 6 | [open](https://viewer.lockrot.dev/reports/watch/mautic) |
-| [akaunting/akaunting](https://github.com/akaunting/akaunting) | [3.2.4](https://github.com/akaunting/akaunting/releases/tag/3.2.4)&nbsp;· [`3940b76`](https://github.com/akaunting/akaunting/tree/3940b76b12cb86592dcb44147e8912742945a4c9) | 183 | 16 | 0 | 0 | 7 | 2 | 10 | [open](https://viewer.lockrot.dev/reports/watch/akaunting) |
-| [invoiceninja/invoiceninja](https://github.com/invoiceninja/invoiceninja) | [v5.13.43](https://github.com/invoiceninja/invoiceninja/releases/tag/v5.13.43)&nbsp;· [`3820200`](https://github.com/invoiceninja/invoiceninja/tree/382020072bc79e8c7ede49f7e9ce91b0aeb1a051) | 245 | 0 | 0 | 2 | 7 | 2 | 9 | [open](https://viewer.lockrot.dev/reports/watch/invoiceninja) |
+| [akaunting/akaunting](https://github.com/akaunting/akaunting) | [3.2.4](https://github.com/akaunting/akaunting/releases/tag/3.2.4)&nbsp;· [`3940b76`](https://github.com/akaunting/akaunting/tree/3940b76b12cb86592dcb44147e8912742945a4c9) | 183 | 16 | 0 | 0 | 7 | 2 | 9 | [open](https://viewer.lockrot.dev/reports/watch/akaunting) |
+| [invoiceninja/invoiceninja](https://github.com/invoiceninja/invoiceninja) | [v5.13.43](https://github.com/invoiceninja/invoiceninja/releases/tag/v5.13.43)&nbsp;· [`3820200`](https://github.com/invoiceninja/invoiceninja/tree/382020072bc79e8c7ede49f7e9ce91b0aeb1a051) | 245 | 0 | 0 | 2 | 7 | 2 | 8 | [open](https://viewer.lockrot.dev/reports/watch/invoiceninja) |
 | [PrestaShop/PrestaShop](https://github.com/PrestaShop/PrestaShop) | [9.1.5](https://github.com/PrestaShop/PrestaShop/releases/tag/9.1.5)&nbsp;· [`aee413e`](https://github.com/PrestaShop/PrestaShop/tree/aee413eedd5fdc5053f28fb998da4b7e286cf641) | 227 | 4 | 3 | 0 | 8 | 3 | 17 | [open](https://viewer.lockrot.dev/reports/watch/prestashop) |
 | [moodle/moodle](https://github.com/moodle/moodle) | [v5.2.3](https://github.com/moodle/moodle/releases/tag/v5.2.3)&nbsp;· [`344232c`](https://github.com/moodle/moodle/tree/344232c15336c71b80f9aca8359ce0e0a9f3d116) | 48 | 0 | 1 | 0 | 0 | 2 | 1 | [open](https://viewer.lockrot.dev/reports/watch/moodle) |
 | [phpmyadmin/phpmyadmin](https://github.com/phpmyadmin/phpmyadmin) | [RELEASE_5_2_3](https://github.com/phpmyadmin/phpmyadmin/releases/tag/RELEASE_5_2_3)&nbsp;· [`962857e`](https://github.com/phpmyadmin/phpmyadmin/tree/962857e4f63d42e38f11ff4d63f5e722018add76) | 58 | 2 | 1 | 0 | 9 | 2 | 0 | [open](https://viewer.lockrot.dev/reports/watch/phpmyadmin) |
-| [phpbb/phpbb](https://github.com/phpbb/phpbb) | [release-3.3.18](https://github.com/phpbb/phpbb/releases/tag/release-3.3.18)&nbsp;· [`99ed94d`](https://github.com/phpbb/phpbb/tree/99ed94dc28be582b77b9c8753ffa8cc8a5e1b069) | 40 | 4 | 1 | 0 | 16 | 1 | 2 | [open](https://viewer.lockrot.dev/reports/watch/phpbb) |
+| [phpbb/phpbb](https://github.com/phpbb/phpbb) | [release-3.3.19](https://github.com/phpbb/phpbb/releases/tag/release-3.3.19)&nbsp;· [`10356c2`](https://github.com/phpbb/phpbb/tree/10356c2c3be3804402c7616e18bb53d54c02f143) | 40 | 4 | 1 | 0 | 16 | 1 | 2 | [open](https://viewer.lockrot.dev/reports/watch/phpbb) |
 | [joomla/joomla-cms](https://github.com/joomla/joomla-cms) | [6.1.3](https://github.com/joomla/joomla-cms/releases/tag/6.1.3)&nbsp;· [`0f2d4de`](https://github.com/joomla/joomla-cms/tree/0f2d4de4729eb951e0878fec98c7990da07915b2) | 89 | 2 | 0 | 2 | 2 | 0 | 4 | [open](https://viewer.lockrot.dev/reports/watch/joomla-cms) |
-| [drupal/drupal](https://github.com/drupal/drupal) | [11.4.7](https://github.com/drupal/drupal/releases/tag/11.4.7)&nbsp;· [`e0e7bfb`](https://github.com/drupal/drupal/tree/e0e7bfbc2d29f74e97ce98fd33df79aa97bed4e4) | 66 | 0 | 1 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/drupal) |
-| [TYPO3/typo3](https://github.com/TYPO3/typo3) | [v14.3.7](https://github.com/TYPO3/typo3/releases/tag/v14.3.7)&nbsp;· [`07f4dc8`](https://github.com/TYPO3/typo3/tree/07f4dc8267d1824a3021c00cd36c5ad8ee7f84a1) | 77 | 0 | 0 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/typo3) |
-| **20 projects** | | **2646** | **72** | **34** | **11** | **143** | **22** | **96** | |
+| [drupal/drupal](https://github.com/drupal/drupal) | [11.4.8](https://github.com/drupal/drupal/releases/tag/11.4.8)&nbsp;· [`6104450`](https://github.com/drupal/drupal/tree/61044508071749629aaf3380aa85971e94df9e84) | 66 | 0 | 1 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/drupal) |
+| [TYPO3/typo3](https://github.com/TYPO3/typo3) | [v14.3.7](https://github.com/TYPO3/typo3/releases/tag/v14.3.7)&nbsp;· [`07f4dc8`](https://github.com/TYPO3/typo3/tree/07f4dc8267d1824a3021c00cd36c5ad8ee7f84a1) | 77 | 0 | 0 | 0 | 0 | 0 | 0 | [open](https://viewer.lockrot.dev/reports/watch/typo3) |
+| **20 projects** | | **2645** | **72** | **34** | **11** | **143** | **22** | **90** | |
 
 Each row names the release it read and the commit that release points at, so any number here can be
 checked against the same two files lockrot read. A release rather than a branch head on purpose: a
@@ -61,20 +61,20 @@ nothing installed and no script or plugin executed — and reads the lock file t
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
 | Laravel | [laravel/laravel v13.10.1](https://packagist.org/packages/laravel/laravel) | 76 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/new-laravel) |
 | Symfony (skeleton) | [symfony/skeleton v8.1.99](https://packagist.org/packages/symfony/skeleton) | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | [open](https://viewer.lockrot.dev/reports/watch/new-symfony) |
-| Symfony (--webapp) | [symfony/skeleton v8.1.99](https://packagist.org/packages/symfony/skeleton) | 133 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | [open](https://viewer.lockrot.dev/reports/watch/new-symfony-webapp) |
+| Symfony (--webapp) | [symfony/skeleton v8.1.99](https://packagist.org/packages/symfony/skeleton) | 133 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/new-symfony-webapp) |
 | API Platform | [symfony/skeleton v8.1.99](https://packagist.org/packages/symfony/skeleton) | 47 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/new-api-platform) |
-| Drupal | [drupal/recommended-project 11.4.7](https://packagist.org/packages/drupal/recommended-project) | 68 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/new-drupal) |
+| Drupal | [drupal/recommended-project 11.4.8](https://packagist.org/packages/drupal/recommended-project) | 68 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/new-drupal) |
 | WordPress (Bedrock) | [roots/bedrock 1.31.6](https://packagist.org/packages/roots/bedrock) | 15 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | [open](https://viewer.lockrot.dev/reports/watch/new-wordpress) |
-| Shopware | [shopware/production v6.7.14.2](https://packagist.org/packages/shopware/production) | 173 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | [open](https://viewer.lockrot.dev/reports/watch/new-shopware) |
+| Shopware | [shopware/production v6.7.14.2](https://packagist.org/packages/shopware/production) | 173 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | [open](https://viewer.lockrot.dev/reports/watch/new-shopware) |
 | Sylius | [sylius/sylius-standard v2.2.4](https://packagist.org/packages/sylius/sylius-standard) | 195 | 0 | 3 | 0 | 0 | 1 | 1 | 4 | [open](https://viewer.lockrot.dev/reports/watch/new-sylius) |
-| TYPO3 | [typo3/cms-base-distribution v14.3.0](https://packagist.org/packages/typo3/cms-base-distribution) | 106 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | [open](https://viewer.lockrot.dev/reports/watch/new-typo3) |
-| Craft CMS | [craftcms/craft 5.8.0](https://packagist.org/packages/craftcms/craft) | 111 | 0 | 0 | 2 | 0 | 1 | 2 | 7 | [open](https://viewer.lockrot.dev/reports/watch/new-craft) |
-| Statamic | [statamic/statamic v6.5.1](https://packagist.org/packages/statamic/statamic) | 123 | 0 | 0 | 1 | 0 | 0 | 0 | 6 | [open](https://viewer.lockrot.dev/reports/watch/new-statamic) |
-| Pimcore | [pimcore/skeleton v2026.2.0](https://packagist.org/packages/pimcore/skeleton) | 187 | 0 | 1 | 1 | 0 | 0 | 2 | 6 | [open](https://viewer.lockrot.dev/reports/watch/new-pimcore) |
+| TYPO3 | [typo3/cms-base-distribution v14.3.0](https://packagist.org/packages/typo3/cms-base-distribution) | 106 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | [open](https://viewer.lockrot.dev/reports/watch/new-typo3) |
+| Craft CMS | [craftcms/craft 5.8.0](https://packagist.org/packages/craftcms/craft) | 111 | 0 | 0 | 2 | 0 | 1 | 2 | 6 | [open](https://viewer.lockrot.dev/reports/watch/new-craft) |
+| Statamic | [statamic/statamic v6.5.1](https://packagist.org/packages/statamic/statamic) | 123 | 0 | 0 | 1 | 0 | 0 | 0 | 5 | [open](https://viewer.lockrot.dev/reports/watch/new-statamic) |
+| Pimcore | [pimcore/skeleton v2026.2.0](https://packagist.org/packages/pimcore/skeleton) | 187 | 0 | 1 | 1 | 0 | 0 | 2 | 5 | [open](https://viewer.lockrot.dev/reports/watch/new-pimcore) |
 | Slim | [slim/slim-skeleton 4.5.0](https://packagist.org/packages/slim/slim-skeleton) | 16 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | [open](https://viewer.lockrot.dev/reports/watch/new-slim) |
 | CakePHP | [cakephp/app 5.4.0](https://packagist.org/packages/cakephp/app) | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | [open](https://viewer.lockrot.dev/reports/watch/new-cakephp) |
 | Yii 2 | [yiisoft/yii2-app-basic 2.0.55](https://packagist.org/packages/yiisoft/yii2-app-basic) | 25 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | [open](https://viewer.lockrot.dev/reports/watch/new-yii2) |
-| **15 starters** | | **1296** | **0** | **4** | **6** | **0** | **4** | **7** | **34** | |
+| **15 starters** | | **1296** | **0** | **4** | **6** | **0** | **4** | **7** | **28** | |
 
 The advisories column counts packages with a security advisory against the installed version, from
 the same feed `composer audit` reads. It is here and not in the table above because these reports
