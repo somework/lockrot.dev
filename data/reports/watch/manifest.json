@@ -1,6 +1,6 @@
 {
     "run": {
-        "date": "2026-09-24",
+        "date": "2026-09-28",
         "target_php": "8.4"
     },
     "projects": [
@@ -52,10 +52,10 @@
             "kind": "release",
             "name": "firefly-iii",
             "repo": "firefly-iii/firefly-iii",
-            "tag": "v6.7.3",
-            "tag_url": "https://github.com/firefly-iii/firefly-iii/releases/tag/v6.7.3",
-            "commit": "99f9b7477d064b1d1729a4348e43fffef1b385ce",
-            "commit_url": "https://github.com/firefly-iii/firefly-iii/tree/99f9b7477d064b1d1729a4348e43fffef1b385ce",
+            "tag": "v6.7.6",
+            "tag_url": "https://github.com/firefly-iii/firefly-iii/releases/tag/v6.7.6",
+            "commit": "7879e01a0f6aab52e9b5ae00d04b3f7e4c912079",
+            "commit_url": "https://github.com/firefly-iii/firefly-iii/tree/7879e01a0f6aab52e9b5ae00d04b3f7e4c912079",
             "lock": "composer.lock",
             "target_php": "8.4"
         },
@@ -74,10 +74,10 @@
             "kind": "release",
             "name": "bookstack",
             "repo": "BookStackApp/BookStack",
-            "tag": "v26.05.5",
-            "tag_url": "https://github.com/BookStackApp/BookStack/releases/tag/v26.05.5",
-            "commit": "771a2d04927dab0ce07edc5874aeb18896f830c4",
-            "commit_url": "https://github.com/BookStackApp/BookStack/tree/771a2d04927dab0ce07edc5874aeb18896f830c4",
+            "tag": "v26.09",
+            "tag_url": "https://github.com/BookStackApp/BookStack/releases/tag/v26.09",
+            "commit": "b5638a1c72f483c1cab535a78dcdb2977b5dc106",
+            "commit_url": "https://github.com/BookStackApp/BookStack/tree/b5638a1c72f483c1cab535a78dcdb2977b5dc106",
             "lock": "composer.lock",
             "target_php": "8.4"
         },
@@ -184,10 +184,10 @@
             "kind": "release",
             "name": "phpbb",
             "repo": "phpbb/phpbb",
-            "tag": "release-3.3.18",
-            "tag_url": "https://github.com/phpbb/phpbb/releases/tag/release-3.3.18",
-            "commit": "99ed94dc28be582b77b9c8753ffa8cc8a5e1b069",
-            "commit_url": "https://github.com/phpbb/phpbb/tree/99ed94dc28be582b77b9c8753ffa8cc8a5e1b069",
+            "tag": "release-3.3.19",
+            "tag_url": "https://github.com/phpbb/phpbb/releases/tag/release-3.3.19",
+            "commit": "10356c2c3be3804402c7616e18bb53d54c02f143",
+            "commit_url": "https://github.com/phpbb/phpbb/tree/10356c2c3be3804402c7616e18bb53d54c02f143",
             "lock": "phpBB/composer.lock",
             "target_php": "8.4"
         },
@@ -206,10 +206,10 @@
             "kind": "release",
             "name": "drupal",
             "repo": "drupal/drupal",
-            "tag": "11.4.7",
-            "tag_url": "https://github.com/drupal/drupal/releases/tag/11.4.7",
-            "commit": "e0e7bfbc2d29f74e97ce98fd33df79aa97bed4e4",
-            "commit_url": "https://github.com/drupal/drupal/tree/e0e7bfbc2d29f74e97ce98fd33df79aa97bed4e4",
+            "tag": "11.4.8",
+            "tag_url": "https://github.com/drupal/drupal/releases/tag/11.4.8",
+            "commit": "61044508071749629aaf3380aa85971e94df9e84",
+            "commit_url": "https://github.com/drupal/drupal/tree/61044508071749629aaf3380aa85971e94df9e84",
             "lock": "composer.lock",
             "target_php": "8.4"
         },
@@ -277,10 +277,10 @@
             "name": "new-drupal",
             "title": "Drupal",
             "package": "drupal/recommended-project",
-            "version": "11.4.7",
+            "version": "11.4.8",
             "packagist_url": "https://packagist.org/packages/drupal/recommended-project",
             "require": [],
-            "command": "composer create-project drupal/recommended-project:11.4.7 .",
+            "command": "composer create-project drupal/recommended-project:11.4.8 .",
             "target_php": "8.4"
         },
         {
