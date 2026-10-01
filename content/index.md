@@ -162,7 +162,7 @@ No, but it sees more with one. Anonymously GitHub allows 60 requests an hour, so
 repository activity only for packages whose releases already look stale, at most 50 per host per
 run, and reports how many the cap affected. With `GITHUB_TOKEN` set, or Composer's own
 `github-oauth`, every package is checked.
-[How it fetches metadata](internals.md#repository-hosts-and-credentials) has the GitLab and
+[Data sources](internals.md#repository-hosts-and-credentials) has the GitLab and
 Bitbucket rules.
 
 ### Does it work with Private Packagist, Satis or a mirror?
@@ -209,7 +209,7 @@ anything else, add an entry with a reason to `extra.lockrot.ignore` —
 | [Install-time summary](install-time.md) | What the plugin prints during `install`/`update`, and how to silence it |
 | [PHAR and self-update](phar.md) | Verified and signed download, PHIVE, `self-update`, the global-plugin alternative |
 | [Example run](example-run.md) | The full 200-package report the sample above is cut from |
-| [How it fetches metadata](internals.md) | Composer repositories, the GitHub, GitLab and Bitbucket APIs, caching, `--offline` |
+| [Data sources](internals.md) | Composer repositories, the GitHub, GitLab and Bitbucket APIs, caching, `--offline` |
 | [Changelog](changelog.md) | What changed, release by release |
 | [Weekly watch](watch.md) | What lockrot finds in the newest release of widely used PHP applications, and in projects created from scratch that morning — and how much of it `composer audit` names |
 | [Blog](blog/index.md) | Notes from building lockrot: dependency rot, Composer internals, release engineering |

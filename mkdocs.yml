@@ -58,10 +58,12 @@ nav:
   - Reading a report: viewer.md
   - Baseline: baseline.md
   - JSON schemas: schema.md
+  - Run notes: notes.md
+  - Compatibility: compatibility.md
   - Install-time summary: install-time.md
   - PHAR and self-update: phar.md
   - Example run: example-run.md
-  - How it fetches metadata: internals.md
+  - Data sources: internals.md
   - Changelog: changelog.md
   # Written by scripts/build_watch_page.py from the weekly run, not by hand.
   - Weekly watch: watch.md
