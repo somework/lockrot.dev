@@ -5,6 +5,13 @@
 // on an ordinary load, and again after each page swap if instant navigation is ever turned on.
 document$.subscribe(function () {
   document.querySelectorAll(".lockrot-watch table").forEach(function (table) {
-    new Tablesort(table);
+    var sort = new Tablesort(table);
+    // The rows arrive sorted (scripts/build_watch_page.py prints them in Flagged order and marks that
+    // heading aria-sort). Telling tablesort so lets a click on another heading clear that arrow;
+    // data-sort-default would re-sort on load instead, and reverse every tie the page printed.
+    var current = table.querySelector("thead th[aria-sort]");
+    if (current) {
+      sort.current = current;
+    }
   });
 });

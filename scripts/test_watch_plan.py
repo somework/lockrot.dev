@@ -157,6 +157,118 @@ class ResolveTest(unittest.TestCase):
             self.resolve([node("1.0.0-rc1", "2026-09-01")], with_lock=set())
 
 
+def http_error(code):
+    return wp.urllib.error.HTTPError("https://api.github.com/x", code, "x", {}, None)
+
+
+class Response:
+    def __init__(self, body):
+        self.body = body
+
+    def __enter__(self):
+        import io
+        return io.BytesIO(wp.json.dumps(self.body).encode())
+
+    def __exit__(self, *exc):
+        return False
+
+
+def answers(*outcomes):
+    """A urlopen stand-in that answers each call with the next outcome: an exception or a body."""
+    queue = list(outcomes)
+
+    def urlopen(request, timeout):
+        outcome = queue.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return Response(outcome)
+    return urlopen
+
+
+class FetchTest(unittest.TestCase):
+    def setUp(self):
+        patcher = mock.patch.object(wp.time, "sleep")
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_a_server_error_is_tried_again(self):
+        with mock.patch.object(wp.urllib.request, "urlopen", answers(http_error(502), {"ok": 1})):
+            self.assertEqual({"ok": 1}, wp.get("/repos/acme/app/contents/composer.lock", "t"))
+
+    def test_a_server_error_that_lasts_stops_the_run_rather_than_reading_as_no_file(self):
+        with mock.patch.object(wp.urllib.request, "urlopen", answers(*[http_error(502)] * wp.RETRIES)):
+            with self.assertRaises(SystemExit):
+                wp.has_files("acme/app", "sha", "composer.lock", "t")
+
+    def test_not_found_is_an_answer(self):
+        with mock.patch.object(wp.urllib.request, "urlopen", answers(http_error(404))):
+            self.assertIsNone(wp.get("/repos/acme/app/contents/composer.lock", "t"))
+
+    def test_a_spent_allowance_names_the_token(self):
+        with mock.patch.object(wp.urllib.request, "urlopen", answers(http_error(403))):
+            with self.assertRaises(SystemExit) as raised:
+                wp.get("/x", "t")
+        self.assertIn("ROT_WATCH_TOKEN", str(raised.exception))
+
+    def test_a_graphql_timeout_reported_as_an_error_is_tried_again(self):
+        timeout = {"errors": [{"message": "Something went wrong while executing your query. This may be the result of a timeout"}]}
+        with mock.patch.object(wp.urllib.request, "urlopen", answers(timeout, {"data": {"ok": 1}})):
+            self.assertEqual({"ok": 1}, wp.graphql("q", {}, "t"))
+
+    def test_a_missing_repository_is_not_retried(self):
+        missing = {"data": {"repository": None}, "errors": [{"type": "NOT_FOUND", "message": "nope"}]}
+        with mock.patch.object(wp.urllib.request, "urlopen", answers(missing)):
+            self.assertEqual({"repository": None}, wp.graphql("q", {}, "t"))
+
+
+class PagingTest(unittest.TestCase):
+    def test_releases_with_no_stable_one_fall_back_to_the_tags(self):
+        # phpBB publishing its first GitHub release, an alpha, beside years of tags.
+        answer = answering([node("release-4.0.0-a1", "2026-09-01", pre=True)], [tag_node("release-3.3.19", "2026-09-24")])
+        pattern = wp.re.compile(r"^release-\d+(\.\d+)*$")
+        with mock.patch.object(wp, "graphql", answer):
+            found = wp.versions("acme/app", "t", pattern, "2023-10-01")
+
+        self.assertEqual(["release-3.3.19"], [v["tag"] for v in found])
+
+    def test_a_project_deeper_than_the_page_limit_stops_the_run(self):
+        page = connection([node(f"1.0.{i}", "2026-09-01") for i in range(3)], more=True)
+        with mock.patch.object(wp, "graphql", lambda q, v, t: page), self.assertRaises(SystemExit) as raised:
+            wp.versions("acme/app", "t", wp.STABLE_TAG, "2023-10-01")
+        self.assertIn("PAGES", str(raised.exception))
+
+    def test_an_undated_tag_does_not_end_the_reading_early(self):
+        first = connection([tag_node("v2.0.0", "2026-09-01"), {"name": "v1.9.9", "target": {"target": {}}}], more=True)
+        second = connection([tag_node("v1.0.0", "2025-01-01"), tag_node("v0.9.0", "2022-01-01")])
+        pages = [first, second]
+        with mock.patch.object(wp, "graphql", lambda q, v, t: connection([]) if q is wp.RELEASES else pages.pop(0)):
+            found = wp.versions("acme/app", "t", wp.STABLE_TAG, "2023-10-01")
+
+        self.assertIn("v1.0.0", [v["tag"] for v in found])
+
+
+class StillReleasingTest(unittest.TestCase):
+    def grouped(self, *versions):
+        return wp.lines([{"tag": t, "commit": t, "date": d} for t, d in versions])
+
+    def test_a_line_kept_beside_a_newer_one_is_read(self):
+        # Drupal: 10.x keeps releasing long after 11.0.0.
+        by_line = self.grouped(("11.0.0", "2024-08-01"), ("11.4.8", "2026-09-26"), ("10.6.18", "2026-09-26"))
+
+        self.assertTrue(wp.still_releasing("10", by_line, "2023-10-01"))
+
+    def test_a_line_that_ended_when_the_next_began_is_not(self):
+        # BookStack: v25's last release three days before v26's first.
+        by_line = self.grouped(("v26.03", "2026-03-15"), ("v26.09.1", "2026-09-29"), ("v25.12.9", "2026-03-12"))
+
+        self.assertFalse(wp.still_releasing("25", by_line, "2023-10-01"))
+
+    def test_a_line_quiet_since_before_the_window_is_not(self):
+        by_line = self.grouped(("8.0.0", "2020-01-01"), ("8.3.0", "2026-09-01"), ("7.4.5", "2023-01-01"))
+
+        self.assertFalse(wp.still_releasing("7", by_line, "2023-10-01"))
+
+
 class StarterVersionTest(unittest.TestCase):
     def test_takes_the_highest_stable_version_whatever_order_packagist_lists(self):
         body = {"packages": {"acme/skeleton": [{"version": v} for v in ("v2.0.0-RC1", "v1.9.0", "v1.10.0")]}}

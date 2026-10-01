@@ -20,13 +20,15 @@ Many maintain more than one line at once — Drupal 10 and 11, TYPO3 13 and 14, 
 and publish a fix to the older one after the newer one's latest release. So the versions are
 grouped into release lines the way lockrot's S8 draws a branch, and the row is the newest line's
 highest version, never the one published last: a backport would otherwise turn the row into a
-different line of the project from one week to the next. Every older line that has released inside
-the window S8 uses (`release-warn-years`) is read too, as a report of its own beside the table.
+different line of the project from one week to the next. Every older line still maintained beside a
+newer one — it released inside the window S8 uses (`release-warn-years`), and after the next line up
+first did — is read too, as a report of its own beside the table.
 
 The chosen release then has to actually carry `composer.json` and `composer.lock`. Several projects
 tag a release whose lock lives elsewhere, or is not committed at all; the run tries the highest few
-versions of the line and takes the first that has both, never stepping down to another line. A project where none does fails the run rather than
-being quietly dropped, because a page that is silently one project smaller is worse than a red run.
+versions of the line and takes the first that has both, never stepping down to another line. A
+project where none does fails the run rather than being quietly dropped, because a page that is
+silently one project smaller is worse than a red run.
 """
 
 from __future__ import annotations
@@ -36,6 +38,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -49,8 +52,12 @@ GRAPHQL = "https://api.github.com/graphql"
 # reports carry the value lockrot used, and build_watch_page.py fails when the two disagree.
 LINE_WINDOW_YEARS = 3
 
-# How many pages of 100 releases or tags to read back through, at most.
-PAGES = 5
+# How many pages of 100 releases or tags to read back through before the run stops and says so.
+# Matomo publishes nightly pre-releases, about six a week, and its older line has to stay in reach.
+PAGES = 20
+
+# How many times one request is tried through a server error or a dropped connection.
+RETRIES = 3
 # Packagist's metadata endpoint, the same one Composer reads. Versions come newest first.
 PACKAGIST = "https://repo.packagist.org/p2/{package}.json"
 
@@ -82,7 +89,40 @@ def version_key(tag: str) -> tuple[int, ...]:
     return (*numbers, int(suffix.group(1)) if suffix else 0)
 
 
+class NotFound(Exception):
+    """GitHub answered 404: the file or the repository is not there."""
+
+
+def fetch(request: urllib.request.Request, what: str):
+    """The JSON one request answers, tried RETRIES times through a 5xx or a dropped connection.
+
+    A 404 is an answer and raises NotFound. Anything else that is still failing after the last try
+    stops the run, because the callers turn "no answer" into a public statement — "this release
+    carries no lock file", "this line has no row" — and a 502 is not that.
+    """
+    for attempt in range(1, RETRIES + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                return json.load(response)
+        except urllib.error.HTTPError as err:
+            if err.code == 404:
+                raise NotFound(what) from err
+            if err.code in (401, 403, 429):
+                raise SystemExit(
+                    f"watch_plan: {what} answered {err.code}; the token's hourly allowance is spent, "
+                    "or there is no token. Set ROT_WATCH_TOKEN."
+                ) from err
+            if err.code < 500 or attempt == RETRIES:
+                raise SystemExit(f"watch_plan: {what} answered {err.code}") from err
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as err:
+            if attempt == RETRIES:
+                raise SystemExit(f"watch_plan: cannot read {what}: {err}") from err
+        time.sleep(2 ** attempt)
+    raise AssertionError("unreachable")
+
+
 def get(path: str, token: str | None):
+    """One GitHub REST answer, or None when GitHub says the thing is not there."""
     request = urllib.request.Request(
         f"{API}{path}",
         headers={
@@ -92,42 +132,37 @@ def get(path: str, token: str | None):
         },
     )
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            return json.load(response)
-    except urllib.error.HTTPError as err:
-        if err.code in (403, 429):
-            raise SystemExit(
-                f"watch_plan: GitHub answered {err.code} for {path}; the token's hourly allowance "
-                "is spent, or there is no token. Set ROT_WATCH_TOKEN."
-            ) from err
+        return fetch(request, f"GitHub {path}")
+    except NotFound:
         return None
-    except (urllib.error.URLError, TimeoutError) as err:
-        raise SystemExit(f"watch_plan: cannot reach GitHub for {path}: {err}") from err
 
 
 def graphql(query: str, variables: dict, token: str | None) -> dict:
-    """One GitHub GraphQL query. It needs a token, which the run always has."""
+    """One GitHub GraphQL query. It needs a token, which the run always has.
+
+    GraphQL reports a server-side timeout as a 200 with `errors`, so those are tried again as well;
+    a repository that does not exist comes back as data with `repository: null`, for the caller.
+    """
     if not token:
         raise SystemExit("watch_plan: GitHub's GraphQL API needs a token; set ROT_WATCH_TOKEN or GH_TOKEN")
-    request = urllib.request.Request(
-        GRAPHQL,
-        data=json.dumps({"query": query, "variables": variables}).encode(),
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "User-Agent": "lockrot.dev rot watch",
-        },
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            body = json.load(response)
-    except urllib.error.HTTPError as err:
-        raise SystemExit(f"watch_plan: GitHub GraphQL answered {err.code}") from err
-    except (urllib.error.URLError, TimeoutError) as err:
-        raise SystemExit(f"watch_plan: cannot reach GitHub GraphQL: {err}") from err
-    if body.get("errors"):
-        raise SystemExit(f"watch_plan: GitHub GraphQL: {body['errors'][0].get('message')}")
-    return body["data"]
+    for attempt in range(1, RETRIES + 1):
+        request = urllib.request.Request(
+            GRAPHQL,
+            data=json.dumps({"query": query, "variables": variables}).encode(),
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "User-Agent": "lockrot.dev rot watch",
+            },
+        )
+        body = fetch(request, "GitHub GraphQL")
+        errors = body.get("errors") or []
+        if not errors or all(e.get("type") == "NOT_FOUND" for e in errors):
+            return body.get("data") or {}
+        if attempt == RETRIES:
+            raise SystemExit(f"watch_plan: GitHub GraphQL: {errors[0].get('message')}")
+        time.sleep(2 ** attempt)
+    raise AssertionError("unreachable")
 
 
 RELEASES = """query($owner: String!, $name: String!, $after: String) {
@@ -159,36 +194,48 @@ def _commit(node: dict) -> dict:
     return target.get("target") or target
 
 
+def _read(query: str, repo: str, token: str | None, pattern: re.Pattern, cutoff: str) -> tuple[bool, list[dict]]:
+    """One source — releases or tags — read back past the window's start: whether it had any entry
+    at all, and the stable versions in it. Stops the run rather than a list cut short in silence."""
+    owner, name = repo.split("/", 1)
+    found, seen_any, after = [], False, None
+    for _ in range(PAGES):
+        data = graphql(query, {"owner": owner, "name": name, "after": after}, token)
+        if data.get("repository") is None:
+            raise SystemExit(f"watch_plan: GitHub has no repository {repo}")
+        connection = data["repository"]["connection"]
+        dates = []
+        for node in connection["nodes"]:
+            seen_any = True
+            commit = _commit(node)
+            date = (commit.get("committedDate") or node.get("publishedAt") or "")[:10]
+            if date:
+                dates.append(date)
+            if node.get("isDraft") or node.get("isPrerelease") or not commit.get("oid") or not date:
+                continue
+            if pattern.match(node["name"]):
+                found.append({"tag": node["name"], "commit": commit["oid"], "date": date})
+        if not connection["pageInfo"]["hasNextPage"] or (found and dates and min(dates) < cutoff):
+            return seen_any, found
+        after = connection["pageInfo"]["endCursor"]
+    raise SystemExit(
+        f"watch_plan: {repo} has more than {PAGES * 100} entries inside the window; raise PAGES in "
+        "watch_plan.py rather than read part of it"
+    )
+
+
 def versions(repo: str, token: str | None, pattern: re.Pattern, cutoff: str) -> list[dict]:
     """Every stable version of the project, with its commit and the date of that commit, newest
     first by date, reading back until the window's start.
 
-    From the project's GitHub releases when it publishes any — a release flagged pre-release or left
-    in draft is not one, whatever its tag looks like — and from its tags when it publishes none.
+    From the project's GitHub releases when they hold a stable one — a release flagged pre-release or
+    left in draft is not one, whatever its tag looks like — and from its tags otherwise: a project
+    that tags its releases and once published a single alpha as a GitHub release still has them.
     The date is the commit's, which is how Packagist and lockrot date a tag too.
     """
-    owner, name = repo.split("/", 1)
     for query in (RELEASES, TAGS):
-        found, seen_any, after = [], False, None
-        for _ in range(PAGES):
-            data = graphql(query, {"owner": owner, "name": name, "after": after}, token)
-            if data.get("repository") is None:
-                raise SystemExit(f"watch_plan: GitHub has no repository {repo}")
-            connection = data["repository"]["connection"]
-            dates = []
-            for node in connection["nodes"]:
-                seen_any = True
-                commit = _commit(node)
-                date = (commit.get("committedDate") or node.get("publishedAt") or "")[:10]
-                dates.append(date)
-                if node.get("isDraft") or node.get("isPrerelease") or not commit.get("oid"):
-                    continue
-                if pattern.match(node["name"]) and date:
-                    found.append({"tag": node["name"], "commit": commit["oid"], "date": date})
-            if not connection["pageInfo"]["hasNextPage"] or (found and dates and min(dates) < cutoff):
-                break
-            after = connection["pageInfo"]["endCursor"]
-        if seen_any:
+        _, found = _read(query, repo, token, pattern, cutoff)
+        if found:
             return found
     return []
 
@@ -253,14 +300,32 @@ def line_name(project: str, line: str) -> str:
     return f"{project}-v{line.replace('.', '-')}"
 
 
+def still_releasing(line: str, by_line: dict[str, list[dict]], cutoff: str) -> bool:
+    """Whether an older line is maintained beside a newer one, rather than finished when it came.
+
+    Two conditions, both lockrot's S8: the line has released inside the window, and it released
+    *after* the next line up first did — S8 calls a branch left behind only once a higher branch has
+    released since, and the converse is what makes two lines concurrent. BookStack's v25 shipped its
+    last release three days before v26's first, so it is a line that ended, not one still kept.
+    """
+    last = max(v["date"] for v in by_line[line])
+    if last < cutoff:
+        return False
+    key = version_key(by_line[line][0]["tag"])
+    higher = [other for other in by_line if version_key(by_line[other][0]["tag"]) > key]
+    if not higher:
+        return False
+    next_up = min(higher, key=lambda other: version_key(by_line[other][0]["tag"]))
+    return last > min(v["date"] for v in by_line[next_up])
+
+
 def resolve(project: dict, token: str | None, cutoff: str) -> tuple[list[dict], list[dict]]:
     """The project's newest release line, and every older line still releasing, as run entries.
 
     The newest line is the row the page totals and compares week to week; a project with no usable
-    release there fails the run, as before. An older line is one more report, beside the table — it
-    is still releasing if its newest release is inside the window, the same rule lockrot uses to
-    call an installed branch left behind (S8, `release-warn-years`). An older line whose releases
-    carry no lock file is not dropped quietly: it is listed in the manifest as skipped.
+    release there fails the run, as before. An older line is one more report, beside the table, when
+    it is still releasing beside a newer one (`still_releasing`). An older line whose releases carry
+    no lock file is not dropped quietly: it is listed in the manifest as skipped.
     """
     repo = project["repo"]
     pattern = re.compile(project["tag_pattern"]) if project.get("tag_pattern") else STABLE_TAG
@@ -281,10 +346,7 @@ def resolve(project: dict, token: str | None, cutoff: str) -> tuple[list[dict], 
         )
     entries, skipped = [{"kind": "release", **main}], []
 
-    older = [
-        line for line in by_line
-        if line != newest and max(v["date"] for v in by_line[line]) >= cutoff
-    ]
+    older = [line for line in by_line if line != newest and still_releasing(line, by_line, cutoff)]
     for line in sorted(older, key=lambda line: version_key(by_line[line][0]["tag"]), reverse=True):
         entry, tried = pick(project, by_line[line], token)
         if entry is None:
@@ -310,10 +372,9 @@ def newest_package_version(package: str) -> str:
         headers={"User-Agent": "lockrot.dev rot watch", "Accept": "application/json"},
     )
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            versions = json.load(response)["packages"][package]
-    except (urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError) as err:
-        raise SystemExit(f"watch_plan: cannot read {package} from Packagist: {err}") from err
+        versions = fetch(request, f"Packagist {package}")["packages"][package]
+    except (NotFound, KeyError, TypeError) as err:
+        raise SystemExit(f"watch_plan: cannot read {package} from Packagist: {err!r}") from err
 
     # The highest stable version, not the first one listed: the order is Packagist's to change.
     stable = [version["version"] for version in versions if STABLE_TAG.match(version["version"])]

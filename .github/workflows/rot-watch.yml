@@ -91,12 +91,19 @@ jobs:
           php-version: ${{ matrix.project.target_php }}
           tools: composer:v2
           coverage: none
+          # setup-php would write the workflow's GITHUB_TOKEN into Composer's global auth.json, and
+          # lockrot then uses Composer's credential for api.github.com instead of ROT_WATCH_TOKEN:
+          # every job on the 1,000-an-hour token, and the counts quietly short when it runs out.
+          # lockrot-action passes '' to setup-php for the same reason; nothing here needs a token
+          # from Composer.
+          github-token: ''
       # What Composer's own check says about the same lock, for the page's "Not in composer audit"
       # column: the packages lockrot flags that this does not name at all. Before lockrot, so it
       # reads the lock as fetched. --locked reads composer.lock and needs no vendor/; no --no-dev, so
       # the list is a superset of what lockrot read and the page intersects the two. The exit code is
-      # a bitmask of what it found (1 advisories, 2 abandoned), so it is not the failure signal:
-      # report_page.py refuses output that is not composer audit's JSON.
+      # a bitmask of what it found (1 advisories, 2 abandoned), so it is not the failure signal; an
+      # answer that is not composer audit's JSON — Packagist's advisory API down, say — is stored as
+      # "not measured" with a warning (report_page.py), rather than costing the week its page.
       - name: Ask composer audit about the same lock
         working-directory: work
         env:
@@ -170,6 +177,12 @@ jobs:
           php-version: ${{ matrix.starter.target_php }}
           tools: composer:v2
           coverage: none
+          # setup-php would write the workflow's GITHUB_TOKEN into Composer's global auth.json, and
+          # lockrot then uses Composer's credential for api.github.com instead of ROT_WATCH_TOKEN:
+          # every job on the 1,000-an-hour token, and the counts quietly short when it runs out.
+          # lockrot-action passes '' to setup-php for the same reason; nothing here needs a token
+          # from Composer.
+          github-token: ''
       - name: Create the project
         env:
           PACKAGE: ${{ matrix.starter.package }}
@@ -191,8 +204,9 @@ jobs:
       # column: the packages lockrot flags that this does not name at all. Before lockrot, so it
       # reads the lock as fetched. --locked reads composer.lock and needs no vendor/; no --no-dev, so
       # the list is a superset of what lockrot read and the page intersects the two. The exit code is
-      # a bitmask of what it found (1 advisories, 2 abandoned), so it is not the failure signal:
-      # report_page.py refuses output that is not composer audit's JSON.
+      # a bitmask of what it found (1 advisories, 2 abandoned), so it is not the failure signal; an
+      # answer that is not composer audit's JSON — Packagist's advisory API down, say — is stored as
+      # "not measured" with a warning (report_page.py), rather than costing the week its page.
       - name: Ask composer audit about the same lock
         working-directory: work
         env:
@@ -247,6 +261,10 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version-file: .python-version
+      # The run directory holds this run and nothing else. Capsules are downloaded over it and
+      # nothing deletes, so a project or an older line the plan no longer names — a line leaving the
+      # window — would keep last week's capsule, which no manifest describes and the build refuses.
+      - run: rm -rf data/reports/watch
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: watch-manifest

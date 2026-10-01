@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -115,11 +116,12 @@ class TableTest(unittest.TestCase):
         self.assertIn('href="https://github.com/acme/one/tree/c0ffee1234567890"><code>c0ffee1</code>', table)
 
     def test_a_count_carries_its_sort_value_and_its_shade(self):
-        table = bw.table(bw.rows(manifest("one"), {"one": report({"abandoned": 7, "stale": 0})}))
+        table = bw.table(bw.rows(manifest("one"), {"one": report({"abandoned": 7, "stale": 12})}))
+        row = table[table.index("<tbody><tr>"):table.index("</tr></tbody>")]
 
-        self.assertIn('<td data-sort="7" class="lockrot-heat-3">7</td>', table)
-        # stale is not shaded; a zero in it only recedes.
-        self.assertIn('<td data-sort="0" class="lockrot-zero">0</td>', table)
+        self.assertIn('<td data-sort="7" class="lockrot-heat-3">7</td>', row)
+        # stale, the last column, is not shaded however large: the count and no class.
+        self.assertTrue(row.endswith('<td data-sort="12">12</td>'), row[-60:])
 
     def test_shades_by_fixed_steps(self):
         self.assertEqual(
@@ -140,11 +142,13 @@ class TableTest(unittest.TestCase):
 
         self.assertEqual(["wide", "loud", "quiet", "calm"], [r["name"] for r in bw.order(rows)])
 
-    def test_the_flagged_heading_is_the_sort_the_rows_arrive_in(self):
+    def test_the_flagged_heading_says_the_rows_arrive_in_its_order_without_resorting_them(self):
         table = bw.table(bw.rows(manifest("one"), {"one": report()}))
 
-        self.assertIn("data-sort-default>Flagged</th>", table)
-        self.assertEqual(1, table.count("data-sort-default"))
+        self.assertIn('aria-sort="descending">Flagged</th>', table)
+        self.assertEqual(1, table.count("aria-sort"))
+        # data-sort-default would make tablesort re-sort on load and reverse every tie.
+        self.assertNotIn("data-sort-default", table)
 
     def test_escapes_what_a_project_named_itself(self):
         rows = bw.rows(manifest("one", tag="<b>1.0</b>"), {"one": report()})
@@ -188,7 +192,7 @@ class FlaggedTest(unittest.TestCase):
 
         line = bw.since_line(rows, {"one": history_row("one", silent=1)}, "2026-09-15")
 
-        self.assertIn("Compared with the run of 2026-09-15: flagged 1 → 3; `silent` 1 → 3.", line)
+        self.assertIn("Compared with the run of 2026-09-15, across the 1 application: flagged 1 → 3; `silent` 1 → 3.", line)
 
 
 class ComposerTest(unittest.TestCase):
@@ -273,9 +277,29 @@ class SettingsTest(unittest.TestCase):
             "no stable release for 5 years and no push to any branch for 3", settings["silent_span"]
         )
 
-    def test_refuses_reports_measured_against_different_php(self):
-        with self.assertRaises(SystemExit):
-            bw.run_settings({"one": with_run(target="8.4"), "two": with_run(target="8.3")})
+    def test_names_a_project_measured_against_another_php(self):
+        settings = bw.run_settings(
+            {"one": with_run(target="8.4"), "two": with_run(target="8.4"), "odd": with_run(target="8.3")}
+        )
+
+        self.assertEqual(("8.4", "every project here but odd"), (settings["target_php"], settings["target_scope"]))
+
+    def test_names_a_project_that_set_its_own_silent_years(self):
+        settings = bw.run_settings({"one": with_run(), "two": with_run(), "own": with_run(release=4, push=4)})
+
+        self.assertEqual(
+            "no stable release and no push to any branch for 5 years (own set their own in `extra.lockrot`)",
+            settings["silent_span"],
+        )
+
+    def test_a_report_without_thresholds_stops_with_a_message_not_a_traceback(self):
+        rep = with_run()
+        del rep["run"]["thresholds"]
+
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"one": with_run(), "bare": rep})
+
+        self.assertIn("bare", str(raised.exception))
 
     def test_refuses_a_lockrot_that_flags_a_verdict_the_page_has_no_column_for(self):
         with self.assertRaises(SystemExit) as raised:
@@ -338,12 +362,12 @@ class LinesTest(unittest.TestCase):
         section = bw.lines_section(lines_, releases, {}, None, {"skipped_lines": []}, 3)
 
         self.assertIn('<a class="lockrot-lines" href="#older-lines-still-releasing">+1 line</a>', main)
-        self.assertIn("<td>1 projects</td>", main)
+        self.assertIn("<td>1 project</td>", main)
         self.assertIn("## Older lines still releasing", section)
-        self.assertIn("1 of the 1 applications ship more than one release line", section)
-        self.assertIn("a release in the last 3 years", section)
+        self.assertIn("1 of the 1 application maintain more than one release line", section)
+        self.assertIn("released in the last 3 years", section)
         self.assertIn('<span class="lockrot-line">10.x</span>', section)
-        self.assertIn("<td>1 older lines</td>", section)
+        self.assertIn("<td>1 older line</td>", section)
 
     def test_a_run_with_no_lines_prints_no_section(self):
         self.assertEqual("", bw.lines_section([], [], {}, None, {}, 3))
@@ -363,6 +387,91 @@ class LinesTest(unittest.TestCase):
         self.assertEqual(3, bw.run_settings({"one": rep}, {"run": {"line_window_years": 3}})["window"])
         with self.assertRaises(SystemExit):
             bw.run_settings({"one": rep}, {"run": {"line_window_years": 2}})
+
+
+class FixesTest(unittest.TestCase):
+    def test_a_line_that_just_became_older_is_compared_with_the_projects_row(self):
+        # Drupal 12.0.0 shipped: last week's `drupal` row read 11.x, this week's drupal-v11 reads it.
+        m = manifest("drupal", tag="12.0.0")
+        m["projects"].append(line_manifest(tag="11.4.9"))
+        rows = bw.rows(m, {"drupal": report(), "drupal-v11": report({"silent": 3})})
+        previous = {"drupal": history_row("drupal", tag="11.4.8", silent=2)}
+        lines_ = [r for r in rows if r["kind"] == "line"]
+
+        table = bw.table(lines_, previous, "2026-09-15", label="older line")
+
+        self.assertIn('title="+1 since 2026-09-15">+1</span>', table)
+        self.assertIn(">new</span>", table)
+
+    def test_the_summary_sums_the_applications_only(self):
+        m = manifest("one")
+        m["projects"].append(line_manifest(parent="one", tag="0.9.0"))
+        m["projects"] += starter_manifest()["projects"]
+        rows = bw.rows(m, {"one": report({"silent": 2}), "one-v0": report({"silent": 9}), "new-laravel": report({"silent": 5})})
+        previous = {
+            "one": history_row("one", silent=1),
+            "one-v0": {**history_row("one-v0", tag="0.8.0"), "kind": "line"},
+            "new-laravel": {**history_row("new-laravel"), "kind": "starter", "version": "v13.0.0"},
+        }
+
+        line = bw.since_line(rows, previous, "2026-09-15")
+
+        self.assertIn("across the 1 application: flagged 1 → 2; `silent` 1 → 2.", line)
+        self.assertIn("moved to a new release or starter version: new-laravel.", line)
+        self.assertNotIn("one-v0", line)
+
+    def test_a_share_rounds_half_up(self):
+        self.assertIn(">13%<", bw.share(1, 8))
+
+    def test_a_section_with_only_skipped_lines_counts_them_and_prints_no_table(self):
+        releases = bw.rows(manifest("drupal"), {"drupal": report()})
+        run = {"skipped_lines": [{"project": "drupal", "line": "7", "tried": ["7.103 (no composer.lock)"]}]}
+
+        section = bw.lines_section([], releases, {}, None, run, 3)
+
+        self.assertIn("1 of the 1 application maintain more than one release line", section)
+        self.assertNotIn("<table>", section)
+        self.assertNotIn("This one reads", section)
+
+    def test_a_starter_can_name_its_project_for_the_prose(self):
+        projects = {"starters": [{"name": "new-typo3", "title": "TYPO3", "no_lock_in_repository": True, "prose_name": "TYPO3's distribution"}]}
+
+        self.assertEqual("TYPO3's distribution", bw.lockless(projects, [{"name": "new-typo3"}]))
+
+
+class MainTest(unittest.TestCase):
+    """main(), end to end over files: what the unit tests above cannot see is the wiring."""
+
+    def test_older_lines_are_in_their_own_table_and_out_of_every_total(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            caps = tmp / "caps"
+            caps.mkdir()
+            m = manifest("drupal", tag="11.4.8", date="2026-09-22")
+            m["projects"].append(line_manifest(tag="10.6.18"))
+            m["projects"] += starter_manifest()["projects"]
+            m["run"].update({"target_php": "8.4", "line_window_years": 3, "skipped_lines": []})
+            (caps / "manifest.json").write_text(json.dumps(m), encoding="utf-8")
+            for name, counts in (("drupal", {"silent": 2}), ("drupal-v10", {"silent": 40}), ("new-laravel", {"silent": 1})):
+                rep = with_run()
+                rep["counts"].update(counts)
+                (caps / f"{name}.json").write_text(json.dumps({"data": {"report": rep}}), encoding="utf-8")
+            projects = tmp / "projects.json"
+            projects.write_text(json.dumps({"starters": [{"name": "new-laravel", "title": "Laravel", "no_lock_in_repository": True}]}), encoding="utf-8")
+            page, history = tmp / "watch.md", tmp / "history.csv"
+
+            bw.main(["build_watch_page.py", "--manifest", str(caps / "manifest.json"), "--capsules", str(caps),
+                     "--history", str(history), "--page", str(page), "--projects", str(projects)])
+            text = page.read_text(encoding="utf-8")
+            kinds = [r["kind"] for r in bw.read_history(history)]
+
+        applications = text[text.index("## What these applications ship"):text.index("## Older lines still releasing")]
+        self.assertIn("<td>1 project</td><td></td><td>10</td>", applications)
+        self.assertIn('<td class="lockrot-flagged">2 ', applications)
+        self.assertNotIn(">40<", applications)
+        self.assertIn('<span class="lockrot-line">10.x</span>', text)
+        self.assertIn("+1 line</a>", applications)
+        self.assertEqual(["release", "line", "starter"], kinds)
 
 
 class CompareTest(unittest.TestCase):
@@ -419,7 +528,7 @@ class CompareTest(unittest.TestCase):
 
         line = bw.since_line(rows, previous, "2026-09-15")
 
-        self.assertIn("Compared with the run of 2026-09-15: flagged 6 → 4; `stale` 6 → 4.", line)
+        self.assertIn("Compared with the run of 2026-09-15, across the 1 application: flagged 6 → 4; `stale` 6 → 4.", line)
         self.assertIn("lockrot itself moved from 0.10.0 to 0.11.0", line)
 
     def test_the_summary_names_the_projects_that_released(self):
