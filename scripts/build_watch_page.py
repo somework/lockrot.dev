@@ -84,8 +84,10 @@ Packagist and the repository host about the packages in them.
 
 {table}
 
-A project's name opens the full report lockrot wrote for it; a column heading sorts the table. A
-small number beside a count is how far it moved since the previous run, and *new* marks a project
+A project's name opens the full report lockrot wrote for it; a column heading sorts the table.
+*Flagged* is every package with one of the six verdicts to its right — each package has exactly one,
+so they add up — and is the number at the top of that report; the percentage is its share of the
+lock. A small number beside a count is how far it moved since the previous run, and *new* marks a project
 that cut a release in between. Each row names the release it read and the commit that release points
 at, so any number here can be
 checked against the same two files lockrot read. A release rather than a branch head on purpose: a
@@ -315,6 +317,27 @@ def count_cell(
     return f'<td data-sort="{value}"{shade}>{value}{moved}</td>'
 
 
+def flagged(row: dict) -> int:
+    """The packages lockrot flags: one verdict per package, so the six columns add up without
+    counting anything twice. It is lockrot's own number — `Verdict::flagged()` is every verdict from
+    `stale` up, and a report's title reads "101 of 210 packages flagged" — and it leaves out
+    `unknown`, `finished` and `ok`. Works on a run's row and on a history row alike."""
+    return sum(int(row[c] or 0) for c in COLUMNS)
+
+
+def share(part: int, whole: int) -> str:
+    return f'<span class="lockrot-share">{round(100 * part / whole) if whole else 0}%</span>'
+
+
+def flagged_cell(row: dict, before: dict | None, since: str | None) -> str:
+    """How many packages are flagged, and what share of the lock that is: 30 of 50 and 30 of 300
+    are different projects."""
+    value = flagged(row)
+    tone = "lockrot-flagged lockrot-zero" if value == 0 else "lockrot-flagged"
+    moved = delta(value, flagged(before) if before else None, since)
+    return f'<td data-sort="{value}" class="{tone}">{value} {share(value, int(row["packages"]))}{moved}</td>'
+
+
 def new_mark(moved: bool, was: str, since: str | None) -> str:
     if not moved:
         return ""
@@ -361,6 +384,7 @@ def header(first: list[str], counted: list[str]) -> str:
     cells = [f"<th>{name}</th>" for name in first[:1]]
     cells += [f'<th data-sort-method="none">{name}</th>' for name in first[1:]]
     cells.append('<th class="lockrot-num" data-sort-method="number" data-sort-reverse>Packages</th>')
+    cells.append('<th class="lockrot-num lockrot-flagged" data-sort-method="number" data-sort-reverse>Flagged</th>')
     cells += [
         f'<th class="lockrot-num" data-sort-method="number" data-sort-reverse>{"Advisories" if c == "advisories" else f"<code>{c.replace("-", "-<wbr>")}</code>"}</th>'
         for c in counted
@@ -382,6 +406,9 @@ def totals(rows_: list[dict], previous: dict, since: str | None, label: str, cou
     cells = [f"<td>{label}</td>", "<td></td>"]
     packages = sum(int(r["packages"]) for r in rows_)
     cells.append(f"<td>{packages}{delta(packages, before('packages'), since, neutral=True)}</td>")
+    total = sum(flagged(r) for r in rows_)
+    total_before = sum(flagged(previous[r["name"]]) for r in rows_) if comparable else None
+    cells.append(f'<td class="lockrot-flagged">{total} {share(total, packages)}{delta(total, total_before, since)}</td>')
     for column in counted:
         value = sum(int(r[column]) for r in rows_)
         cells.append(f"<td>{value}{delta(value, before(column), since)}</td>")
@@ -396,6 +423,7 @@ def table(rows_: list[dict], previous: dict | None = None, since: str | None = N
         before = previous.get(row["name"])
         cells = [project_cell(row), release_cell(row, before, since)]
         cells.append(count_cell(int(row["packages"]), (before or {}).get("packages"), since))
+        cells.append(flagged_cell(row, before, since))
         cells += [count_cell(int(row[c]), (before or {}).get(c), since, c) for c in COLUMNS]
         body.append("<tr>" + "".join(cells) + "</tr>")
     return (
@@ -421,6 +449,7 @@ def starter_table(rows_: list[dict], previous: dict | None = None, since: str | 
         before = previous.get(row["name"])
         cells = [starter_cells(row, before, since)]
         cells.append(count_cell(int(row["packages"]), (before or {}).get("packages"), since))
+        cells.append(flagged_cell(row, before, since))
         cells += [count_cell(int(row[c]), (before or {}).get(c), since, c) for c in COUNTED]
         body.append("<tr>" + "".join(cells) + "</tr>")
     label = f"{len(rows_)} starter{'' if len(rows_) == 1 else 's'}"
@@ -448,9 +477,10 @@ def since_line(rows_: list[dict], previous: dict, since: str | None) -> str:
     now = rows_[0]["lockrot"]
     parts = [f"Compared with the run of {since}:"]
 
-    moved = []
+    common = [r for r in rows_ if r["name"] in previous]
+    was, now_flagged = sum(flagged(previous[r["name"]]) for r in common), sum(flagged(r) for r in common)
+    moved = [f"flagged {was} → {now_flagged}"] if was != now_flagged else []
     for column in COUNTED:
-        common = [r for r in rows_ if r["name"] in previous]
         a = sum(int(previous[r["name"]][column] or 0) for r in common)
         b = sum(int(r[column]) for r in common)
         if a != b:
