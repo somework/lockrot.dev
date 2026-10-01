@@ -122,7 +122,7 @@ jobs:
             > ../composer-audit.json || status=$?
           echo "composer audit: exit $status"
           composer --version --no-ansi 2>/dev/null | awk 'NR==1{print $3}' > ../composer-version.txt
-      - uses: somework/lockrot-action@2b5dd2ed8cb841f171ec20667d0a1d16961494c9 # v1.0.11
+      - uses: somework/lockrot-action@c7d755ff759de3d30d9af5280870d702a1c49d49 # v1.0.13
         with:
           working-directory: work
           # The newest release, verified against the sha256 published with it. This page says which
@@ -237,7 +237,7 @@ jobs:
             > ../composer-audit.json || status=$?
           echo "composer audit: exit $status"
           composer --version --no-ansi 2>/dev/null | awk 'NR==1{print $3}' > ../composer-version.txt
-      - uses: somework/lockrot-action@2b5dd2ed8cb841f171ec20667d0a1d16961494c9 # v1.0.11
+      - uses: somework/lockrot-action@c7d755ff759de3d30d9af5280870d702a1c49d49 # v1.0.13
         with:
           working-directory: work
           version: latest
