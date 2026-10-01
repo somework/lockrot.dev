@@ -32,7 +32,8 @@ A project's name opens the full report lockrot wrote for it; a column heading so
 *Flagged* is every package with one of the six verdicts to its right — each package has exactly one,
 so they add up — and is the number at the top of that report; the percentage is its share of the
 lock. *Not in `composer audit`* is the flagged packages that `composer audit --locked --abandoned=report` (Composer 2.10.3), run on the same lock file, does not name at all — as abandoned or as carrying an advisory; its percentage is their share of the flagged ones. Composer reads the `abandoned` marker the lock file carries, so a package marked on Packagist after the lock was written is missed as well ([what that adds up to](blog/posts/2026-09-19-composer-audit-abandoned-misses.md)). The fresh installs below show a dash: this run did not ask composer audit about them. A small number beside a count is how far it moved since the previous run, and *new* marks a project
-that cut a release in between. Each row names the release it read and the commit that release points
+that cut a release in between; *moved* marks one whose newest line changed, and that row is not
+compared with the previous run. Each row names the release it read and the commit that release points
 at, so any number here can be
 checked against the same two files lockrot read. A release rather than a branch head on purpose: a
 release is what people install, and it is the only version of a project that two weeks of this page

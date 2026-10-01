@@ -158,6 +158,19 @@ body[data-md-color-scheme="slate"] {
   color: var(--md-default-fg-color--light);
 }
 
+/* An older line's branch beside its project, and the link from a project's row to its older lines:
+   both say which line a row is about, quieter than the name. */
+.md-typeset .lockrot-watch table:not([class]) :is(.lockrot-line, .lockrot-lines) {
+  margin-left: 0.3em;
+  font-family: var(--md-code-font-family);
+  font-size: 0.85em;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .lockrot-watch table:not([class]) a.lockrot-lines {
+  color: var(--md-typeset-a-color);
+}
+
 .md-typeset .lockrot-watch table:not([class]) :is(.lockrot-release, .lockrot-created) code {
   font-size: 0.85em;
   white-space: nowrap;
