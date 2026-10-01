@@ -1,7 +1,7 @@
 name: Rot watch
-# Every Monday, lockrot's newest release reads two kinds of composer.lock: the one twenty
-# open-source PHP applications ship at their newest stable release, and the one fifteen projects
-# created that morning with `composer create-project` resolve to. The result becomes /watch/ and one
+# Every Monday, lockrot's newest release reads two kinds of composer.lock: the one open-source PHP
+# applications ship at their newest stable release, and the one projects created that morning with
+# `composer create-project` resolve to. The result becomes /watch/ and one
 # row per project in its history. The projects are data/watch/projects.json; the page is written by
 # scripts/build_watch_page.py.
 #
@@ -86,6 +86,29 @@ jobs:
           base="https://raw.githubusercontent.com/$REPO/$COMMIT"
           curl -sfL --retry 3 -o work/composer.lock "$base/$LOCK"
           curl -sfL --retry 3 -o work/composer.json "$base/${LOCK%composer.lock}composer.json"
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.project.target_php }}
+          tools: composer:v2
+          coverage: none
+      # What Composer's own check says about the same lock, for the page's "Not in composer audit"
+      # column: the packages lockrot flags that this does not name at all. Before lockrot, so it
+      # reads the lock as fetched. --locked reads composer.lock and needs no vendor/; no --no-dev, so
+      # the list is a superset of what lockrot read and the page intersects the two. The exit code is
+      # a bitmask of what it found (1 advisories, 2 abandoned), so it is not the failure signal:
+      # report_page.py refuses output that is not composer audit's JSON.
+      - name: Ask composer audit about the same lock
+        working-directory: work
+        env:
+          COMPOSER_NO_INTERACTION: "1"
+        run: |
+          set -euo pipefail
+          # Actions runs this under `bash -e`, so the bitmask exit has to be caught, not just ignored.
+          status=0
+          composer audit --locked --abandoned=report --format=json --no-plugins --no-scripts \
+            > ../composer-audit.json || status=$?
+          echo "composer audit: exit $status"
+          composer --version --no-ansi 2>/dev/null | awk 'NR==1{print $3}' > ../composer-version.txt
       - uses: somework/lockrot-action@2b5dd2ed8cb841f171ec20667d0a1d16961494c9 # v1.0.11
         with:
           working-directory: work
@@ -108,7 +131,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p capsules
-          python scripts/report_page.py report.html "capsules/$NAME.json"
+          python scripts/report_page.py report.html "capsules/$NAME.json" \
+            --composer-audit composer-audit.json --composer-version "$(cat composer-version.txt)"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: capsule-${{ matrix.project.name }}
@@ -163,6 +187,24 @@ jobs:
             # shellcheck disable=SC2086
             composer require --no-install --no-scripts --no-plugins --ignore-platform-reqs $EXTRA
           fi
+      # What Composer's own check says about the same lock, for the page's "Not in composer audit"
+      # column: the packages lockrot flags that this does not name at all. Before lockrot, so it
+      # reads the lock as fetched. --locked reads composer.lock and needs no vendor/; no --no-dev, so
+      # the list is a superset of what lockrot read and the page intersects the two. The exit code is
+      # a bitmask of what it found (1 advisories, 2 abandoned), so it is not the failure signal:
+      # report_page.py refuses output that is not composer audit's JSON.
+      - name: Ask composer audit about the same lock
+        working-directory: work
+        env:
+          COMPOSER_NO_INTERACTION: "1"
+        run: |
+          set -euo pipefail
+          # Actions runs this under `bash -e`, so the bitmask exit has to be caught, not just ignored.
+          status=0
+          composer audit --locked --abandoned=report --format=json --no-plugins --no-scripts \
+            > ../composer-audit.json || status=$?
+          echo "composer audit: exit $status"
+          composer --version --no-ansi 2>/dev/null | awk 'NR==1{print $3}' > ../composer-version.txt
       - uses: somework/lockrot-action@2b5dd2ed8cb841f171ec20667d0a1d16961494c9 # v1.0.11
         with:
           working-directory: work
@@ -183,7 +225,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p capsules
-          python scripts/report_page.py report.html "capsules/$NAME.json"
+          python scripts/report_page.py report.html "capsules/$NAME.json" \
+            --composer-audit composer-audit.json --composer-version "$(cat composer-version.txt)"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: capsule-${{ matrix.starter.name }}

@@ -219,5 +219,29 @@ class ReleasedRendererTest(unittest.TestCase):
             rp.render(rp.extract(page()), TEMPLATE, None, None)
 
 
+class ComposerViewTest(unittest.TestCase):
+    def test_keeps_both_lists_composer_audit_printed_and_its_version(self):
+        audit = {"advisories": {"b/vulnerable": [{}]}, "abandoned": {"a/old": None, "c/older": "c/new"}}
+
+        self.assertEqual(
+            {"version": "2.10.3", "abandoned": ["a/old", "c/older"], "advisories": ["b/vulnerable"]},
+            rp.composer_view(audit, "2.10.3\n"),
+        )
+
+    def test_reads_composers_empty_map_written_as_a_list(self):
+        view = rp.composer_view({"advisories": [], "abandoned": []}, "2.10.3")
+
+        self.assertEqual(([], []), (view["abandoned"], view["advisories"]))
+
+    def test_refuses_output_that_is_not_composer_audits(self):
+        for bad in ({"error": "boom"}, {"advisories": "x", "abandoned": []}, []):
+            with self.subTest(bad=bad), self.assertRaises(SystemExit):
+                rp.composer_view(bad, "2.10.3")
+
+    def test_refuses_a_view_without_a_version(self):
+        with self.assertRaises(SystemExit):
+            rp.composer_view({"advisories": [], "abandoned": []}, " ")
+
+
 if __name__ == "__main__":
     unittest.main()

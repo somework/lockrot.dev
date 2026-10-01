@@ -24,7 +24,7 @@ Install: `composer require --dev somework/lockrot`, or download https://lockrot.
 
 ## Data
 
-- [Weekly watch](https://lockrot.dev/watch/): every Monday lockrot's newest release reads two kinds of composer.lock — the one shipped by the newest stable release of 20 widely used open-source PHP applications (Coolify, Appwrite, Bagisto, Monica, Firefly III, Matomo, BookStack, Snipe-IT, wallabag, Magento 2, Mautic, Akaunting, Invoice Ninja, PrestaShop, Moodle, phpMyAdmin, phpBB, Joomla, Drupal, TYPO3), and the one a project created that morning gets from composer create-project (Laravel, Symfony skeleton and --webapp, API Platform, Drupal, WordPress via Bedrock, Shopware, Sylius, TYPO3, Craft CMS, Statamic, Pimcore, Slim, CakePHP, Yii 2). Each row names the release tag and commit, or the starter package and version, and links the full rendered report; security advisories on fresh installs are counted; every run is kept in history.csv
+- [Weekly watch](https://lockrot.dev/watch/): every Monday lockrot's newest release reads two kinds of composer.lock — the one shipped by the newest stable release of widely used open-source PHP applications, and the one a project created that morning gets from composer create-project. Each row names the release tag and commit, or the starter package and version, links the full rendered report, and counts the flagged packages composer audit does not name at all; the reports of every earlier run stay published, and every run is kept in history.csv
 
 ## Blog
 

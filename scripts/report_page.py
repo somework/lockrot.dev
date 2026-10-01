@@ -20,6 +20,7 @@ a blank page in someone's browser, which is the same bargain scripts/build_frame
 
 from __future__ import annotations
 
+import argparse
 import html
 import json
 import re
@@ -252,11 +253,48 @@ def _only(pattern: re.Pattern, page: str, what: str) -> str:
     return found[0]
 
 
+def composer_view(audit: dict, version: str) -> dict:
+    """What `composer audit --locked --format=json` named in the same lock, beside lockrot's report.
+
+    The weekly page counts the packages lockrot flags that Composer's own check says nothing about,
+    so the capsule keeps both lists Composer printed — abandoned and with an advisory — and the
+    Composer version, which is what the claim is true for. Composer writes an empty map as `[]`.
+    """
+    if not isinstance(audit, dict) or not {"abandoned", "advisories"} <= audit.keys():
+        raise SystemExit("report_page: the composer audit output has no abandoned and advisories keys")
+    if not version.strip():
+        raise SystemExit("report_page: no Composer version for the composer audit output")
+
+    def names(found) -> list[str]:
+        if isinstance(found, dict):
+            return sorted(found)
+        if found == []:
+            return []
+        raise SystemExit(f"report_page: unexpected composer audit value {found!r}")
+
+    return {
+        "version": version.strip(),
+        "abandoned": names(audit["abandoned"]),
+        "advisories": names(audit["advisories"]),
+    }
+
+
 def main(argv: list[str]) -> int:
-    if len(argv) != 3:
-        raise SystemExit("usage: report_page.py <report.html> <capsule.json>")
-    capsule = extract(Path(argv[1]).read_text(encoding="utf-8"))
-    Path(argv[2]).write_text(
+    parser = argparse.ArgumentParser(description="Store a --format=html report as a capsule.")
+    parser.add_argument("report", type=Path)
+    parser.add_argument("capsule", type=Path)
+    parser.add_argument("--composer-audit", type=Path, help="composer audit --format=json output")
+    parser.add_argument("--composer-version", default="", help="the Composer version that wrote it")
+    args = parser.parse_args(argv[1:])
+
+    capsule = extract(args.report.read_text(encoding="utf-8"))
+    if args.composer_audit is not None:
+        try:
+            audit = json.loads(args.composer_audit.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as err:
+            raise SystemExit(f"report_page: cannot read the composer audit output: {err}") from err
+        capsule["composer"] = composer_view(audit, args.composer_version)
+    args.capsule.write_text(
         json.dumps(capsule, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
     )
     return 0
