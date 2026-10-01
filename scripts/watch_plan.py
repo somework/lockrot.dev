@@ -34,6 +34,7 @@ silently one project smaller is worse than a red run.
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import os
 import re
@@ -114,7 +115,9 @@ def fetch(request: urllib.request.Request, what: str):
                 ) from err
             if err.code < 500 or attempt == RETRIES:
                 raise SystemExit(f"watch_plan: {what} answered {err.code}") from err
-        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as err:
+        # Every transport failure: URLError and timeouts are OSErrors, and so is a connection reset;
+        # a cut-off body is an http.client.HTTPException. HTTPError, an OSError too, is caught above.
+        except (OSError, http.client.HTTPException, json.JSONDecodeError) as err:
             if attempt == RETRIES:
                 raise SystemExit(f"watch_plan: cannot read {what}: {err}") from err
         time.sleep(2 ** attempt)

@@ -200,6 +200,12 @@ class FetchTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 wp.has_files("acme/app", "sha", "composer.lock", "t")
 
+    def test_a_dropped_connection_or_a_cut_off_body_is_tried_again(self):
+        for failure in (ConnectionResetError("reset"), wp.http.client.RemoteDisconnected("gone"), wp.http.client.IncompleteRead(b"{")):
+            with self.subTest(failure=type(failure).__name__):
+                with mock.patch.object(wp.urllib.request, "urlopen", answers(failure, {"ok": 1})):
+                    self.assertEqual({"ok": 1}, wp.get("/x", "t"))
+
     def test_not_found_is_an_answer(self):
         with mock.patch.object(wp.urllib.request, "urlopen", answers(http_error(404))):
             self.assertIsNone(wp.get("/repos/acme/app/contents/composer.lock", "t"))
