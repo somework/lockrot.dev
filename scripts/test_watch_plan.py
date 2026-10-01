@@ -34,72 +34,127 @@ class VersionKeyTest(unittest.TestCase):
         self.assertGreater(wp.version_key("v26.09.1"), wp.version_key("v26.09"))
 
 
-class CandidatesTest(unittest.TestCase):
-    def test_a_backport_made_after_the_newest_release_does_not_come_first(self):
-        # The API lists releases by creation date: 2.3.9 was published last.
-        responses = {
-            "/repos/acme/app/releases/latest": None,
-            "/repos/acme/app/releases?per_page=30": releases("2.3.9", "2.4.12", "2.4.11"),
-        }
-        with mock.patch.object(wp, "get", api(responses)):
-            found = wp.candidates("acme/app", None, wp.STABLE_TAG)
+def node(tag, date, oid=None, **flags):
+    """A GitHub release as the GraphQL query returns it."""
+    return {
+        "name": tag, "isDraft": flags.get("draft", False), "isPrerelease": flags.get("pre", False),
+        "publishedAt": f"{date}T00:00:00Z", "tagCommit": {"oid": oid or f"sha-{tag}", "committedDate": f"{date}T00:00:00Z"},
+    }
 
-        self.assertEqual(["2.4.12", "2.4.11", "2.3.9"], found)
 
-    def test_a_latest_release_that_is_a_beta_is_passed_over(self):
-        responses = {
-            "/repos/acme/app/releases/latest": {"tag_name": "v2.5.0-beta5"},
-            "/repos/acme/app/releases?per_page=30": releases("v2.5.0-beta5", "v2.4.12"),
-        }
-        with mock.patch.object(wp, "get", api(responses)):
-            found = wp.candidates("acme/app", None, wp.STABLE_TAG)
+def tag_node(tag, date, annotated=False):
+    commit = {"oid": f"sha-{tag}", "committedDate": f"{date}T00:00:00Z"}
+    return {"name": tag, "target": {"target": commit} if annotated else commit}
 
-        self.assertEqual(["v2.4.12"], found)
 
-    def test_tags_are_put_in_version_order_whatever_order_they_arrive_in(self):
-        responses = {
-            "/repos/acme/app/releases?per_page=30": [],
-            "/repos/acme/app/tags?per_page=100": [
-                {"name": n} for n in ("v9.9.9", "start", "v10.0.0-rc1", "v10.0.0", "v10.0.1")
-            ],
-        }
-        with mock.patch.object(wp, "get", api(responses)):
-            found = wp.candidates("acme/app", None, wp.STABLE_TAG)
+def connection(nodes, more=False):
+    return {"repository": {"connection": {"nodes": nodes, "pageInfo": {"hasNextPage": more, "endCursor": "c"}}}}
 
-        self.assertEqual(["v10.0.1", "v10.0.0", "v9.9.9"], found)
 
-    def test_tries_no_more_than_the_cap(self):
-        tags = [f"1.0.{i}" for i in range(20)]
-        responses = {"/repos/acme/app/releases?per_page=30": releases(*tags)}
-        with mock.patch.object(wp, "get", api(responses)):
-            found = wp.candidates("acme/app", None, wp.STABLE_TAG)
+def answering(releases, tags=()):
+    """A graphql stand-in: the releases query answers `releases`, the tags query `tags`."""
+    def answer(query, variables, token):
+        return connection(list(releases) if query is wp.RELEASES else list(tags))
+    return answer
 
-        self.assertEqual(wp.CANDIDATES, len(found))
-        self.assertEqual("1.0.19", found[0])
+
+PROJECT = {"name": "app", "repo": "acme/app", "lock": "composer.lock", "target_php": "8.4"}
+
+
+class VersionsTest(unittest.TestCase):
+    def test_reads_releases_and_leaves_out_drafts_and_flagged_prereleases(self):
+        releases = [node("2.0.0", "2026-09-01", pre=True), node("1.9.0", "2026-08-01", draft=True), node("1.8.0", "2026-07-01")]
+        with mock.patch.object(wp, "graphql", answering(releases)):
+            found = wp.versions("acme/app", "t", wp.STABLE_TAG, "2023-10-01")
+
+        self.assertEqual([("1.8.0", "sha-1.8.0", "2026-07-01")], [(v["tag"], v["commit"], v["date"]) for v in found])
+
+    def test_a_project_without_releases_is_read_from_its_tags(self):
+        tags = [tag_node("v2.0.0", "2026-09-01", annotated=True), tag_node("start", "2020-01-01")]
+        with mock.patch.object(wp, "graphql", answering([], tags)):
+            found = wp.versions("acme/app", "t", wp.STABLE_TAG, "2023-10-01")
+
+        self.assertEqual([("v2.0.0", "sha-v2.0.0")], [(v["tag"], v["commit"]) for v in found])
+
+    def test_needs_a_token(self):
+        with self.assertRaises(SystemExit):
+            wp.graphql("query", {}, None)
+
+
+class LineTest(unittest.TestCase):
+    def test_draws_a_branch_the_way_a_caret_constraint_does(self):
+        self.assertEqual(
+            ["11", "2", "0.3", "0.0.3", "5"],
+            [wp.release_line(t) for t in ("11.4.8", "v2.4.8-p3", "0.3.9", "0.0.3", "RELEASE_5_2_3")],
+        )
+
+    def test_groups_versions_by_line_highest_first(self):
+        found = [{"tag": t, "commit": t, "date": "2026-01-01"} for t in ("10.6.17", "11.4.8", "10.6.18")]
+
+        grouped = wp.lines(found)
+
+        self.assertEqual({"11": ["11.4.8"], "10": ["10.6.18", "10.6.17"]}, {k: [v["tag"] for v in vs] for k, vs in grouped.items()})
+
+    def test_a_line_name_carries_no_dot(self):
+        self.assertEqual(("drupal-v10", "lib-v0-3"), (wp.line_name("drupal", "10"), wp.line_name("lib", "0.3")))
+
+    def test_counts_years_back_from_the_run(self):
+        self.assertEqual(("2023-10-01", "2025-02-28"), (wp.years_before("2026-10-01", 3), wp.years_before("2028-02-29", 3)))
 
 
 class ResolveTest(unittest.TestCase):
-    def test_takes_the_highest_release_that_carries_both_files(self):
-        responses = {
-            "/repos/acme/app/releases?per_page=30": releases("3.0.0", "2.9.0"),
-            "/repos/acme/app/git/ref/tags/3.0.0": {"object": {"type": "commit", "sha": "aaa"}},
-            "/repos/acme/app/git/ref/tags/2.9.0": {"object": {"type": "commit", "sha": "bbb"}},
-            # 3.0.0 stopped committing its lock file.
-            "/repos/acme/app/contents/composer.json?ref=aaa": {},
-            "/repos/acme/app/contents/composer.lock?ref=bbb": {},
-            "/repos/acme/app/contents/composer.json?ref=bbb": {},
-        }
-        project = {"name": "app", "repo": "acme/app", "lock": "composer.lock", "target_php": "8.4"}
-        with mock.patch.object(wp, "get", api(responses)):
-            resolved = wp.resolve(project, None)
+    def resolve(self, releases, with_lock, cutoff="2023-10-01"):
+        def files(repo, sha, lock, token):
+            return sha in {f"sha-{t}" for t in with_lock}
+        with mock.patch.object(wp, "graphql", answering(releases)), mock.patch.object(wp, "has_files", files):
+            return wp.resolve(PROJECT, "t", cutoff)
 
-        self.assertEqual(("2.9.0", "bbb"), (resolved["tag"], resolved["commit"]))
+    def test_a_backport_published_last_does_not_become_the_row(self):
+        # 7.4.5 is the newest release by date; the row is still the 8.x line.
+        entries, _ = self.resolve(
+            [node("7.4.5", "2026-09-20"), node("8.3.0", "2026-09-01"), node("8.2.0", "2026-06-01")],
+            with_lock={"7.4.5", "8.3.0", "8.2.0"},
+        )
 
-    def test_a_project_with_no_usable_release_fails_the_run(self):
-        responses = {"/repos/acme/app/releases?per_page=30": releases("1.0.0")}
-        project = {"name": "app", "repo": "acme/app", "lock": "composer.lock", "target_php": "8.4"}
-        with mock.patch.object(wp, "get", api(responses)), self.assertRaises(SystemExit):
-            wp.resolve(project, None)
+        self.assertEqual(("release", "8.3.0", "8"), (entries[0]["kind"], entries[0]["tag"], entries[0]["line"]))
+
+    def test_never_steps_down_to_an_older_line_for_the_row(self):
+        with self.assertRaises(SystemExit) as raised:
+            self.resolve([node("8.3.0", "2026-09-01"), node("7.4.5", "2026-09-20")], with_lock={"7.4.5"})
+
+        self.assertIn("newest line 8.x", str(raised.exception))
+
+    def test_takes_the_highest_release_of_the_line_that_carries_a_lock(self):
+        entries, _ = self.resolve([node("8.3.0", "2026-09-01"), node("8.2.0", "2026-06-01")], with_lock={"8.2.0"})
+
+        self.assertEqual("8.2.0", entries[0]["tag"])
+
+    def test_reads_every_older_line_still_releasing_and_no_other(self):
+        entries, skipped = self.resolve(
+            [
+                node("8.3.0", "2026-09-01"),
+                node("7.4.5", "2026-09-20"),
+                node("6.9.9", "2022-01-01"),   # last released before the window
+            ],
+            with_lock={"8.3.0", "7.4.5", "6.9.9"},
+        )
+
+        self.assertEqual(
+            [("release", "app", "8.3.0"), ("line", "app-v7", "7.4.5")],
+            [(e["kind"], e["name"], e["tag"]) for e in entries],
+        )
+        self.assertEqual("app", entries[1]["parent"])
+        self.assertEqual([], skipped)
+
+    def test_an_older_line_without_a_lock_is_listed_as_skipped(self):
+        entries, skipped = self.resolve([node("8.3.0", "2026-09-01"), node("7.4.5", "2026-09-20")], with_lock={"8.3.0"})
+
+        self.assertEqual(1, len(entries))
+        self.assertEqual([{"project": "app", "line": "7", "tried": ["7.4.5 (no composer.lock)"]}], skipped)
+
+    def test_a_project_with_no_stable_release_fails_the_run(self):
+        with self.assertRaises(SystemExit):
+            self.resolve([node("1.0.0-rc1", "2026-09-01")], with_lock=set())
 
 
 class StarterVersionTest(unittest.TestCase):

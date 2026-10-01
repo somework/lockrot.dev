@@ -28,6 +28,8 @@ import json
 import sys
 from pathlib import Path
 
+from watch_plan import release_line
+
 # Cloudflare serves reports/<name>.html at reports/<name> and redirects the .html form there
 # (`html_handling: auto-trailing-slash` in wrangler.viewer.jsonc), so the link skips the 307.
 VIEWER = "https://viewer.lockrot.dev/reports/watch"
@@ -88,14 +90,15 @@ A project's name opens the full report lockrot wrote for it; a column heading so
 *Flagged* is every package with one of the six verdicts to its right — each package has exactly one,
 so they add up — and is the number at the top of that report; the percentage is its share of the
 lock. {composer_note}A small number beside a count is how far it moved since the previous run, and *new* marks a project
-that cut a release in between. Each row names the release it read and the commit that release points
+that cut a release in between; *moved* marks one whose newest line changed, and that row is not
+compared with the previous run. Each row names the release it read and the commit that release points
 at, so any number here can be
 checked against the same two files lockrot read. A release rather than a branch head on purpose: a
 release is what people install, and it is the only version of a project that two weeks of this page
 can be compared across — the tip of a development branch moves for reasons that have nothing to do
 with dependency rot.
 
-## What a new project gets today
+{lines_section}## What a new project gets today
 
 A project started this morning has no history to rot in, and that is exactly why it is worth
 measuring: its dependency tree is whatever the current constraints resolve to, and the answer
@@ -261,6 +264,8 @@ def rows(manifest: dict, capsules: dict, composer: dict | None = None) -> list[d
                 "package": project.get("package", ""),
                 "packagist_url": project.get("packagist_url", ""),
                 "version": project.get("version", ""),
+                "line": project.get("line") or (release_line(project["tag"]) if project.get("tag") else ""),
+                "parent": project.get("parent", ""),
                 "command": project.get("command", ""),
                 "advisories": advisories(report),
                 "tag": project.get("tag", ""),
@@ -386,25 +391,52 @@ def new_mark(moved: bool, was: str, since: str | None) -> str:
     return f' <span class="lockrot-new" title="{html.escape(was)} on {html.escape(since or "")}">new</span>'
 
 
-def project_cell(row: dict) -> str:
+def same_line(row: dict, before: dict | None) -> dict | None:
+    """The previous run's row, when it read the same release line; otherwise nothing to compare.
+
+    A project whose newest line changed — Drupal 11 to 12 — reports a different lock, and every
+    number on its row moved for that reason alone. The history has no line column: a line is read
+    off the tag, the same way the plan drew it.
+    """
+    if before is None or row["kind"] == "starter" or not before.get("tag"):
+        return before
+    return before if release_line(before["tag"]) == row["line"] else None
+
+
+def line_moved(row: dict, before: dict | None) -> bool:
+    return before is not None and same_line(row, before) is None
+
+
+def project_cell(row: dict, older: int = 0) -> str:
     owner, _, repo = row["repo"].partition("/")
+    line = f' <span class="lockrot-line">{html.escape(row["line"])}.x</span>' if row["kind"] == "line" else ""
+    more = (
+        f' <a class="lockrot-lines" href="#older-lines-still-releasing">+{older} '
+        f"line{'' if older == 1 else 's'}</a>"
+        if older else ""
+    )
+    sort = f'{row["repo"].lower()} {row["line"]:>8}' if row["kind"] == "line" else row["repo"].lower()
     return (
-        f'<td data-sort="{html.escape(row["repo"].lower(), quote=True)}">'
+        f'<td data-sort="{html.escape(sort, quote=True)}">'
         f'<a href="{VIEWER}/{html.escape(row["name"], quote=True)}" title="Open the report lockrot wrote">'
-        f'<span class="lockrot-owner">{html.escape(owner)}/</span>{html.escape(repo)}</a></td>'
+        f'<span class="lockrot-owner">{html.escape(owner)}/</span>{html.escape(repo)}</a>{line}{more}</td>'
     )
 
 
 def release_cell(row: dict, before: dict | None, since: str | None) -> str:
+    """The release and its commit. `before` is the previous run's row, whatever line it read."""
     repo_url = f"https://github.com/{row['repo']}"
     tag_url = row.get("tag_url") or f"{repo_url}/releases/tag/{row['tag']}"
     commit_url = row.get("commit_url") or f"{repo_url}/tree/{row['commit']}"
-    moved = before is not None and before.get("tag") != row["tag"]
+    if line_moved(row, before):
+        was = f"{before['tag']} ({release_line(before['tag'])}.x) on {since or ''}"
+        mark = f' <span class="lockrot-new" title="{html.escape(was)}">moved</span>'
+    else:
+        mark = new_mark(before is not None and before.get("tag") != row["tag"], (before or {}).get("tag", ""), since)
     return (
         f'<td class="lockrot-release"><a href="{html.escape(tag_url, quote=True)}">{html.escape(row["tag"])}</a>'
         f' <a class="lockrot-commit" href="{html.escape(commit_url, quote=True)}">'
-        f"<code>{html.escape(row['commit'][:7])}</code></a>"
-        f"{new_mark(moved, (before or {}).get('tag', ''), since)}</td>"
+        f"<code>{html.escape(row['commit'][:7])}</code></a>{mark}</td>"
     )
 
 
@@ -478,13 +510,28 @@ def totals(rows_: list[dict], previous: dict, since: str | None, label: str, cou
     return "<tfoot><tr>" + "".join(cells) + "</tr></tfoot>"
 
 
-def table(rows_: list[dict], previous: dict | None = None, since: str | None = None) -> str:
-    """The applications: one row per project, read from the release it names."""
-    previous = previous or {}
+def comparable(rows_: list[dict], previous: dict) -> dict:
+    """The previous run's rows these rows can be compared with: same project, same line."""
+    found = {r["name"]: same_line(r, previous.get(r["name"])) for r in rows_}
+    return {name: before for name, before in found.items() if before is not None}
+
+
+def table(
+    rows_: list[dict],
+    previous: dict | None = None,
+    since: str | None = None,
+    label: str = "projects",
+    older: dict | None = None,
+) -> str:
+    """The applications, one row per project, read from the release it names; or, with
+    label="older lines", one row per older line still releasing."""
+    raw = previous or {}
+    previous = comparable(rows_, raw)
+    older = older or {}
     body = []
     for row in order(rows_):
         before = previous.get(row["name"])
-        cells = [project_cell(row), release_cell(row, before, since)]
+        cells = [project_cell(row, older.get(row["name"], 0)), release_cell(row, raw.get(row["name"]), since)]
         cells.append(count_cell(int(row["packages"]), (before or {}).get("packages"), since))
         cells.append(flagged_cell(row, before, since))
         cells.append(missed_cell(row, before, since))
@@ -495,7 +542,7 @@ def table(rows_: list[dict], previous: dict | None = None, since: str | None = N
         '<div class="lockrot-watch"><table>'
         + header(["Project", "Release"], COLUMNS)
         + "<tbody>" + "".join(body) + "</tbody>"
-        + totals(rows_, previous, since, f"{len(rows_)} projects", COLUMNS)
+        + totals(rows_, previous, since, f"{len(rows_)} {label}", COLUMNS)
         + "</table></div>"
     )
 
@@ -507,7 +554,7 @@ def starter_table(rows_: list[dict], previous: dict | None = None, since: str | 
     package that is perfectly healthy apart from a CVE is in the document. The applications are
     read without it, where such a package is not a finding and never reaches the page.
     """
-    previous = previous or {}
+    previous = comparable(rows_, previous or {})
     body = []
     for row in order(rows_):
         before = previous.get(row["name"])
@@ -541,6 +588,9 @@ def since_line(rows_: list[dict], previous: dict, since: str | None) -> str:
     then = {r["lockrot"] for r in previous.values()}
     now = rows_[0]["lockrot"]
     parts = [f"Compared with the run of {since}:"]
+    # A row whose newest line changed is named, and left out of every sum below.
+    moved_lines = [(r, previous[r["name"]]) for r in rows_ if line_moved(r, previous.get(r["name"]))]
+    previous = comparable(rows_, previous)
 
     common = [r for r in rows_ if r["name"] in previous]
     was, now_flagged = sum(flagged(previous[r["name"]]) for r in common), sum(flagged(r) for r in common)
@@ -567,6 +617,13 @@ def since_line(rows_: list[dict], previous: dict, since: str | None) -> str:
         parts.append(
             f"Since then {len(released)} {'project' if len(released) == 1 else 'projects'} moved to a "
             "new release or starter version: " + ", ".join(released) + "."
+        )
+    if moved_lines:
+        parts.append(
+            " ".join(
+                f"{r['name']} moved from {release_line(before['tag'])}.x to {r['line']}.x, so its row is not compared."
+                for r, before in moved_lines
+            )
         )
     if then != {now}:
         parts.append(
@@ -642,7 +699,49 @@ def composer_note(rows_: list[dict]) -> str:
     )
 
 
-def run_settings(reports: dict) -> dict:
+def lines_section(
+    lines_: list[dict], releases: list[dict], previous: dict, since: str | None, run: dict, window: int
+) -> str:
+    """The older release lines still releasing: a table of their own, kept out of the totals above.
+
+    Empty when the run read none and skipped none, so a run from before lines were read prints no
+    heading over nothing. A line skipped because its releases carry no lock file is named here, not
+    dropped: a project that seems to have one line may have two the run could not read.
+    """
+    skipped = run.get("skipped_lines", [])
+    if not lines_ and not skipped:
+        return ""
+    repos = {r["name"]: r["repo"] for r in releases}
+    parents = sorted({r["parent"] for r in lines_})
+    parts = [
+        "## Older lines still releasing\n\n"
+        f"{len(parents)} of the {len(releases)} applications ship more than one release line at a "
+        "time. The table above reads each one's newest line; this one reads every older line with a "
+        f"release in the last {window} years — the window lockrot itself gives a release branch "
+        "before it calls the branch left behind (`left-behind`, signal S8), so a lock on any of these "
+        "lines is not yet told to move. A project counts once in the totals above; these rows are "
+        "not in them.\n"
+    ]
+    if lines_:
+        parts.append(table(lines_, previous, since, label="older lines"))
+    if skipped:
+        def tried(attempts: list[str]) -> str:
+            tags = [attempt.split(" (", 1)[0] for attempt in attempts]
+            rest = f" and {len(tags) - 2} more" if len(tags) > 2 else ""
+            return ", ".join(tags[:2]) + rest
+
+        named = "; ".join(
+            f"{repos.get(m['project'], m['project'])} {m['line']}.x (tried {tried(m['tried'])})"
+            for m in skipped
+        )
+        parts.append(
+            "Released inside the window, but with no lock file at the releases the run tried, so "
+            f"with no row: {named}."
+        )
+    return "\n\n".join(parts) + "\n\n"
+
+
+def run_settings(reports: dict, manifest: dict | None = None) -> dict:
     """What the page says about how the run was made, read from the run rather than written into
     the prose: the PHP version every report was measured against and the years `silent` takes.
 
@@ -667,13 +766,23 @@ def run_settings(reports: dict) -> dict:
                 f"build_watch_page: lockrot flags {run.get('flagged_verdicts')}, the page has columns "
                 f"for {COLUMNS}; give the page the new verdict before publishing it"
             )
+    warn = {run.get("thresholds", {}).get("release-warn-years") for run in runs}
+    if len(warn) != 1 or None in warn:
+        raise SystemExit(f"build_watch_page: the reports disagree on release-warn-years: {sorted(map(str, warn))}")
+    window = warn.pop()
+    planned = (manifest or {}).get("run", {}).get("line_window_years")
+    if planned is not None and planned != window:
+        raise SystemExit(
+            f"build_watch_page: the plan read older lines back {planned} years, lockrot's "
+            f"release-warn-years is {window}; change LINE_WINDOW_YEARS in watch_plan.py to match"
+        )
     release, push = next(iter(spans))
     span = (
         f"no stable release and no push to any branch for {release} years"
         if release == push
         else f"no stable release for {release} years and no push to any branch for {push}"
     )
-    return {"target_php": targets.pop(), "silent_span": span}
+    return {"target_php": targets.pop(), "silent_span": span, "window": window}
 
 
 def lockless(projects: dict, rows_: list[dict]) -> str:
@@ -719,15 +828,19 @@ def main(argv: list[str]) -> int:
 
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     reports = read_capsules(args.capsules)
-    settings = run_settings(reports)
+    settings = run_settings(reports, manifest)
     rows_ = rows(manifest, reports, read_composer(args.capsules))
     since, previous = previous_run(read_history(args.history), manifest["run"]["date"])
     write_history(args.history, rows_)
 
     releases = [row for row in rows_ if row["kind"] == "release"]
+    lines_ = [row for row in rows_ if row["kind"] == "line"]
     starters = [row for row in rows_ if row["kind"] == "starter"]
     if not releases:
         raise SystemExit("build_watch_page: the run read no releases")
+    older = {}
+    for row in lines_:
+        older[row["parent"]] = older.get(row["parent"], 0) + 1
 
     args.page.parent.mkdir(parents=True, exist_ok=True)
     args.page.write_text(
@@ -736,20 +849,22 @@ def main(argv: list[str]) -> int:
             starters=len(starters),
             date=manifest["run"]["date"],
             version=rows_[0]["lockrot"],
-            composer_note=composer_note(rows_),
-            headline=headline(releases),
-            lockless=lockless(json.loads(args.projects.read_text(encoding="utf-8")), rows_),
-            **settings,
             since=since_line(rows_, previous, since),
-            table=table(releases, previous, since),
+            table=table(releases, previous, since, older=older),
+            lines_section=lines_section(lines_, releases, previous, since, manifest["run"], settings["window"]),
             starter_table=starter_table(starters, previous, since) if starters else "",
             history="assets/data/watch/history.csv",
             archive=archive(read_history(args.history)),
+            composer_note=composer_note(rows_),
+            headline=headline(releases),
+            lockless=lockless(json.loads(args.projects.read_text(encoding="utf-8")), rows_),
+            target_php=settings["target_php"],
+            silent_span=settings["silent_span"],
         ),
         encoding="utf-8",
     )
     print(
-        f"build-watch-page: {len(releases)} releases and {len(starters)} starters, "
+        f"build-watch-page: {len(releases)} releases, {len(lines_)} older lines and {len(starters)} starters, "
         f"run {manifest['run']['date']}, compared with {since or 'nothing'}"
     )
     return 0

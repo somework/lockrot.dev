@@ -253,7 +253,7 @@ def with_run(target="8.4", release=5, push=5, flagged=None):
     rep = report()
     rep["run"] = {
         "target_php": target,
-        "thresholds": {"release-high-years": release, "push-high-years": push},
+        "thresholds": {"release-high-years": release, "push-high-years": push, "release-warn-years": 3},
         "flagged_verdicts": list(bw.COLUMNS) if flagged is None else flagged,
     }
     return rep
@@ -298,6 +298,71 @@ class SettingsTest(unittest.TestCase):
         projects = {"starters": [{"name": n, "title": n.upper(), "no_lock_in_repository": True} for n in "abc"]}
 
         self.assertEqual("A, B and C", bw.lockless(projects, rows))
+
+
+def line_manifest(parent="drupal", tag="10.6.18", date="2026-09-22"):
+    return {
+        "kind": "line", "name": f"{parent}-v{tag.split('.')[0]}", "parent": parent, "repo": f"acme/{parent}",
+        "tag": tag, "commit": "c0ffee1234567890", "line": tag.split(".")[0],
+    }
+
+
+class LinesTest(unittest.TestCase):
+    def test_a_row_whose_newest_line_changed_is_marked_and_not_compared(self):
+        rows = bw.rows(manifest("one", tag="12.0.0"), {"one": report({"silent": 5})})
+        previous = {"one": history_row("one", tag="11.4.8", silent=1)}
+
+        table = bw.table(rows, previous, "2026-09-15")
+
+        self.assertIn('<span class="lockrot-new" title="11.4.8 (11.x) on 2026-09-15">moved</span>', table)
+        self.assertNotIn("lockrot-delta", table)
+        self.assertIn("one moved from 11.x to 12.x, so its row is not compared.", bw.since_line(rows, previous, "2026-09-15"))
+        self.assertIn("no total moved.", bw.since_line(rows, previous, "2026-09-15"))
+
+    def test_a_new_release_on_the_same_line_is_still_compared(self):
+        rows = bw.rows(manifest("one", tag="11.4.9"), {"one": report({"silent": 5})})
+
+        table = bw.table(rows, {"one": history_row("one", tag="11.4.8", silent=1)}, "2026-09-15")
+
+        self.assertIn(">new</span>", table)
+        self.assertIn("lockrot-delta-up", table)
+
+    def test_older_lines_get_their_own_table_and_stay_out_of_the_totals(self):
+        m = manifest("drupal", tag="11.4.8")
+        m["projects"].append(line_manifest())
+        rows = bw.rows(m, {"drupal": report({"silent": 1}), "drupal-v10": report({"silent": 4})})
+        releases = [r for r in rows if r["kind"] == "release"]
+        lines_ = [r for r in rows if r["kind"] == "line"]
+
+        main = bw.table(releases, older={"drupal": 1})
+        section = bw.lines_section(lines_, releases, {}, None, {"skipped_lines": []}, 3)
+
+        self.assertIn('<a class="lockrot-lines" href="#older-lines-still-releasing">+1 line</a>', main)
+        self.assertIn("<td>1 projects</td>", main)
+        self.assertIn("## Older lines still releasing", section)
+        self.assertIn("1 of the 1 applications ship more than one release line", section)
+        self.assertIn("a release in the last 3 years", section)
+        self.assertIn('<span class="lockrot-line">10.x</span>', section)
+        self.assertIn("<td>1 older lines</td>", section)
+
+    def test_a_run_with_no_lines_prints_no_section(self):
+        self.assertEqual("", bw.lines_section([], [], {}, None, {}, 3))
+
+    def test_a_skipped_line_is_named_not_dropped(self):
+        releases = bw.rows(manifest("drupal"), {"drupal": report()})
+        run = {"skipped_lines": [{"project": "drupal", "line": "7", "tried": [f"7.10{i} (no composer.lock)" for i in range(4)]}]}
+
+        section = bw.lines_section([], releases, {}, None, run, 3)
+
+        self.assertIn("acme/drupal 7.x (tried 7.100, 7.101 and 2 more)", section)
+
+    def test_the_plan_window_must_be_lockrots(self):
+        rep = with_run()
+        rep["run"]["thresholds"]["release-warn-years"] = 3
+
+        self.assertEqual(3, bw.run_settings({"one": rep}, {"run": {"line_window_years": 3}})["window"])
+        with self.assertRaises(SystemExit):
+            bw.run_settings({"one": rep}, {"run": {"line_window_years": 2}})
 
 
 class CompareTest(unittest.TestCase):
@@ -358,7 +423,7 @@ class CompareTest(unittest.TestCase):
         self.assertIn("lockrot itself moved from 0.10.0 to 0.11.0", line)
 
     def test_the_summary_names_the_projects_that_released(self):
-        rows = bw.rows(manifest("one", tag="v2.0.0"), {"one": report()})
+        rows = bw.rows(manifest("one", tag="v1.1.0"), {"one": report()})
 
         line = bw.since_line(rows, {"one": history_row("one", tag="v1.0.0")}, "2026-09-15")
 

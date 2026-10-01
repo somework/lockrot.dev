@@ -227,18 +227,26 @@ like a browser's — check with a browser User-Agent and `Accept: text/html`, no
 Every Monday `.github/workflows/rot-watch.yml` runs lockrot's newest release over the
 releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What each piece is for:
 
-- **`plan` finds each project's newest stable release, not a branch head.** A release is what people
-  install, and it is the only version two runs can be compared across; a development branch moves
-  for reasons that have nothing to do with dependency rot. Three tries per project — GitHub's
-  `releases/latest`, then the releases list filtered by `STABLE_TAG` (a version core, optionally a
-  `-p3`-style patch suffix, never alpha, beta, RC or dev), then the tags — tried highest version
-  first (`watch_plan.version_key`), never in the API's order: releases are listed by the date they
-  were made, so a backport to an older branch would otherwise win. The release it settles on must
-  actually carry `composer.json` and `composer.lock`, which several projects do not.
-  A project where none of the newest six releases does fails the run on purpose: dropping it would
-  publish a page quietly one project smaller with a total that moved for an unstated reason.
-  The tag, the commit and the date go into the run's manifest, from there into the page's table and
-  into the band above every published report.
+- **`plan` finds each project's newest stable release line, not a branch head.** A release is
+  what people install, and it is the only version two runs can be compared across. The versions
+  come from GitHub GraphQL with their commit dates — the project's releases (a draft or a release
+  flagged pre-release is not one), or its tags when it publishes none — filtered by `STABLE_TAG`
+  (a version core, optionally a `-p3`-style patch suffix, never alpha, beta, RC or dev), and are
+  grouped into release lines the way lockrot's S8 draws a branch (`watch_plan.release_line`: the
+  major from 1.0 up). The row is the newest line's highest version, never the one published last:
+  a backport to an older line would otherwise turn the row into another line of the project. It must
+  carry `composer.json` and `composer.lock`; the plan tries six versions of that line and never steps
+  down to another line — a project with none fails the run on purpose, rather than publishing a page
+  quietly one project smaller. When the newest line itself changes (Drupal 11 to 12) the page marks
+  the row *moved* and compares nothing on it.
+- **Older lines still releasing get reports of their own.** Every older line whose newest release is
+  inside `LINE_WINDOW_YEARS` (3, lockrot's default `release-warn-years`, the window S8 gives a branch
+  before calling it left behind) is a `kind: "line"` entry named `<project>-v<line>` (no dot: the
+  viewer serves `<name>` by adding `.html`). They have a table of their own on `/watch/` and stay out
+  of the totals; a line whose releases carry no lock file is listed in the manifest's `skipped_lines`
+  and named on the page. `build_watch_page.py` fails when the reports' `release-warn-years` and the
+  plan's window disagree. On 2026-10-01 this was 20 lines beside 20 releases, which doubles the run's
+  lockrot jobs.
 - **The run has two halves, and the second one has no repository to read.** `projects` are read
   from a release; `starters` are *created* by the run — `composer create-project`, the starter
   package pinned to its newest stable version on Packagist, then `composer update --no-install`, so
