@@ -247,7 +247,9 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
   (`watch_plan.still_releasing`) when it released inside `LINE_WINDOW_YEARS` — lockrot's default
   `release-warn-years`, the window S8 gives a branch before calling it left behind — *and* after the
   next line up first did; the second condition is what tells Drupal 10 beside 11 from BookStack's
-  yearly majors, each finished the day the next began. Each is a `kind: "line"` entry named
+  yearly majors, each finished the day the next began. The plan reads back to the window's start,
+  and reads a project's whole history only when that second condition hangs on a release older
+  than the window (the next line up's first release may not have been read). Each is a `kind: "line"` entry named
   `<project>-v<line>` (no dot: the viewer serves `<name>` by adding `.html`), with a table of its own
   on `/watch/`, out of every total and out of the "Compared with" sentence. A line whose releases
   carry no lock file is listed in the manifest's `skipped_lines` and named on the page.
@@ -328,9 +330,10 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
 
 ## Deploy
 
-`deploy.yml` builds and runs `wrangler deploy` twice — the site, then the viewer with
+`deploy.yml` builds both sites, then runs `wrangler deploy` twice — the site, then the viewer with
 `--config wrangler.viewer.jsonc`, skipped when a lockrot older than 0.10.0 left no renderer to
-build one from — on: a push to `main`, a `repository_dispatch` with
+build one from. Both are built before either goes out, so a viewer build that fails (the archive
+`/watch/` links, say) deploys neither. It runs on: a push to `main`, a `repository_dispatch` with
 `event_type: lockrot-release` (to be sent by lockrot's `phar.yml` after a release), a weekly
 schedule (the safety net for a dispatch that never arrived), or a manual run.
 After `wrangler deploy` the run announces the changed pages to the IndexNow engines — Bing,

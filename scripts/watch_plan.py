@@ -303,13 +303,17 @@ def line_name(project: str, line: str) -> str:
     return f"{project}-v{line.replace('.', '-')}"
 
 
-def still_releasing(line: str, by_line: dict[str, list[dict]], cutoff: str) -> bool:
+def still_releasing(line: str, by_line: dict[str, list[dict]], cutoff: str, complete: bool) -> bool | None:
     """Whether an older line is maintained beside a newer one, rather than finished when it came.
 
     Two conditions, both lockrot's S8: the line has released inside the window, and it released
     *after* the next line up first did — S8 calls a branch left behind only once a higher branch has
     released since, and the converse is what makes two lines concurrent. BookStack's v25 shipped its
     last release three days before v26's first, so it is a line that ended, not one still kept.
+
+    `complete` says whether `by_line` is the project's whole history or only what was read back to
+    the window's start. In the second case the next line's earliest release seen need not be its
+    first — that one can be older than the window — so a "no" resting on it is None, undecided.
     """
     last = max(v["date"] for v in by_line[line])
     if last < cutoff:
@@ -319,7 +323,9 @@ def still_releasing(line: str, by_line: dict[str, list[dict]], cutoff: str) -> b
     if not higher:
         return False
     next_up = min(higher, key=lambda other: version_key(by_line[other][0]["tag"]))
-    return last > min(v["date"] for v in by_line[next_up])
+    if last > min(v["date"] for v in by_line[next_up]):
+        return True
+    return False if complete else None
 
 
 def resolve(project: dict, token: str | None, cutoff: str) -> tuple[list[dict], list[dict]]:
@@ -339,6 +345,10 @@ def resolve(project: dict, token: str | None, cutoff: str) -> tuple[list[dict], 
         )
     by_line = lines(found)
     newest = max(by_line, key=lambda line: version_key(by_line[line][0]["tag"]))
+    if any(still_releasing(line, by_line, cutoff, complete=False) is None for line in by_line if line != newest):
+        # An older line's answer hangs on when the next line up began, which can be before the
+        # window: read the whole history (a cutoff of "" never ends the reading early) and ask again.
+        by_line = lines(versions(repo, token, pattern, ""))
 
     main, tried = pick(project, by_line[newest], token)
     if main is None:
@@ -349,7 +359,8 @@ def resolve(project: dict, token: str | None, cutoff: str) -> tuple[list[dict], 
         )
     entries, skipped = [{"kind": "release", **main}], []
 
-    older = [line for line in by_line if line != newest and still_releasing(line, by_line, cutoff)]
+    # Every answer is decided now: read to the window none was undecided, or read whole.
+    older = [line for line in by_line if line != newest and still_releasing(line, by_line, cutoff, complete=True)]
     for line in sorted(older, key=lambda line: version_key(by_line[line][0]["tag"]), reverse=True):
         entry, tried = pick(project, by_line[line], token)
         if entry is None:

@@ -156,6 +156,42 @@ class ResolveTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.resolve([node("1.0.0-rc1", "2026-09-01")], with_lock=set())
 
+    def paged(self, first, second):
+        """A graphql stand-in serving the releases in two pages; counts the pages asked for."""
+        asked = []
+
+        def answer(query, variables, token):
+            asked.append(variables["after"])
+            return connection(first, more=True) if variables["after"] is None else connection(second)
+        return answer, asked
+
+    def test_reads_the_whole_history_when_the_next_line_began_before_the_window(self):
+        # The first page reaches past the window's start (7.3.0), so the window's read stops there
+        # and sees 8.x begin in 2025, after 7.x last released. 8.0.0, on the second page, shows that
+        # 8.x began in 2023: 7.x has released since, so it is still kept.
+        answer, asked = self.paged(
+            [node("8.3.0", "2026-09-01"), node("8.2.0", "2025-06-01"), node("7.4.5", "2025-01-01"), node("7.3.0", "2023-06-01")],
+            [node("8.0.0", "2023-03-01"), node("7.0.0", "2021-01-01")],
+        )
+        files = lambda repo, sha, lock, token: True
+        with mock.patch.object(wp, "graphql", answer), mock.patch.object(wp, "has_files", files):
+            entries, _ = wp.resolve(PROJECT, "t", "2023-10-01")
+
+        self.assertEqual(["app", "app-v7"], [e["name"] for e in entries])
+        self.assertIn("c", asked)
+
+    def test_reads_only_to_the_window_when_every_answer_is_decided(self):
+        answer, asked = self.paged(
+            [node("8.3.0", "2026-09-01"), node("7.4.5", "2026-09-20"), node("8.0.0", "2023-03-01")],
+            [node("7.0.0", "2021-01-01")],
+        )
+        files = lambda repo, sha, lock, token: True
+        with mock.patch.object(wp, "graphql", answer), mock.patch.object(wp, "has_files", files):
+            entries, _ = wp.resolve(PROJECT, "t", "2023-10-01")
+
+        self.assertEqual(["app", "app-v7"], [e["name"] for e in entries])
+        self.assertEqual([None], asked)
+
 
 def http_error(code):
     return wp.urllib.error.HTTPError("https://api.github.com/x", code, "x", {}, None)
@@ -261,18 +297,24 @@ class StillReleasingTest(unittest.TestCase):
         # Drupal: 10.x keeps releasing long after 11.0.0.
         by_line = self.grouped(("11.0.0", "2024-08-01"), ("11.4.8", "2026-09-26"), ("10.6.18", "2026-09-26"))
 
-        self.assertTrue(wp.still_releasing("10", by_line, "2023-10-01"))
+        self.assertTrue(wp.still_releasing("10", by_line, "2023-10-01", complete=False))
 
     def test_a_line_that_ended_when_the_next_began_is_not(self):
         # BookStack: v25's last release three days before v26's first.
         by_line = self.grouped(("v26.03", "2026-03-15"), ("v26.09.1", "2026-09-29"), ("v25.12.9", "2026-03-12"))
 
-        self.assertFalse(wp.still_releasing("25", by_line, "2023-10-01"))
+        self.assertIs(False, wp.still_releasing("25", by_line, "2023-10-01", complete=True))
+
+    def test_read_only_to_the_window_that_no_is_undecided(self):
+        # v26.03 is the earliest v26 release read; an earlier one may lie before the window.
+        by_line = self.grouped(("v26.03", "2026-03-15"), ("v26.09.1", "2026-09-29"), ("v25.12.9", "2026-03-12"))
+
+        self.assertIsNone(wp.still_releasing("25", by_line, "2023-10-01", complete=False))
 
     def test_a_line_quiet_since_before_the_window_is_not(self):
         by_line = self.grouped(("8.0.0", "2020-01-01"), ("8.3.0", "2026-09-01"), ("7.4.5", "2023-01-01"))
 
-        self.assertFalse(wp.still_releasing("7", by_line, "2023-10-01"))
+        self.assertIs(False, wp.still_releasing("7", by_line, "2023-10-01", complete=False))
 
 
 class StarterVersionTest(unittest.TestCase):
