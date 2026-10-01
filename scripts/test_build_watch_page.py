@@ -81,7 +81,8 @@ class TableTest(unittest.TestCase):
 
         table = bw.table(rows)
 
-        self.assertIn("<tfoot><tr><td>2 projects</td><td></td><td>17</td><td>7</td>", table)
+        self.assertIn("<tfoot><tr><td>2 projects</td><td></td><td>17</td>", table)
+        self.assertIn('<td class="lockrot-flagged">7 <span class="lockrot-share">41%</span></td><td>7</td>', table)
 
     def test_the_project_name_opens_its_report(self):
         table = bw.table(bw.rows(manifest("one"), {"one": report()}))
@@ -133,6 +134,38 @@ class TableTest(unittest.TestCase):
         self.assertIn('<th data-sort-method="none">Release</th>', table)
 
 
+class FlaggedTest(unittest.TestCase):
+    def test_is_the_six_verdicts_and_nothing_else(self):
+        counts = {"abandoned": 1, "silent": 2, "pinned": 3, "left-behind": 4, "old-promise": 5, "stale": 6}
+        rows = bw.rows(manifest("one"), {"one": report({**counts, "unknown": 7, "finished": 8, "ok": 9})})
+
+        self.assertEqual(21, bw.flagged(rows[0]))
+        self.assertEqual(21, bw.flagged(history_row("one", **{k.replace("-", "_"): v for k, v in counts.items()})))
+
+    def test_shows_the_count_its_share_of_the_lock_and_how_far_it_moved(self):
+        rows = bw.rows(manifest("one"), {"one": report({"abandoned": 2, "stale": 3}, checked=20)})
+
+        table = bw.table(rows, {"one": history_row("one", stale=1)}, "2026-09-15")
+
+        self.assertIn(
+            '<td data-sort="5" class="lockrot-flagged">5 <span class="lockrot-share">25%</span>'
+            ' <span class="lockrot-delta lockrot-delta-up" title="+4 since 2026-09-15">+4</span></td>',
+            table,
+        )
+
+    def test_an_empty_lock_has_no_share_to_divide_by(self):
+        table = bw.table(bw.rows(manifest("one"), {"one": report(checked=0)}))
+
+        self.assertIn('class="lockrot-flagged lockrot-zero">0 <span class="lockrot-share">0%</span>', table)
+
+    def test_the_summary_leads_with_the_flagged_total(self):
+        rows = bw.rows(manifest("one"), {"one": report({"silent": 3})})
+
+        line = bw.since_line(rows, {"one": history_row("one", silent=1)}, "2026-09-15")
+
+        self.assertIn("Compared with the run of 2026-09-15: flagged 1 → 3; `silent` 1 → 3.", line)
+
+
 class CompareTest(unittest.TestCase):
     def test_the_previous_run_is_the_newest_one_before_this(self):
         history = [history_row("one", date=d) for d in ("2026-09-01", "2026-09-08", "2026-09-15")]
@@ -173,7 +206,11 @@ class CompareTest(unittest.TestCase):
 
         table = bw.table(rows, {"one": history_row("one", silent=1)}, "2026-09-15")
 
-        self.assertEqual(1, table.count("lockrot-delta-up"))
+        rows_html = table[table.index("<tbody>"):table.index("</tbody>")].split("<tr>")
+        two = next(r for r in rows_html if "/two" in r)
+        one = next(r for r in rows_html if "/one" in r)
+        self.assertNotIn("lockrot-delta", two)
+        self.assertIn("lockrot-delta-up", one)
         # The total is not compared either: it moved because the list grew.
         self.assertNotIn("lockrot-delta", table[table.index("<tfoot>"):])
 
@@ -183,7 +220,7 @@ class CompareTest(unittest.TestCase):
 
         line = bw.since_line(rows, previous, "2026-09-15")
 
-        self.assertIn("Compared with the run of 2026-09-15: `stale` 6 → 4.", line)
+        self.assertIn("Compared with the run of 2026-09-15: flagged 6 → 4; `stale` 6 → 4.", line)
         self.assertIn("lockrot itself moved from 0.10.0 to 0.11.0", line)
 
     def test_the_summary_names_the_projects_that_released(self):

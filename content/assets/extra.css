@@ -170,6 +170,21 @@ body[data-md-color-scheme="slate"] {
 .md-typeset .lockrot-watch table:not([class]) .lockrot-heat-3 { background-color: color-mix(in srgb, var(--lockrot-heat) 24%, transparent); font-weight: 600; }
 .md-typeset .lockrot-watch table:not([class]) .lockrot-heat-4 { background-color: color-mix(in srgb, var(--lockrot-heat) 36%, transparent); font-weight: 700; }
 
+/* Flagged is the total the verdict columns break down, so it reads as one: heavier, and ruled off
+   from the breakdown on its right. */
+.md-typeset .lockrot-watch table:not([class]) .lockrot-flagged {
+  border-right: 0.05rem solid var(--md-default-fg-color--lightest);
+  font-weight: 600;
+}
+
+/* The flagged share of a lock, beside the count: quiet, it qualifies the number rather than
+   competing with it. */
+.md-typeset .lockrot-watch table:not([class]) .lockrot-share {
+  font-size: 0.78em;
+  font-weight: 400;
+  color: var(--md-default-fg-color--light);
+}
+
 .md-typeset .lockrot-watch table:not([class]) .lockrot-delta {
   margin-left: 0.25em;
   font-size: 0.78em;
