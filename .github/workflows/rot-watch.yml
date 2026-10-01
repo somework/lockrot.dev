@@ -86,7 +86,7 @@ jobs:
           base="https://raw.githubusercontent.com/$REPO/$COMMIT"
           curl -sfL --retry 3 -o work/composer.lock "$base/$LOCK"
           curl -sfL --retry 3 -o work/composer.json "$base/${LOCK%composer.lock}composer.json"
-      - uses: somework/lockrot-action@2b5dd2ed8cb841f171ec20667d0a1d16961494c9 # v1.0.11
+      - uses: somework/lockrot-action@c7d755ff759de3d30d9af5280870d702a1c49d49 # v1.0.13
         with:
           working-directory: work
           # The newest release, verified against the sha256 published with it. This page says which
@@ -163,7 +163,7 @@ jobs:
             # shellcheck disable=SC2086
             composer require --no-install --no-scripts --no-plugins --ignore-platform-reqs $EXTRA
           fi
-      - uses: somework/lockrot-action@2b5dd2ed8cb841f171ec20667d0a1d16961494c9 # v1.0.11
+      - uses: somework/lockrot-action@c7d755ff759de3d30d9af5280870d702a1c49d49 # v1.0.13
         with:
           working-directory: work
           version: latest
@@ -204,11 +204,11 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version-file: .python-version
-      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: watch-manifest
           path: data/reports/watch
-      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: capsule-*
           merge-multiple: true
