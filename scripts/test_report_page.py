@@ -235,12 +235,33 @@ class ComposerViewTest(unittest.TestCase):
 
     def test_refuses_output_that_is_not_composer_audits(self):
         for bad in ({"error": "boom"}, {"advisories": "x", "abandoned": []}, []):
-            with self.subTest(bad=bad), self.assertRaises(SystemExit):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
                 rp.composer_view(bad, "2.10.3")
 
     def test_refuses_a_view_without_a_version(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(ValueError):
             rp.composer_view({"advisories": [], "abandoned": []}, " ")
+
+
+class ComposerMainTest(unittest.TestCase):
+    def test_an_unreadable_audit_stores_the_report_as_not_measured(self):
+        import tempfile
+        from pathlib import Path
+        page = rp.render(
+            {"title": "t", "description": "d", "data": {"report": {}}},
+            "<html><head><title>{{TITLE}}</title><meta name=\"description\" content=\"{{DESCRIPTION}}\"></head>"
+            "<body><style>{{CSS}}</style><script>{{JS}}</script>"
+            '<script id="lockrot-data" type="application/json">{{DATA}}</script></body></html>',
+            "", "",
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            report, capsule, audit = Path(tmp, "r.html"), Path(tmp, "c.json"), Path(tmp, "a.json")
+            report.write_text(page, encoding="utf-8")
+            audit.write_text("::error ::Packagist answered 503", encoding="utf-8")
+
+            rp.main(["report_page.py", str(report), str(capsule), "--composer-audit", str(audit), "--composer-version", "2.10.3"])
+
+            self.assertNotIn("composer", json.loads(capsule.read_text(encoding="utf-8")))
 
 
 if __name__ == "__main__":

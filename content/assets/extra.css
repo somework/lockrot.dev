@@ -95,11 +95,16 @@ body[data-md-color-scheme="slate"] {
 }
 
 .md-typeset .lockrot-watch table:not([class]) {
-  /* Material makes the table its own scroll box, inside a wrapper that also scrolls. Only the wrapper
-     scrolls here: a sticky cell sticks to its nearest scroll box, and the table never moves. */
-  overflow: visible;
   font-size: 0.68rem;
   font-variant-numeric: tabular-nums;
+}
+
+/* Material makes the table its own scroll box and, from JavaScript, wraps it in a second one. Once
+   wrapped, only the wrapper scrolls: a sticky cell sticks to its nearest scroll box, and a table
+   that never scrolls would hold it in place. Unwrapped — no JavaScript — the table keeps Material's
+   own overflow and still scrolls. */
+.md-typeset .lockrot-watch .md-typeset__table > table:not([class]) {
+  overflow: visible;
 }
 
 .md-typeset .lockrot-watch table:not([class]) :is(th, td) {
@@ -281,7 +286,9 @@ body[data-md-color-scheme="slate"] {
   background-color: var(--md-default-fg-color--light);
 }
 
-.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:is([aria-sort="ascending"], [aria-sort="descending"])::after {
+/* The sorted heading keeps its colour under the pointer: same weight as the hover rule above, and
+   later, so it wins. */
+.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"]):is([aria-sort="ascending"], [aria-sort="descending"])::after {
   background-color: var(--md-typeset-a-color);
 }
 
@@ -308,9 +315,33 @@ body[data-md-color-scheme="slate"] {
   cursor: pointer;
 }
 
+/* Material's admonition icon and chevron would make each run a callout; they go, and a plain
+   disclosure mark of the summary's own takes their place, turned when the run is open. */
 .md-typeset details.lockrot-run > summary::before,
 .md-typeset details.lockrot-run > summary::after {
   display: none;
+}
+
+/* Drawn, not a glyph: the triangle characters are a few pixels tall in Roboto. */
+.md-typeset details.lockrot-run .lockrot-run-mark::before {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.6em;
+  margin-right: 0.55em;
+  content: "";
+  background-color: var(--md-typeset-a-color);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transition: transform var(--lockrot-duration-fast) ease-out;
+}
+
+.md-typeset details.lockrot-run[open] .lockrot-run-mark::before {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset details.lockrot-run .lockrot-run-mark::before {
+    transition: none;
+  }
 }
 
 .md-typeset details.lockrot-run > p {

@@ -86,6 +86,31 @@ class ArchiveTest(unittest.TestCase):
 
         self.assertEqual({"abandoned": 9}, self.read("2026-09-08", "one"))
 
+    def test_a_same_day_rerun_that_changed_only_capsules_is_the_one_published(self):
+        write_run(self.repo, "2026-09-08", {"one": 1})
+        commit(self.repo, "run")
+        # The re-run's manifest is byte for byte the first one's; only the capsule moved.
+        (self.repo / wa.RUN_DIR / "one.json").write_text(json.dumps({"abandoned": 7}), encoding="utf-8")
+        commit(self.repo, "rerun")
+        write_run(self.repo, "2026-09-15", {"one": 2})
+        commit(self.repo, "next week")
+
+        wa.lay_out(self.repo, self.out, history(self.repo, "2026-09-08", "2026-09-15"))
+
+        self.assertEqual({"abandoned": 7}, self.read("2026-09-08", "one"))
+
+    def test_a_commit_that_removed_the_run_names_no_run(self):
+        write_run(self.repo, "2026-09-08", {"one": 1})
+        commit(self.repo, "run")
+        run(self.repo, "rm", "-q", "-r", wa.RUN_DIR)
+        commit(self.repo, "removed")
+        write_run(self.repo, "2026-09-15", {"one": 2})
+        commit(self.repo, "next week")
+
+        written = wa.lay_out(self.repo, self.out, history(self.repo, "2026-09-08", "2026-09-15"))
+
+        self.assertEqual({"2026-09-08", "2026-09-15"}, set(written))
+
     def test_a_run_not_yet_committed_comes_from_the_tree(self):
         write_run(self.repo, "2026-09-08", {"one": 1})
         commit(self.repo, "run")

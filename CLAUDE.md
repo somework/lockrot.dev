@@ -230,30 +230,36 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
 - **`plan` finds each project's newest stable release line, not a branch head.** A release is
   what people install, and it is the only version two runs can be compared across. The versions
   come from GitHub GraphQL with their commit dates — the project's releases (a draft or a release
-  flagged pre-release is not one), or its tags when it publishes none — filtered by `STABLE_TAG`
+  flagged pre-release is not one), or its tags when no release is a stable one — filtered by `STABLE_TAG`
   (a version core, optionally a `-p3`-style patch suffix, never alpha, beta, RC or dev), and are
   grouped into release lines the way lockrot's S8 draws a branch (`watch_plan.release_line`: the
   major from 1.0 up). The row is the newest line's highest version, never the one published last:
   a backport to an older line would otherwise turn the row into another line of the project. It must
-  carry `composer.json` and `composer.lock`; the plan tries six versions of that line and never steps
-  down to another line — a project with none fails the run on purpose, rather than publishing a page
-  quietly one project smaller. When the newest line itself changes (Drupal 11 to 12) the page marks
-  the row *moved* and compares nothing on it.
-- **Older lines still releasing get reports of their own.** Every older line whose newest release is
-  inside `LINE_WINDOW_YEARS` (3, lockrot's default `release-warn-years`, the window S8 gives a branch
-  before calling it left behind) is a `kind: "line"` entry named `<project>-v<line>` (no dot: the
-  viewer serves `<name>` by adding `.html`). They have a table of their own on `/watch/` and stay out
-  of the totals; a line whose releases carry no lock file is listed in the manifest's `skipped_lines`
-  and named on the page. `build_watch_page.py` fails when the reports' `release-warn-years` and the
-  plan's window disagree. On 2026-10-01 this was 20 lines beside 20 releases, which doubles the run's
-  lockrot jobs.
+  carry `composer.json` and `composer.lock`; the plan tries `CANDIDATES` versions of that line and
+  never steps down to another line — a project with none fails the run on purpose, rather than
+  publishing a page quietly one project smaller. Every request is retried through a 5xx (`fetch`),
+  and one still failing stops the run: the callers turn "no answer" into public statements ("no lock
+  file at this release"), and a 502 is not one. Paging that runs past `PAGES` stops the run too,
+  rather than reading part of a project. When the newest line itself changes (Drupal 11 to 12) the
+  page marks the row *moved* and compares nothing on it; the line that just became older is compared
+  with the project's row of the week before.
+- **Older lines still kept beside a newer one get reports of their own.** An older line counts
+  (`watch_plan.still_releasing`) when it released inside `LINE_WINDOW_YEARS` — lockrot's default
+  `release-warn-years`, the window S8 gives a branch before calling it left behind — *and* after the
+  next line up first did; the second condition is what tells Drupal 10 beside 11 from BookStack's
+  yearly majors, each finished the day the next began. Each is a `kind: "line"` entry named
+  `<project>-v<line>` (no dot: the viewer serves `<name>` by adding `.html`), with a table of its own
+  on `/watch/`, out of every total and out of the "Compared with" sentence. A line whose releases
+  carry no lock file is listed in the manifest's `skipped_lines` and named on the page.
+  `build_watch_page.py` fails when the plan's window and the `release-warn-years` most reports carry
+  disagree. Each line is one more lockrot job in the matrix; watch the run's length and the token.
 - **The run has two halves, and the second one has no repository to read.** `projects` are read
   from a release; `starters` are *created* by the run — `composer create-project`, the starter
   package pinned to its newest stable version on Packagist, then `composer update --no-install`, so
   a lock file is written and no dependency is downloaded. `--no-scripts` and `--no-plugins` on every
   call: nothing a third party wrote is executed, ever. This is the only way most of the ecosystem
-  can be measured at all — Shopware, Sylius, Craft, Statamic, Pimcore, TYPO3's distribution and
-  WordPress-through-Bedrock commit no lock file anywhere — and it answers a different question: not
+  can be measured at all — the starters marked `no_lock_in_repository` in `projects.json` commit no
+  lock file anywhere — and it answers a different question: not
   what a project shipped, but what a project started this week gets. Starters run with `--all`,
   because a fresh install is mostly `ok` by construction and an advisory rides on an otherwise
   healthy package; the releases do not, and the page says so where it shows the advisory column.
@@ -281,18 +287,24 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
   `composer audit --locked --abandoned=report --format=json` on the same lock before lockrot, and
   `report_page.py --composer-audit` stores what it named (abandoned and advisories, plus the Composer
   version) in the capsule's `composer` key. *Not in `composer audit`* is the flagged packages it names
-  for neither reason; `history.csv` keeps it as `composer_missed`, empty for runs before 2026-09-28
-  (the releases of that run were backfilled from the same commits, the starters could not be). The
-  exit code is a bitmask of findings and Actions runs `bash -e`, so the step catches it and
-  `composer_view` is what fails on output that is not composer audit's. *Flagged* is lockrot's own
-  number (`Verdict::flagged()`, every verdict from `stale` up), the six columns added, and the rows
-  are printed in its order.
+  for neither reason; `history.csv` keeps it as `composer_missed`, empty for the runs that did not
+  ask (the first run with it backfilled its releases from the same commits; starters cannot be
+  backfilled, their lock was never stored). The exit code is a bitmask of findings and Actions runs
+  `bash -e`, so the step catches it; output that is not composer audit's JSON — Packagist's advisory
+  API down for one job — is stored as "not measured" with a warning, and the page shows a dash.
+  Before any of this, `setup-php` is given `github-token: ''`: with a token it writes one into
+  Composer's global auth.json, and lockrot then uses Composer's credential instead of
+  `ROT_WATCH_TOKEN`. *Flagged* is lockrot's own number (`Verdict::flagged()`, every verdict from
+  `stale` up), the six columns added, and the rows are printed in its order.
 - **Every earlier run stays published.** The capsules in `data/reports/watch/` are one week deep;
   `scripts/watch_archive.py` reads every run the history names back out of git (the newest commit
-  holding each date's manifest) and `build-viewer.sh` renders them to `/reports/watch/<date>/<project>`
-  with the current renderer, which reads the 0.10.0 documents fine (checked). It fails a shallow
-  clone and a history date git cannot produce, because `/watch/` links every one of them. The cost
-  is about 11 MB of pages per run on the viewer's host.
+  that changed anything in the run directory, keyed by the date in its manifest) and
+  `build-viewer.sh` renders them to `/reports/watch/<date>/<project>` with the current renderer,
+  which reads the 0.10.0 documents fine (checked). It fails a shallow clone and a history date git
+  cannot produce, because `/watch/` links every one of them. The cost is every run's pages on the
+  viewer's host, re-rendered on each build. The `publish` job empties the run directory before
+  laying the new run out: a capsule the new manifest does not name would otherwise stay behind and
+  fail the build.
 - **The run publishes through a pull request that merges itself, on `ROT_WATCH_PUSH_TOKEN`.** The
   `main` ruleset requires a pull request and a green `build`, and its bypass list is empty — a
   repository owned by a user account is offered no GitHub Actions bypass to put there, so the

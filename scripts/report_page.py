@@ -259,18 +259,19 @@ def composer_view(audit: dict, version: str) -> dict:
     The weekly page counts the packages lockrot flags that Composer's own check says nothing about,
     so the capsule keeps both lists Composer printed — abandoned and with an advisory — and the
     Composer version, which is what the claim is true for. Composer writes an empty map as `[]`.
+    Raises ValueError on anything that is not composer audit's answer.
     """
     if not isinstance(audit, dict) or not {"abandoned", "advisories"} <= audit.keys():
-        raise SystemExit("report_page: the composer audit output has no abandoned and advisories keys")
+        raise ValueError("the composer audit output has no abandoned and advisories keys")
     if not version.strip():
-        raise SystemExit("report_page: no Composer version for the composer audit output")
+        raise ValueError("no Composer version for the composer audit output")
 
     def names(found) -> list[str]:
         if isinstance(found, dict):
             return sorted(found)
         if found == []:
             return []
-        raise SystemExit(f"report_page: unexpected composer audit value {found!r}")
+        raise ValueError(f"unexpected composer audit value {found!r}")
 
     return {
         "version": version.strip(),
@@ -289,11 +290,17 @@ def main(argv: list[str]) -> int:
 
     capsule = extract(args.report.read_text(encoding="utf-8"))
     if args.composer_audit is not None:
+        # A failed composer audit — Packagist's advisory API down for this one job — leaves the
+        # project "not measured" on the page, said aloud in the log, rather than the week without a
+        # page: the report itself is fine, and the page already shows a dash for exactly this.
         try:
             audit = json.loads(args.composer_audit.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as err:
-            raise SystemExit(f"report_page: cannot read the composer audit output: {err}") from err
-        capsule["composer"] = composer_view(audit, args.composer_version)
+            capsule["composer"] = composer_view(audit, args.composer_version)
+        except (OSError, json.JSONDecodeError, ValueError) as err:
+            print(
+                f"::warning::report_page: composer audit not measured for {args.capsule.stem}: {err}",
+                file=sys.stderr,
+            )
     args.capsule.write_text(
         json.dumps(capsule, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
     )

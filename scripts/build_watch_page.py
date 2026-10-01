@@ -26,6 +26,7 @@ import csv
 import html
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 from watch_plan import release_line
@@ -124,7 +125,7 @@ different things. `abandoned` is the Packagist marker or an archived repository 
 either. That is what the [allowlist](configuration.md#the-allowlist) is for, and a project that has
 looked at one of these and decided it is fine can say so in its own `composer.json` in one line.
 
-`old-promise` counts against PHP {target_php} for every project here, whatever each one actually targets,
+`old-promise` counts against PHP {target_php} for {target_scope}, whatever each one actually targets,
 because a column has to mean the same thing in every row. On a real project it is
 `--target-php` that decides it.
 
@@ -315,6 +316,11 @@ def read_history(path: Path) -> list[dict]:
         return list(csv.DictReader(fh))
 
 
+def plural(count: int, word: str) -> str:
+    """`1 project`, `2 projects`; `older line` the same way."""
+    return f"{count} {word}{'' if count == 1 else 's'}"
+
+
 def heat(value: int) -> str:
     for floor, level in HEAT:
         if value >= floor:
@@ -362,7 +368,7 @@ def flagged(row: dict) -> int:
 
 
 def share(part: int, whole: int) -> str:
-    return f'<span class="lockrot-share">{round(100 * part / whole) if whole else 0}%</span>'
+    return f'<span class="lockrot-share">{int(100 * part / whole + 0.5) if whole else 0}%</span>'
 
 
 def flagged_cell(row: dict, before: dict | None, since: str | None) -> str:
@@ -389,6 +395,18 @@ def new_mark(moved: bool, was: str, since: str | None) -> str:
     if not moved:
         return ""
     return f' <span class="lockrot-new" title="{html.escape(was)} on {html.escape(since or "")}">new</span>'
+
+
+def previous_of(row: dict, previous: dict) -> dict | None:
+    """The previous run's row for this one: by name, or — for an older line that was the project's
+    newest line last week, Drupal 11 the week 12.0.0 ships — the project's own row, when it read
+    this line."""
+    before = previous.get(row["name"])
+    if before is None and row["kind"] == "line":
+        parent = previous.get(row["parent"])
+        if parent and parent.get("tag") and release_line(parent["tag"]) == row["line"]:
+            return parent
+    return before
 
 
 def same_line(row: dict, before: dict | None) -> dict | None:
@@ -458,21 +476,21 @@ def header(first: list[str], counted: list[str]) -> str:
     cells = [f"<th>{name}</th>" for name in first[:1]]
     cells += [f'<th data-sort-method="none">{name}</th>' for name in first[1:]]
     cells.append('<th class="lockrot-num" data-sort-method="number" data-sort-reverse>Packages</th>')
-    # data-sort-default: tablesort sorts by it on load, so its arrow shows the order the rows
-    # arrived in, and a click elsewhere clears it.
+    # The rows arrive in Flagged order (order()), and the heading says so with aria-sort. Not
+    # data-sort-default: tablesort would re-sort on load and break every tie the other way round.
+    # assets/watch.js tells tablesort this heading is the current sort, so a click elsewhere clears it.
     cells.append(
         '<th class="lockrot-num lockrot-flagged" data-sort-method="number" data-sort-reverse'
-        " data-sort-default>Flagged</th>"
+        ' aria-sort="descending">Flagged</th>'
     )
     cells.append(
         '<th class="lockrot-num lockrot-missed" data-sort-method="number" data-sort-reverse'
         ' title="Flagged packages composer audit does not name at all, as abandoned or with an advisory">'
         "Not in<br><code>composer&nbsp;audit</code></th>"
     )
-    cells += [
-        f'<th class="lockrot-num" data-sort-method="number" data-sort-reverse>{"Advisories" if c == "advisories" else f"<code>{c.replace("-", "-<wbr>")}</code>"}</th>'
-        for c in counted
-    ]
+    for column in counted:
+        label = "Advisories" if column == "advisories" else "<code>" + column.replace("-", "-<wbr>") + "</code>"
+        cells.append(f'<th class="lockrot-num" data-sort-method="number" data-sort-reverse>{label}</th>')
     return "<thead><tr>" + "".join(cells) + "</tr></thead>"
 
 
@@ -512,7 +530,7 @@ def totals(rows_: list[dict], previous: dict, since: str | None, label: str, cou
 
 def comparable(rows_: list[dict], previous: dict) -> dict:
     """The previous run's rows these rows can be compared with: same project, same line."""
-    found = {r["name"]: same_line(r, previous.get(r["name"])) for r in rows_}
+    found = {r["name"]: same_line(r, previous_of(r, previous)) for r in rows_}
     return {name: before for name, before in found.items() if before is not None}
 
 
@@ -520,7 +538,7 @@ def table(
     rows_: list[dict],
     previous: dict | None = None,
     since: str | None = None,
-    label: str = "projects",
+    label: str = "project",
     older: dict | None = None,
 ) -> str:
     """The applications, one row per project, read from the release it names; or, with
@@ -531,7 +549,7 @@ def table(
     body = []
     for row in order(rows_):
         before = previous.get(row["name"])
-        cells = [project_cell(row, older.get(row["name"], 0)), release_cell(row, raw.get(row["name"]), since)]
+        cells = [project_cell(row, older.get(row["name"], 0)), release_cell(row, previous_of(row, raw), since)]
         cells.append(count_cell(int(row["packages"]), (before or {}).get("packages"), since))
         cells.append(flagged_cell(row, before, since))
         cells.append(missed_cell(row, before, since))
@@ -542,7 +560,7 @@ def table(
         '<div class="lockrot-watch"><table>'
         + header(["Project", "Release"], COLUMNS)
         + "<tbody>" + "".join(body) + "</tbody>"
-        + totals(rows_, previous, since, f"{len(rows_)} {label}", COLUMNS)
+        + totals(rows_, previous, since, plural(len(rows_), label), COLUMNS)
         + "</table></div>"
     )
 
@@ -564,7 +582,7 @@ def starter_table(rows_: list[dict], previous: dict | None = None, since: str | 
         cells.append(missed_cell(row, before, since))
         cells += [count_cell(int(row[c]), (before or {}).get(c), since, c) for c in COUNTED]
         body.append("<tr>" + "".join(cells) + "</tr>")
-    label = f"{len(rows_)} starter{'' if len(rows_) == 1 else 's'}"
+    label = plural(len(rows_), "starter")
     return (
         # Material styles, and makes scrollable, only a table with no class of its own.
         '<div class="lockrot-watch"><table>'
@@ -581,37 +599,48 @@ def since_line(rows_: list[dict], previous: dict, since: str | None) -> str:
     The causes are the ones "What moves these numbers" names: a project released, the tool changed,
     or the ecosystem moved under both. The first two can be read off the history; the third is
     whatever is left.
+
+    The sums are the applications table's, so they are numbers a reader finds in its totals row —
+    not the starters', which have their own, and not the older lines', which the page keeps out of
+    every total. Only rows read on the same line both times are summed; when that is not all of
+    them, the sentence says how many it covers.
     """
     if since is None:
         return "This is the first run; the next one is compared with it."
 
     then = {r["lockrot"] for r in previous.values()}
     now = rows_[0]["lockrot"]
-    parts = [f"Compared with the run of {since}:"]
+    releases = [r for r in rows_ if r["kind"] == "release"]
     # A row whose newest line changed is named, and left out of every sum below.
-    moved_lines = [(r, previous[r["name"]]) for r in rows_ if line_moved(r, previous.get(r["name"]))]
-    previous = comparable(rows_, previous)
+    moved_lines = [(r, previous[r["name"]]) for r in releases if line_moved(r, previous.get(r["name"]))]
+    same = comparable([r for r in rows_ if r["kind"] != "line"], previous)
 
-    common = [r for r in rows_ if r["name"] in previous]
-    was, now_flagged = sum(flagged(previous[r["name"]]) for r in common), sum(flagged(r) for r in common)
+    common = [r for r in releases if r["name"] in same]
+    scope = (
+        "the " + plural(len(common), "application")
+        if len(common) == len(releases)
+        else f"the {len(common)} of {plural(len(releases), 'application')} read on the same line both times"
+    )
+    parts = [f"Compared with the run of {since}, across {scope}:"]
+    was, now_flagged = sum(flagged(same[r["name"]]) for r in common), sum(flagged(r) for r in common)
     moved = [f"flagged {was} → {now_flagged}"] if was != now_flagged else []
-    measured = [r for r in common if r["composer_missed"] != "" and previous[r["name"]].get("composer_missed")]
-    if measured and len(measured) == len(common):
-        a = sum(int(previous[r["name"]]["composer_missed"]) for r in measured)
+    measured = [r for r in common if r["composer_missed"] != "" and same[r["name"]].get("composer_missed")]
+    if common and len(measured) == len(common):
+        a = sum(int(same[r["name"]]["composer_missed"]) for r in measured)
         b = sum(int(r["composer_missed"]) for r in measured)
         if a != b:
             moved.append(f"not in `composer audit` {a} → {b}")
-    for column in COUNTED:
-        a = sum(int(previous[r["name"]][column] or 0) for r in common)
+    for column in COLUMNS:
+        a = sum(int(same[r["name"]][column] or 0) for r in common)
         b = sum(int(r[column]) for r in common)
         if a != b:
-            moved.append(f"`{column}` {a} → {b}" if column != "advisories" else f"advisories {a} → {b}")
+            moved.append(f"`{column}` {a} → {b}")
     parts.append(("; ".join(moved) + ".") if moved else "no total moved.")
 
     released = sorted(
         r["name"] for r in rows_
-        if r["name"] in previous
-        and (previous[r["name"]].get("tag"), previous[r["name"]].get("version")) != (r["tag"], r["version"])
+        if r["kind"] != "line" and r["name"] in same
+        and (same[r["name"]].get("tag"), same[r["name"]].get("version")) != (r["tag"], r["version"])
     )
     if released:
         parts.append(
@@ -651,7 +680,8 @@ def archive(history: list[dict]) -> str:
             for r in day
         )
         blocks.append(
-            f'<details class="lockrot-run"><summary><strong>{date}</strong> · lockrot {html.escape(version)}'
+            f'<details class="lockrot-run"><summary><span class="lockrot-run-mark" aria-hidden="true"></span>'
+            f'<strong>{date}</strong> · lockrot {html.escape(version)}'
             f" · {len(day)} reports · {abandoned} abandoned, {silent} silent</summary>"
             f"<p>{links}</p></details>"
         )
@@ -712,18 +742,22 @@ def lines_section(
     if not lines_ and not skipped:
         return ""
     repos = {r["name"]: r["repo"] for r in releases}
-    parents = sorted({r["parent"] for r in lines_})
-    parts = [
-        "## Older lines still releasing\n\n"
-        f"{len(parents)} of the {len(releases)} applications ship more than one release line at a "
-        "time. The table above reads each one's newest line; this one reads every older line with a "
-        f"release in the last {window} years — the window lockrot itself gives a release branch "
-        "before it calls the branch left behind (`left-behind`, signal S8), so a lock on any of these "
-        "lines is not yet told to move. A project counts once in the totals above; these rows are "
-        "not in them.\n"
-    ]
+    projects = {r["parent"] for r in lines_} | {m["project"] for m in skipped}
+    intro = (
+        f"{len(projects)} of the {plural(len(releases), 'application')} maintain more than one release "
+        "line at a time. The table above reads each one's newest line."
+    )
     if lines_:
-        parts.append(table(lines_, previous, since, label="older lines"))
+        intro += (
+            " This one reads every older line still kept beside a newer one: it has released in the "
+            f"last {window} years — the window lockrot gives a release branch before it calls the "
+            "branch left behind (`left-behind`, signal S8) — and after the next line up first did, "
+            "which is what makes two lines concurrent rather than one following the other. A project "
+            "counts once in the totals above; these rows are not in them."
+        )
+    parts = ["## Older lines still releasing\n\n" + intro]
+    if lines_:
+        parts.append(table(lines_, previous, since, label="older line"))
     if skipped:
         def tried(attempts: list[str]) -> str:
             tags = [attempt.split(" (", 1)[0] for attempt in attempts]
@@ -741,48 +775,75 @@ def lines_section(
     return "\n\n".join(parts) + "\n\n"
 
 
+def _common(values: dict, what: str) -> tuple:
+    """The value most reports carry, and the projects whose report carries another.
+
+    A project can set lockrot's thresholds in its own composer.json (`extra.lockrot`), and lockrot
+    honours that over its defaults; the workflow passes none. So one project's own setting is a fact
+    the prose names, not a reason to publish nothing.
+    """
+    if any(value is None for value in values.values()):
+        missing = sorted(name for name, value in values.items() if value is None)
+        raise SystemExit(f"build_watch_page: no {what} in the reports of {', '.join(missing)}")
+    common = Counter(values.values()).most_common(1)[0][0]
+    return common, sorted(name for name, value in values.items() if value != common)
+
+
+def _but(names: list[str]) -> str:
+    return "" if not names else " but " + (names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1])
+
+
 def run_settings(reports: dict, manifest: dict | None = None) -> dict:
     """What the page says about how the run was made, read from the run rather than written into
-    the prose: the PHP version every report was measured against and the years `silent` takes.
+    the prose: the PHP version the reports were measured against, the years `silent` takes, and the
+    window lockrot gives a release branch — each the value most reports carry, with the projects
+    that differ named.
 
-    Every report has to agree — a sentence that says "PHP 8.4 for every project" is false the week
-    one project is given its own target. And lockrot's own list of flagged verdicts has to be the
-    page's columns, in order: Flagged adds those columns up, and a release that flags one more
-    verdict would otherwise make every total on the page quietly short.
+    lockrot's own list of flagged verdicts, which no project can change, has to be the page's
+    columns in order: Flagged adds those columns up, and a release that flags one more verdict would
+    otherwise make every total on the page quietly short. The plan's window for older lines has to
+    be lockrot's default `release-warn-years`, which is what most reports carry.
     """
-    runs = [report.get("run", {}) for report in reports.values()]
-    targets = {run.get("target_php") for run in runs}
-    if len(targets) != 1 or None in targets:
-        raise SystemExit(f"build_watch_page: the reports disagree on the target PHP: {sorted(map(str, targets))}")
-    spans = {
-        (run.get("thresholds", {}).get("release-high-years"), run.get("thresholds", {}).get("push-high-years"))
-        for run in runs
-    }
-    if len(spans) != 1 or None in next(iter(spans)):
-        raise SystemExit(f"build_watch_page: the reports disagree on the silent thresholds: {sorted(spans)}")
-    for run in runs:
+    runs = {name: report.get("run", {}) for name, report in reports.items()}
+    for run in runs.values():
         if run.get("flagged_verdicts") != COLUMNS:
             raise SystemExit(
                 f"build_watch_page: lockrot flags {run.get('flagged_verdicts')}, the page has columns "
                 f"for {COLUMNS}; give the page the new verdict before publishing it"
             )
-    warn = {run.get("thresholds", {}).get("release-warn-years") for run in runs}
-    if len(warn) != 1 or None in warn:
-        raise SystemExit(f"build_watch_page: the reports disagree on release-warn-years: {sorted(map(str, warn))}")
-    window = warn.pop()
+
+    def threshold(run: dict, key: str):
+        return (run.get("thresholds") or {}).get(key)
+
+    target, other_targets = _common({n: r.get("target_php") for n, r in runs.items()}, "target PHP")
+    span, own_span = _common(
+        {n: (threshold(r, "release-high-years"), threshold(r, "push-high-years")) for n, r in runs.items()},
+        "silent thresholds",
+    )
+    if None in span:
+        raise SystemExit("build_watch_page: the reports carry no release-high-years or push-high-years")
+    window, _ = _common({n: threshold(r, "release-warn-years") for n, r in runs.items()}, "release-warn-years")
     planned = (manifest or {}).get("run", {}).get("line_window_years")
     if planned is not None and planned != window:
         raise SystemExit(
             f"build_watch_page: the plan read older lines back {planned} years, lockrot's "
             f"release-warn-years is {window}; change LINE_WINDOW_YEARS in watch_plan.py to match"
         )
-    release, push = next(iter(spans))
-    span = (
+
+    release, push = span
+    silent = (
         f"no stable release and no push to any branch for {release} years"
         if release == push
         else f"no stable release for {release} years and no push to any branch for {push}"
     )
-    return {"target_php": targets.pop(), "silent_span": span, "window": window}
+    if own_span:
+        silent += f" ({', '.join(own_span)} set their own in `extra.lockrot`)"
+    return {
+        "target_php": target,
+        "target_scope": "every project here" + _but(other_targets),
+        "silent_span": silent,
+        "window": window,
+    }
 
 
 def lockless(projects: dict, rows_: list[dict]) -> str:
@@ -793,7 +854,7 @@ def lockless(projects: dict, rows_: list[dict]) -> str:
     """
     names = {r["name"] for r in rows_}
     titles = [
-        s["title"] for s in projects.get("starters", [])
+        s.get("prose_name") or s["title"] for s in projects.get("starters", [])
         if s.get("no_lock_in_repository") and s["name"] in names
     ]
     if not titles:
@@ -859,6 +920,7 @@ def main(argv: list[str]) -> int:
             headline=headline(releases),
             lockless=lockless(json.loads(args.projects.read_text(encoding="utf-8")), rows_),
             target_php=settings["target_php"],
+            target_scope=settings["target_scope"],
             silent_span=settings["silent_span"],
         ),
         encoding="utf-8",

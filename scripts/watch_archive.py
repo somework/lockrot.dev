@@ -30,8 +30,10 @@ MANIFEST = "manifest.json"
 
 def git(*args: str, cwd: Path, stdin: bytes | None = None) -> bytes:
     try:
+        # A user's log.showSignature would put gpg output into `git log --format=%H`.
         return subprocess.run(
-            ["git", *args], cwd=cwd, input=stdin, capture_output=True, check=True
+            ["git", "-c", "log.showSignature=false", *args],
+            cwd=cwd, input=stdin, capture_output=True, check=True,
         ).stdout
     except (OSError, subprocess.CalledProcessError) as err:
         detail = getattr(err, "stderr", b"") or b""
@@ -39,7 +41,13 @@ def git(*args: str, cwd: Path, stdin: bytes | None = None) -> bytes:
 
 
 def runs_in_git(repo: Path) -> dict[str, str]:
-    """Each run's date, mapped to the newest commit that holds that run's manifest."""
+    """Each run's date, mapped to the newest commit that changed anything of that run.
+
+    Any file of the run directory, not only the manifest: a re-run on the same day writes a
+    manifest identical to the first one's (it holds no time), so its commit changes only capsules,
+    and keying on the manifest would publish the first run's reports beside the re-run's numbers. A
+    commit whose tree holds no manifest (one that removed the directory) names no run.
+    """
     if git("rev-parse", "--is-shallow-repository", cwd=repo).strip() == b"true":
         raise SystemExit(
             "watch_archive: this is a shallow clone, so the earlier runs are not in it; "
@@ -47,7 +55,10 @@ def runs_in_git(repo: Path) -> dict[str, str]:
         )
 
     runs: dict[str, str] = {}
-    for commit in git("log", "--format=%H", "--", f"{RUN_DIR}/{MANIFEST}", cwd=repo).decode().split():
+    for commit in git("log", "--format=%H", "--", RUN_DIR, cwd=repo).decode().split():
+        listed = git("ls-tree", "--name-only", commit, f"{RUN_DIR}/{MANIFEST}", cwd=repo).strip()
+        if not listed:
+            continue
         manifest = json.loads(git("show", f"{commit}:{RUN_DIR}/{MANIFEST}", cwd=repo))
         # git log lists newest first, so the first commit seen for a date is the one that won.
         runs.setdefault(manifest["run"]["date"], commit)

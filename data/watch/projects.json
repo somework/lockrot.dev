@@ -88,7 +88,8 @@
         "",
         "`no_lock_in_repository` marks a starter whose project commits no lock file anywhere, so it",
         "cannot be in the releases table; /watch/ names those projects from this flag rather than",
-        "from a list in its prose"
+        "from a list in its prose, by `prose_name` when the title alone would be wrong (TYPO3's core",
+        "repository commits a lock and is in the releases table; its distribution does not)"
     ],
     "starters": [
         { "name": "new-laravel", "title": "Laravel", "package": "laravel/laravel" },
@@ -99,7 +100,7 @@
         { "name": "new-wordpress", "title": "WordPress (Bedrock)", "package": "roots/bedrock", "no_lock_in_repository": true },
         { "name": "new-shopware", "title": "Shopware", "package": "shopware/production", "no_lock_in_repository": true },
         { "name": "new-sylius", "title": "Sylius", "package": "sylius/sylius-standard", "no_lock_in_repository": true },
-        { "name": "new-typo3", "title": "TYPO3", "package": "typo3/cms-base-distribution", "no_lock_in_repository": true },
+        { "name": "new-typo3", "title": "TYPO3", "package": "typo3/cms-base-distribution", "no_lock_in_repository": true, "prose_name": "TYPO3's distribution" },
         { "name": "new-craft", "title": "Craft CMS", "package": "craftcms/craft", "no_lock_in_repository": true },
         { "name": "new-statamic", "title": "Statamic", "package": "statamic/statamic", "no_lock_in_repository": true },
         { "name": "new-pimcore", "title": "Pimcore", "package": "pimcore/skeleton", "no_lock_in_repository": true },
