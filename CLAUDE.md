@@ -293,8 +293,10 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
   `bash -e`, so the step catches it; output that is not composer audit's JSON — Packagist's advisory
   API down for one job — is stored as "not measured" with a warning, and the page shows a dash.
   Before any of this, `setup-php` is given `github-token: ''`: with a token it writes one into
-  Composer's global auth.json, and lockrot then uses Composer's credential instead of
-  `ROT_WATCH_TOKEN`. *Flagged* is lockrot's own number (`Verdict::flagged()`, every verdict from
+  Composer's global auth.json, and lockrot then sends Composer's credential instead of
+  `ROT_WATCH_TOKEN` (lockrot's internals.md: a request with two headers is refused, so Composer's
+  wins). The Composer steps — `create-project`, `composer audit` — get the same `ROT_WATCH_TOKEN`
+  through `COMPOSER_AUTH` in their own step environment, which the lockrot step never inherits. *Flagged* is lockrot's own number (`Verdict::flagged()`, every verdict from
   `stale` up), the six columns added, and the rows are printed in its order.
 - **Every earlier run stays published.** The capsules in `data/reports/watch/` are one week deep;
   `scripts/watch_archive.py` reads every run the history names back out of git (the newest commit
