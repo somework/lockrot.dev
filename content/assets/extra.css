@@ -103,7 +103,7 @@ body[data-md-color-scheme="slate"] {
 }
 
 .md-typeset .lockrot-watch table:not([class]) :is(th, td) {
-  padding: 0.6em 0.7em;
+  padding: 0.6em 0.65em;
 }
 
 /* Selectors carry table:not([class]) to outrank Material's own table rules, which they restyle. */
@@ -134,6 +134,12 @@ body[data-md-color-scheme="slate"] {
   text-align: right;
 }
 
+/* A count, its share and its change stay on one line; a heading wraps instead. */
+.md-typeset .lockrot-watch table:not([class]) td[data-sort]:not(:first-child),
+.md-typeset .lockrot-watch table:not([class]) tfoot td {
+  white-space: nowrap;
+}
+
 /* The project column stays in view while the counts scroll under it on a narrow screen. */
 .md-typeset .lockrot-watch table:not([class]) :is(th, td):first-child {
   position: sticky;
@@ -157,7 +163,13 @@ body[data-md-color-scheme="slate"] {
   white-space: nowrap;
 }
 
-.md-typeset .lockrot-watch table:not([class]) :is(.lockrot-release, .lockrot-created) {
+.md-typeset .lockrot-watch table:not([class]) .lockrot-release {
+  white-space: nowrap;
+}
+
+/* A starter's package can be long (typo3/cms-base-distribution); when the table runs out of room
+   its version moves under it, which is cheaper than a column that pushes the counts off screen. */
+.md-typeset .lockrot-watch table:not([class]) .lockrot-created a {
   white-space: nowrap;
 }
 
@@ -170,11 +182,15 @@ body[data-md-color-scheme="slate"] {
 .md-typeset .lockrot-watch table:not([class]) .lockrot-heat-3 { background-color: color-mix(in srgb, var(--lockrot-heat) 24%, transparent); font-weight: 600; }
 .md-typeset .lockrot-watch table:not([class]) .lockrot-heat-4 { background-color: color-mix(in srgb, var(--lockrot-heat) 36%, transparent); font-weight: 700; }
 
-/* Flagged is the total the verdict columns break down, so it reads as one: heavier, and ruled off
-   from the breakdown on its right. */
+/* Flagged is the total the verdict columns break down, so it reads as one: heavier. The column
+   beside it, what composer audit says nothing about, closes that group and is ruled off from the
+   breakdown on its right. */
 .md-typeset .lockrot-watch table:not([class]) .lockrot-flagged {
-  border-right: 0.05rem solid var(--md-default-fg-color--lightest);
   font-weight: 600;
+}
+
+.md-typeset .lockrot-watch table:not([class]) .lockrot-missed {
+  border-right: 0.05rem solid var(--md-default-fg-color--lightest);
 }
 
 /* The flagged share of a lock, beside the count: quiet, it qualifies the number rather than
@@ -214,11 +230,13 @@ body[data-md-color-scheme="slate"] {
   text-align: left;
 }
 
-/* Sorting: a sortable heading looks pressable, shows its direction once used, and its keyboard
-   focus is visible (tablesort makes it focusable and sorts on Enter). */
+/* Sorting. Material already draws tablesort's state on th[role=columnheader]::after, as a masked
+   icon: invisible until hover, an arrow once a column is sorted. These rules keep its icons and only
+   move them into the heading's right padding, so the icon never wraps onto a line of its own, and
+   show it faintly at rest, so a reader can tell the headings sort before hovering one. A heading
+   that does not sort (Release, Created from) gets none: tablesort gives it the role all the same. */
 .md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"]) {
-  padding-right: 1.4em;
-  cursor: pointer;
+  padding-right: 1.5em;
   user-select: none;
 }
 
@@ -226,23 +244,32 @@ body[data-md-color-scheme="slate"] {
   position: relative;
 }
 
-/* The arrow sits in the heading's padding rather than in its text, so it never wraps onto a line of
-   its own. The first column is sticky, which is positioned already and holds the arrow the same way;
-   giving it `relative` here would unstick it. */
-.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"])::after {
-  position: absolute;
-  right: 0.4em;
-  bottom: 0.6em;
-  content: "↕";
-  color: var(--md-default-fg-color--lighter);
-  transition: color var(--lockrot-duration-fast) ease-out;
+.md-typeset .lockrot-watch table:not([class]) th[data-sort-method="none"] {
+  cursor: default;
 }
 
-.md-typeset .lockrot-watch table:not([class]) th[aria-sort="ascending"]::after { content: "↑"; color: var(--md-typeset-a-color); }
-.md-typeset .lockrot-watch table:not([class]) th[aria-sort="descending"]::after { content: "↓"; color: var(--md-typeset-a-color); }
+.md-typeset .lockrot-watch table:not([class]) th[data-sort-method="none"]::after {
+  display: none;
+}
+
+/* The first column is sticky, which is positioned already and anchors the icon the same way;
+   giving it `relative` would unstick it. */
+.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"])::after {
+  position: absolute;
+  right: 0.35em;
+  bottom: 0.65em;
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  background-color: var(--md-default-fg-color--lightest);
+}
 
 .md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"]):hover::after {
-  color: var(--md-typeset-a-color);
+  background-color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:is([aria-sort="ascending"], [aria-sort="descending"])::after {
+  background-color: var(--md-typeset-a-color);
 }
 
 .md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:focus-visible {

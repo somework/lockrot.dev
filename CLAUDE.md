@@ -24,7 +24,7 @@ before laying `content/` over it. A change to a verdict, an option or a CLI flag
 | `rm -rf .lockrot && scripts/build.sh` | Back to the newest release tag |
 | `scripts/check-nav.sh` | Fail if a page in `.lockrot/docs/` is missing from `mkdocs.yml` `nav` |
 | `python3 -m unittest discover -s scripts -p 'test_*.py'` | Unit tests for the MkDocs hooks and the report and watch scripts (CI runs them before the build) |
-| `gh workflow run rot-watch.yml` | Run the weekly watch now: twenty releases plus fifteen fresh installs, then a pull request that merges itself and deploys |
+| `gh workflow run rot-watch.yml` | Run the weekly watch now: the releases and fresh installs in `data/watch/projects.json`, then a pull request that merges itself and deploys |
 | `pip-compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in` | Re-lock after editing `requirements.in` (needs `pip install pip-tools`, run under Python 3.12) |
 
 Dependencies: `requirements.in` names the three packages the site asks for; `requirements.txt` is
@@ -80,7 +80,7 @@ wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 wrangler.viewer.jsonc  # Cloudflare Worker "lockrot-viewer", static assets from ./viewer-site
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
                        # weekly, manual), links.yml (weekly external link check),
-                       # rot-watch.yml (Monday: twenty releases and fifteen create-project runs, opens a self-merging PR)
+                       # rot-watch.yml (Monday: the releases and create-project runs in projects.json, opens a self-merging PR)
 .lockrot/ .renderer/ build/ site/ viewer-site/ # generated, git-ignored, safe to delete
 ```
 
@@ -224,8 +224,8 @@ like a browser's — check with a browser User-Agent and `Accept: text/html`, no
 
 ## The weekly watch
 
-Every Monday `.github/workflows/rot-watch.yml` runs lockrot's newest release over the twenty
-releases and fifteen starters in `data/watch/projects.json` and rewrites `/watch/`. What each piece is for:
+Every Monday `.github/workflows/rot-watch.yml` runs lockrot's newest release over the
+releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What each piece is for:
 
 - **`plan` finds each project's newest stable release, not a branch head.** A release is what people
   install, and it is the only version two runs can be compared across; a development branch moves
@@ -269,6 +269,16 @@ releases and fifteen starters in `data/watch/projects.json` and rewrites `/watch
   by, the shade of a count, and how far it moved since the previous run in `history.csv`. The table
   carries no class of its own — Material styles and scrolls only `table:not([class])` — so the CSS
   hangs off the `div.lockrot-watch` around it.
+- **The page measures what Composer does not show, with Composer.** Each job runs
+  `composer audit --locked --abandoned=report --format=json` on the same lock before lockrot, and
+  `report_page.py --composer-audit` stores what it named (abandoned and advisories, plus the Composer
+  version) in the capsule's `composer` key. *Not in `composer audit`* is the flagged packages it names
+  for neither reason; `history.csv` keeps it as `composer_missed`, empty for runs before 2026-09-28
+  (the releases of that run were backfilled from the same commits, the starters could not be). The
+  exit code is a bitmask of findings and Actions runs `bash -e`, so the step catches it and
+  `composer_view` is what fails on output that is not composer audit's. *Flagged* is lockrot's own
+  number (`Verdict::flagged()`, every verdict from `stale` up), the six columns added, and the rows
+  are printed in its order.
 - **Every earlier run stays published.** The capsules in `data/reports/watch/` are one week deep;
   `scripts/watch_archive.py` reads every run the history names back out of git (the newest commit
   holding each date's manifest) and `build-viewer.sh` renders them to `/reports/watch/<date>/<project>`
@@ -330,6 +340,10 @@ Builds connection on the lockrot repo still deploys the same Worker — see READ
 - Do not edit files under `build/` or `.lockrot/`; they are overwritten by the next build.
 - Do not drop `--strict`, `check-nav.sh` or an action's SHA pin to get a build green.
 - Do not hand-edit `requirements.txt`; change `requirements.in` and re-run pip-compile.
+- Do not write a number or a list that a run or `projects.json` decides into prose — the page's,
+  `content/llms.txt`, `content/index.md`, or this file. `build_watch_page.py` reads the target PHP
+  and the `silent` years from the reports, the projects without a lock file from
+  `no_lock_in_repository`, and fails when lockrot's `flagged_verdicts` stop matching its columns.
 - Do not hand-edit `content/watch.md`; it is written by `scripts/build_watch_page.py`, and the next
   run overwrites it. The prose belongs in the script.
 - Do not commit a rendered report. `data/reports/` holds capsules; the pages are built.

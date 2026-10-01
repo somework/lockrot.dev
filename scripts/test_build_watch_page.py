@@ -24,6 +24,20 @@ def report(counts=None, checked=10, marked=0, version="0.10.0"):
     }
 
 
+def flagged_report(**by_verdict):
+    """A report whose findings name each flagged package, as lockrot writes them."""
+    rep = report({v.replace("_", "-"): len(p) for v, p in by_verdict.items()})
+    rep["findings"] = [
+        {"package": name, "verdict": v.replace("_", "-"), "signals": []}
+        for v, packages in by_verdict.items() for name in packages
+    ]
+    return rep
+
+
+def view(abandoned=(), advisories=(), version="2.10.3"):
+    return {"version": version, "abandoned": list(abandoned), "advisories": list(advisories)}
+
+
 def manifest(*names, date="2026-09-22", tag="v1.2.3"):
     return {
         "run": {"date": date},
@@ -82,7 +96,11 @@ class TableTest(unittest.TestCase):
         table = bw.table(rows)
 
         self.assertIn("<tfoot><tr><td>2 projects</td><td></td><td>17</td>", table)
-        self.assertIn('<td class="lockrot-flagged">7 <span class="lockrot-share">41%</span></td><td>7</td>', table)
+        self.assertIn(
+            '<td class="lockrot-flagged">7 <span class="lockrot-share">41%</span></td>'
+            '<td class="lockrot-missed">—</td><td>7</td>',
+            table,
+        )
 
     def test_the_project_name_opens_its_report(self):
         table = bw.table(bw.rows(manifest("one"), {"one": report()}))
@@ -109,17 +127,24 @@ class TableTest(unittest.TestCase):
             [bw.heat(v) for v in (0, 1, 2, 4, 5, 10)],
         )
 
-    def test_prints_the_heaviest_projects_first(self):
+    def test_prints_the_most_flagged_first_and_abandoned_breaks_a_tie(self):
         rows = bw.rows(
-            manifest("calm", "loud", "quiet"),
+            manifest("calm", "loud", "quiet", "wide"),
             {
                 "calm": report({"silent": 1}),
                 "loud": report({"abandoned": 4}),
-                "quiet": report({"silent": 3}),
+                "quiet": report({"silent": 4}),
+                "wide": report({"left-behind": 9}),
             },
         )
 
-        self.assertEqual(["loud", "quiet", "calm"], [r["name"] for r in bw.order(rows)])
+        self.assertEqual(["wide", "loud", "quiet", "calm"], [r["name"] for r in bw.order(rows)])
+
+    def test_the_flagged_heading_is_the_sort_the_rows_arrive_in(self):
+        table = bw.table(bw.rows(manifest("one"), {"one": report()}))
+
+        self.assertIn("data-sort-default>Flagged</th>", table)
+        self.assertEqual(1, table.count("data-sort-default"))
 
     def test_escapes_what_a_project_named_itself(self):
         rows = bw.rows(manifest("one", tag="<b>1.0</b>"), {"one": report()})
@@ -164,6 +189,115 @@ class FlaggedTest(unittest.TestCase):
         line = bw.since_line(rows, {"one": history_row("one", silent=1)}, "2026-09-15")
 
         self.assertIn("Compared with the run of 2026-09-15: flagged 1 → 3; `silent` 1 → 3.", line)
+
+
+class ComposerTest(unittest.TestCase):
+    def test_counts_the_flagged_packages_composer_audit_names_for_nothing(self):
+        rep = flagged_report(abandoned=["a/marked", "a/archived"], silent=["s/quiet"], stale=["s/cve"])
+
+        # a/marked is in the lock's abandoned marker; s/cve has an advisory; the rest are not named.
+        missed = bw.composer_missed(rep, view(abandoned=["a/marked", "x/not-flagged"], advisories=["s/cve"]))
+
+        self.assertEqual(2, missed)
+
+    def test_a_run_that_did_not_ask_composer_has_no_number(self):
+        self.assertEqual("", bw.composer_missed(flagged_report(silent=["s/quiet"]), None))
+
+    def test_refuses_a_report_whose_findings_do_not_add_up(self):
+        rep = flagged_report(silent=["s/quiet"])
+        rep["counts"]["silent"] = 2
+
+        with self.assertRaises(SystemExit):
+            bw.composer_missed(rep, view())
+
+    def test_the_cell_shows_the_count_and_its_share_of_the_flagged(self):
+        rows = bw.rows(
+            manifest("one"),
+            {"one": flagged_report(abandoned=["a/a"], silent=["s/a", "s/b", "s/c"])},
+            {"one": view(abandoned=["a/a"])},
+        )
+
+        self.assertIn('class="lockrot-missed">3 <span class="lockrot-share">75%</span></td>', bw.table(rows))
+
+    def test_an_unmeasured_row_shows_a_dash_that_sorts_last(self):
+        table = bw.table(bw.rows(manifest("one"), {"one": report()}))
+
+        self.assertIn('<td data-sort="-1" class="lockrot-missed lockrot-zero" title="Not measured in this run">—</td>', table)
+
+    def test_the_headline_needs_every_application_measured(self):
+        measured = bw.rows(
+            manifest("one", "two"),
+            {"one": flagged_report(silent=["s/a", "s/b"]), "two": flagged_report(abandoned=["a/a"])},
+            {"one": view(), "two": view(abandoned=["a/a"])},
+        )
+
+        self.assertIn("Of the **3** packages lockrot flags in these 2 applications, `composer audit` names 1.", bw.headline(measured))
+        self.assertIn("the other **2**.", bw.headline(measured))
+        self.assertEqual("", bw.headline(bw.rows(manifest("one"), {"one": report()})))
+
+    def test_the_note_names_the_composer_version_that_ran(self):
+        rows = bw.rows(manifest("one"), {"one": flagged_report(silent=["s/a"])}, {"one": view(version="2.10.3")})
+
+        self.assertIn("(Composer 2.10.3)", bw.composer_note(rows))
+        self.assertEqual("", bw.composer_note(bw.rows(manifest("one"), {"one": report()})))
+
+    def test_the_history_keeps_the_number(self):
+        rows = bw.rows(manifest("one"), {"one": flagged_report(silent=["s/a"])}, {"one": view()})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "history.csv"
+            bw.write_history(path, rows)
+            self.assertEqual("1", bw.read_history(path)[0]["composer_missed"])
+
+
+def with_run(target="8.4", release=5, push=5, flagged=None):
+    rep = report()
+    rep["run"] = {
+        "target_php": target,
+        "thresholds": {"release-high-years": release, "push-high-years": push},
+        "flagged_verdicts": list(bw.COLUMNS) if flagged is None else flagged,
+    }
+    return rep
+
+
+class SettingsTest(unittest.TestCase):
+    def test_reads_the_target_and_the_silent_years_from_the_run(self):
+        settings = bw.run_settings({"one": with_run(target="8.5", release=4, push=4)})
+
+        self.assertEqual("8.5", settings["target_php"])
+        self.assertEqual("no stable release and no push to any branch for 4 years", settings["silent_span"])
+
+    def test_names_both_spans_when_they_differ(self):
+        settings = bw.run_settings({"one": with_run(release=5, push=3)})
+
+        self.assertEqual(
+            "no stable release for 5 years and no push to any branch for 3", settings["silent_span"]
+        )
+
+    def test_refuses_reports_measured_against_different_php(self):
+        with self.assertRaises(SystemExit):
+            bw.run_settings({"one": with_run(target="8.4"), "two": with_run(target="8.3")})
+
+    def test_refuses_a_lockrot_that_flags_a_verdict_the_page_has_no_column_for(self):
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"one": with_run(flagged=[*bw.COLUMNS, "unmaintained"])})
+
+        self.assertIn("unmaintained", str(raised.exception))
+
+    def test_names_the_starters_without_a_lock_from_the_project_list(self):
+        rows = bw.rows(starter_manifest(), {"new-laravel": report()})
+        projects = {"starters": [
+            {"name": "new-laravel", "title": "Laravel", "no_lock_in_repository": True},
+            {"name": "new-gone", "title": "Gone", "no_lock_in_repository": True},
+        ]}
+
+        # Only the starters this run actually has.
+        self.assertEqual("Laravel", bw.lockless(projects, rows))
+
+    def test_joins_several_names_as_prose(self):
+        rows = [{"name": n} for n in ("a", "b", "c")]
+        projects = {"starters": [{"name": n, "title": n.upper(), "no_lock_in_repository": True} for n in "abc"]}
+
+        self.assertEqual("A, B and C", bw.lockless(projects, rows))
 
 
 class CompareTest(unittest.TestCase):

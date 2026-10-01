@@ -35,7 +35,7 @@ VIEWER = "https://viewer.lockrot.dev/reports/watch"
 HISTORY_FIELDS = [
     "date", "lockrot", "kind", "repo", "package", "tag", "version", "commit", "packages",
     "advisories", "abandoned", "silent", "pinned", "left-behind", "old-promise", "stale",
-    "unknown", "marked_on_packagist", "name",
+    "unknown", "marked_on_packagist", "name", "composer_missed",
 ]
 
 # The verdicts the page has a column for, in the order the tool ranks them.
@@ -78,7 +78,7 @@ with `composer create-project`. This page is the last run, {date}. Nothing is in
 or plugin from any package is run, and no project is contacted: the run reads lock files, then asks
 Packagist and the repository host about the packages in them.
 
-{since}
+{headline}{since}
 
 ## What these applications ship
 
@@ -87,7 +87,7 @@ Packagist and the repository host about the packages in them.
 A project's name opens the full report lockrot wrote for it; a column heading sorts the table.
 *Flagged* is every package with one of the six verdicts to its right — each package has exactly one,
 so they add up — and is the number at the top of that report; the percentage is its share of the
-lock. A small number beside a count is how far it moved since the previous run, and *new* marks a project
+lock. {composer_note}A small number beside a count is how far it moved since the previous run, and *new* marks a project
 that cut a release in between. Each row names the release it read and the commit that release points
 at, so any number here can be
 checked against the same two files lockrot read. A release rather than a branch head on purpose: a
@@ -111,19 +111,17 @@ are made with `--all`: every package is in the document, so an advisory on an ot
 is visible. The applications are read without `--all`, where a healthy package is not a finding and
 never reaches the page.
 
-Several projects in this table cannot be in the one above, and for one reason: Shopware, Sylius,
-TYPO3, Craft CMS, Statamic and WordPress-through-Bedrock do not commit a lock file to their
-repository. Their lock is born at `create-project` time, which is the only place it can be read —
+Several projects in this table cannot be in the one above, and for one reason: {lockless} do not
+commit a lock file to their repository. Their lock is born at `create-project` time, which is the only place it can be read —
 and is the version their users actually run.
 
 A verdict is an observation, not a judgement, and the two that carry most of the table say
 different things. `abandoned` is the Packagist marker or an archived repository — someone said so.
-`silent` is no stable release and no push to any branch for five years, which is lockrot's default
-threshold and not a law of nature: a package that encodes base64url does not need a release in 2035
+`silent` is {silent_span}, which is lockrot's default threshold and not a law of nature: a package that encodes base64url does not need a release in 2035
 either. That is what the [allowlist](configuration.md#the-allowlist) is for, and a project that has
 looked at one of these and decided it is fine can say so in its own `composer.json` in one line.
 
-`old-promise` counts against PHP 8.4 for every project here, whatever each one actually targets,
+`old-promise` counts against PHP {target_php} for every project here, whatever each one actually targets,
 because a column has to mean the same thing in every row. On a real project it is
 `--target-php` that decides it.
 
@@ -141,10 +139,10 @@ and a hand list of the widely-deployed ones — 109 looked at — 61 came throug
 these {count} are chosen from those 61 for spread across what the applications actually do: CMS,
 shop, forum, LMS, analytics, marketing, accounting, asset management, the rest.
 
-The second table is where the rest of them turn up. WordPress, Shopware, Sylius, TYPO3, Craft CMS,
-Statamic, Pimcore, Dolibarr, Roundcube, osTicket, SilverStripe, Contao, October, MODX, ProcessWire
-and Vanilla commit no lock file at all; their dependency tree exists only once someone installs
-them, so that is where it is read. The starters are the ways people actually begin a PHP project —
+The second table is where the rest of them turn up. {lockless} commit no lock file at all — nor,
+among the applications looked at, do Dolibarr, Roundcube, osTicket, SilverStripe, Contao, October,
+MODX, ProcessWire and Vanilla; their dependency tree exists only once someone installs them, so
+that is where it is read. The starters are the ways people actually begin a PHP project —
 the framework skeletons and the vendor-recommended distributions — each pinned to its newest stable
 version so the row names something checkable. The list, the reasoning and the near misses are in
 [`data/watch/projects.json`](https://github.com/somework/lockrot.dev/blob/main/data/watch/projects.json).
@@ -172,7 +170,7 @@ in [`history.csv`]({history}).
 
 ```console
 $ composer require --dev somework/lockrot
-$ composer lockrot --target-php=8.4 --fail-on=silent
+$ composer lockrot --target-php={target_php} --fail-on=silent
 ```
 
 The PHAR does the same without touching the lock ([download and verify](phar.md)), and the
@@ -198,6 +196,34 @@ def read_capsules(directory: Path) -> dict:
     return capsules
 
 
+def read_composer(directory: Path) -> dict:
+    """What composer audit named in each project's lock, for the runs that measured it."""
+    views = {}
+    for path in sorted(directory.glob("*.json")):
+        if path.name == "manifest.json":
+            continue
+        view = json.loads(path.read_text(encoding="utf-8")).get("composer")
+        if view is not None:
+            views[path.stem] = view
+    return views
+
+
+def composer_missed(report: dict, view: dict | None) -> int | str:
+    """The flagged packages composer audit does not name at all, as abandoned or as carrying an
+    advisory. Empty when the run did not ask composer audit.
+
+    The findings are checked against the counts first: a report that lists fewer flagged packages
+    than it counts would make this number quietly small.
+    """
+    if view is None:
+        return ""
+    flagged_names = [f["package"] for f in report["findings"] if f["verdict"] in COLUMNS]
+    if len(flagged_names) != sum(report["counts"][c] for c in COLUMNS):
+        raise SystemExit("build_watch_page: a report's findings do not add up to its counts")
+    named = set(view["abandoned"]) | set(view["advisories"])
+    return sum(1 for package in flagged_names if package not in named)
+
+
 def marked(report: dict) -> int:
     """Packages carrying Packagist's own abandoned marker (signal S1), out of the findings."""
     return sum(
@@ -216,7 +242,8 @@ def advisories(report: dict) -> int:
     )
 
 
-def rows(manifest: dict, capsules: dict) -> list[dict]:
+def rows(manifest: dict, capsules: dict, composer: dict | None = None) -> list[dict]:
+    composer = composer or {}
     out = []
     for project in manifest["projects"]:
         name = project["name"]
@@ -248,6 +275,8 @@ def rows(manifest: dict, capsules: dict) -> list[dict]:
                 # not a finding — but the history keeps it, because a week where it jumps means
                 # the run could not reach a host, not that a project changed.
                 "unknown": counts["unknown"],
+                "composer_missed": composer_missed(report, composer.get(name)),
+                "composer": (composer.get(name) or {}).get("version", ""),
             }
         )
     return out
@@ -256,11 +285,13 @@ def rows(manifest: dict, capsules: dict) -> list[dict]:
 def order(rows_: list[dict]) -> list[dict]:
     """The order a table is printed in, which is the order a reader without JavaScript gets.
 
-    Heaviest first: a package abandoned by its own maintainer is the strongest claim on the page,
-    a package silent for years the next, and the name breaks the ties so a week with no change
-    prints the same page.
+    Most flagged first, the column the heading marks as sorted; on a tie, a package abandoned by its
+    own maintainer outweighs one silent for years, and the name settles the rest so a week with no
+    change prints the same page.
     """
-    return sorted(rows_, key=lambda r: (-int(r["abandoned"]), -int(r["silent"]), r["name"]))
+    return sorted(
+        rows_, key=lambda r: (-flagged(r), -int(r["abandoned"]), -int(r["silent"]), r["name"])
+    )
 
 
 def previous_run(history: list[dict], date: str) -> tuple[str | None, dict]:
@@ -338,6 +369,17 @@ def flagged_cell(row: dict, before: dict | None, since: str | None) -> str:
     return f'<td data-sort="{value}" class="{tone}">{value} {share(value, int(row["packages"]))}{moved}</td>'
 
 
+def missed_cell(row: dict, before: dict | None, since: str | None) -> str:
+    """The flagged packages composer audit does not name, and their share of the flagged ones.
+    A dash for a run that did not ask it; it sorts below every measured count."""
+    value = row["composer_missed"]
+    if value == "":
+        return '<td data-sort="-1" class="lockrot-missed lockrot-zero" title="Not measured in this run">—</td>'
+    tone = "lockrot-missed lockrot-zero" if value == 0 else "lockrot-missed"
+    moved = delta(value, (before or {}).get("composer_missed"), since)
+    return f'<td data-sort="{value}" class="{tone}">{value} {share(value, flagged(row))}{moved}</td>'
+
+
 def new_mark(moved: bool, was: str, since: str | None) -> str:
     if not moved:
         return ""
@@ -384,7 +426,17 @@ def header(first: list[str], counted: list[str]) -> str:
     cells = [f"<th>{name}</th>" for name in first[:1]]
     cells += [f'<th data-sort-method="none">{name}</th>' for name in first[1:]]
     cells.append('<th class="lockrot-num" data-sort-method="number" data-sort-reverse>Packages</th>')
-    cells.append('<th class="lockrot-num lockrot-flagged" data-sort-method="number" data-sort-reverse>Flagged</th>')
+    # data-sort-default: tablesort sorts by it on load, so its arrow shows the order the rows
+    # arrived in, and a click elsewhere clears it.
+    cells.append(
+        '<th class="lockrot-num lockrot-flagged" data-sort-method="number" data-sort-reverse'
+        " data-sort-default>Flagged</th>"
+    )
+    cells.append(
+        '<th class="lockrot-num lockrot-missed" data-sort-method="number" data-sort-reverse'
+        ' title="Flagged packages composer audit does not name at all, as abandoned or with an advisory">'
+        "Not in<br><code>composer&nbsp;audit</code></th>"
+    )
     cells += [
         f'<th class="lockrot-num" data-sort-method="number" data-sort-reverse>{"Advisories" if c == "advisories" else f"<code>{c.replace("-", "-<wbr>")}</code>"}</th>'
         for c in counted
@@ -409,6 +461,17 @@ def totals(rows_: list[dict], previous: dict, since: str | None, label: str, cou
     total = sum(flagged(r) for r in rows_)
     total_before = sum(flagged(previous[r["name"]]) for r in rows_) if comparable else None
     cells.append(f'<td class="lockrot-flagged">{total} {share(total, packages)}{delta(total, total_before, since)}</td>')
+    if all(r["composer_missed"] != "" for r in rows_):
+        missed = sum(int(r["composer_missed"]) for r in rows_)
+        measured_before = comparable and all(previous[r["name"]].get("composer_missed") for r in rows_)
+        missed_before = (
+            sum(int(previous[r["name"]]["composer_missed"]) for r in rows_) if measured_before else None
+        )
+        cells.append(
+            f'<td class="lockrot-missed">{missed} {share(missed, total)}{delta(missed, missed_before, since)}</td>'
+        )
+    else:
+        cells.append('<td class="lockrot-missed">—</td>')
     for column in counted:
         value = sum(int(r[column]) for r in rows_)
         cells.append(f"<td>{value}{delta(value, before(column), since)}</td>")
@@ -424,6 +487,7 @@ def table(rows_: list[dict], previous: dict | None = None, since: str | None = N
         cells = [project_cell(row), release_cell(row, before, since)]
         cells.append(count_cell(int(row["packages"]), (before or {}).get("packages"), since))
         cells.append(flagged_cell(row, before, since))
+        cells.append(missed_cell(row, before, since))
         cells += [count_cell(int(row[c]), (before or {}).get(c), since, c) for c in COLUMNS]
         body.append("<tr>" + "".join(cells) + "</tr>")
     return (
@@ -450,6 +514,7 @@ def starter_table(rows_: list[dict], previous: dict | None = None, since: str | 
         cells = [starter_cells(row, before, since)]
         cells.append(count_cell(int(row["packages"]), (before or {}).get("packages"), since))
         cells.append(flagged_cell(row, before, since))
+        cells.append(missed_cell(row, before, since))
         cells += [count_cell(int(row[c]), (before or {}).get(c), since, c) for c in COUNTED]
         body.append("<tr>" + "".join(cells) + "</tr>")
     label = f"{len(rows_)} starter{'' if len(rows_) == 1 else 's'}"
@@ -480,6 +545,12 @@ def since_line(rows_: list[dict], previous: dict, since: str | None) -> str:
     common = [r for r in rows_ if r["name"] in previous]
     was, now_flagged = sum(flagged(previous[r["name"]]) for r in common), sum(flagged(r) for r in common)
     moved = [f"flagged {was} → {now_flagged}"] if was != now_flagged else []
+    measured = [r for r in common if r["composer_missed"] != "" and previous[r["name"]].get("composer_missed")]
+    if measured and len(measured) == len(common):
+        a = sum(int(previous[r["name"]]["composer_missed"]) for r in measured)
+        b = sum(int(r["composer_missed"]) for r in measured)
+        if a != b:
+            moved.append(f"not in `composer audit` {a} → {b}")
     for column in COUNTED:
         a = sum(int(previous[r["name"]][column] or 0) for r in common)
         b = sum(int(r[column]) for r in common)
@@ -530,6 +601,97 @@ def archive(history: list[dict]) -> str:
     return "\n".join(blocks)
 
 
+def headline(releases: list[dict]) -> str:
+    """The page's one-sentence answer to why it exists: of what lockrot flags in the applications,
+    how much Composer's own check names. Only when composer audit was asked about every one of
+    them; a total over some of them would be a different claim."""
+    if not releases or any(r["composer_missed"] == "" for r in releases):
+        return ""
+    total = sum(flagged(r) for r in releases)
+    missed = sum(int(r["composer_missed"]) for r in releases)
+    return (
+        f"Of the **{total}** packages lockrot flags in these {len(releases)} applications, "
+        f"`composer audit` names {total - missed}. It says nothing at all about the other "
+        f"**{missed}**.\n\n"
+    )
+
+
+def composer_note(rows_: list[dict]) -> str:
+    """The sentence that says what the composer audit column measured, and with which Composer.
+
+    Written from the run, so it names the version that ran, and says nothing for a run that did not
+    ask composer audit at all.
+    """
+    versions = sorted({r["composer"] for r in rows_ if r["composer"]})
+    if not versions:
+        return ""
+    unmeasured = [r for r in rows_ if r["composer_missed"] == ""]
+    if not unmeasured:
+        gap = ""
+    elif all(r["kind"] == "starter" for r in unmeasured):
+        gap = " The fresh installs below show a dash: this run did not ask composer audit about them."
+    else:
+        gap = f" A dash marks the {len(unmeasured)} projects this run did not ask composer audit about."
+    return (
+        "*Not in `composer audit`* is the flagged packages that `composer audit --locked "
+        f"--abandoned=report` (Composer {', '.join(versions)}), run on the same lock file, does not "
+        "name at all — as abandoned or as carrying an advisory; its percentage is their share of the "
+        "flagged ones. Composer reads the `abandoned` marker the lock file carries, so a "
+        "package marked on Packagist after the lock was written is missed as well "
+        f"([what that adds up to](blog/posts/2026-09-19-composer-audit-abandoned-misses.md)).{gap} "
+    )
+
+
+def run_settings(reports: dict) -> dict:
+    """What the page says about how the run was made, read from the run rather than written into
+    the prose: the PHP version every report was measured against and the years `silent` takes.
+
+    Every report has to agree — a sentence that says "PHP 8.4 for every project" is false the week
+    one project is given its own target. And lockrot's own list of flagged verdicts has to be the
+    page's columns, in order: Flagged adds those columns up, and a release that flags one more
+    verdict would otherwise make every total on the page quietly short.
+    """
+    runs = [report.get("run", {}) for report in reports.values()]
+    targets = {run.get("target_php") for run in runs}
+    if len(targets) != 1 or None in targets:
+        raise SystemExit(f"build_watch_page: the reports disagree on the target PHP: {sorted(map(str, targets))}")
+    spans = {
+        (run.get("thresholds", {}).get("release-high-years"), run.get("thresholds", {}).get("push-high-years"))
+        for run in runs
+    }
+    if len(spans) != 1 or None in next(iter(spans)):
+        raise SystemExit(f"build_watch_page: the reports disagree on the silent thresholds: {sorted(spans)}")
+    for run in runs:
+        if run.get("flagged_verdicts") != COLUMNS:
+            raise SystemExit(
+                f"build_watch_page: lockrot flags {run.get('flagged_verdicts')}, the page has columns "
+                f"for {COLUMNS}; give the page the new verdict before publishing it"
+            )
+    release, push = next(iter(spans))
+    span = (
+        f"no stable release and no push to any branch for {release} years"
+        if release == push
+        else f"no stable release for {release} years and no push to any branch for {push}"
+    )
+    return {"target_php": targets.pop(), "silent_span": span}
+
+
+def lockless(projects: dict, rows_: list[dict]) -> str:
+    """The starters in this run whose project commits no lock file, as the prose names them.
+
+    From the flag in data/watch/projects.json, so the sentence follows the list instead of being a
+    second copy of it.
+    """
+    names = {r["name"] for r in rows_}
+    titles = [
+        s["title"] for s in projects.get("starters", [])
+        if s.get("no_lock_in_repository") and s["name"] in names
+    ]
+    if not titles:
+        raise SystemExit("build_watch_page: no starter in the run is marked no_lock_in_repository")
+    return titles[0] if len(titles) == 1 else ", ".join(titles[:-1]) + " and " + titles[-1]
+
+
 def write_history(path: Path, rows_: list[dict]) -> None:
     kept = []
     if path.is_file():
@@ -552,10 +714,13 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--capsules", type=Path, default=Path("data/reports/watch"))
     parser.add_argument("--history", type=Path, default=Path("content/assets/data/watch/history.csv"))
     parser.add_argument("--page", type=Path, default=Path("content/watch.md"))
+    parser.add_argument("--projects", type=Path, default=Path("data/watch/projects.json"))
     args = parser.parse_args(argv[1:])
 
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    rows_ = rows(manifest, read_capsules(args.capsules))
+    reports = read_capsules(args.capsules)
+    settings = run_settings(reports)
+    rows_ = rows(manifest, reports, read_composer(args.capsules))
     since, previous = previous_run(read_history(args.history), manifest["run"]["date"])
     write_history(args.history, rows_)
 
@@ -571,6 +736,10 @@ def main(argv: list[str]) -> int:
             starters=len(starters),
             date=manifest["run"]["date"],
             version=rows_[0]["lockrot"],
+            composer_note=composer_note(rows_),
+            headline=headline(releases),
+            lockless=lockless(json.loads(args.projects.read_text(encoding="utf-8")), rows_),
+            **settings,
             since=since_line(rows_, previous, since),
             table=table(releases, previous, since),
             starter_table=starter_table(starters, previous, since) if starters else "",

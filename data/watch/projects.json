@@ -84,7 +84,11 @@
         "is both), and both write a report into the same directory.",
         "",
         "Verified on 2026-09-22: every entry below resolves to a lock file under those flags.",
-        "Also tried and working, if the list grows: laminas/laminas-mvc-skeleton."
+        "Also tried and working, if the list grows: laminas/laminas-mvc-skeleton.",
+        "",
+        "`no_lock_in_repository` marks a starter whose project commits no lock file anywhere, so it",
+        "cannot be in the releases table; /watch/ names those projects from this flag rather than",
+        "from a list in its prose"
     ],
     "starters": [
         { "name": "new-laravel", "title": "Laravel", "package": "laravel/laravel" },
@@ -92,13 +96,13 @@
         { "name": "new-symfony-webapp", "title": "Symfony (--webapp)", "package": "symfony/skeleton", "require": ["symfony/webapp-pack"] },
         { "name": "new-api-platform", "title": "API Platform", "package": "symfony/skeleton", "require": ["api-platform/symfony"] },
         { "name": "new-drupal", "title": "Drupal", "package": "drupal/recommended-project" },
-        { "name": "new-wordpress", "title": "WordPress (Bedrock)", "package": "roots/bedrock" },
-        { "name": "new-shopware", "title": "Shopware", "package": "shopware/production" },
-        { "name": "new-sylius", "title": "Sylius", "package": "sylius/sylius-standard" },
-        { "name": "new-typo3", "title": "TYPO3", "package": "typo3/cms-base-distribution" },
-        { "name": "new-craft", "title": "Craft CMS", "package": "craftcms/craft" },
-        { "name": "new-statamic", "title": "Statamic", "package": "statamic/statamic" },
-        { "name": "new-pimcore", "title": "Pimcore", "package": "pimcore/skeleton" },
+        { "name": "new-wordpress", "title": "WordPress (Bedrock)", "package": "roots/bedrock", "no_lock_in_repository": true },
+        { "name": "new-shopware", "title": "Shopware", "package": "shopware/production", "no_lock_in_repository": true },
+        { "name": "new-sylius", "title": "Sylius", "package": "sylius/sylius-standard", "no_lock_in_repository": true },
+        { "name": "new-typo3", "title": "TYPO3", "package": "typo3/cms-base-distribution", "no_lock_in_repository": true },
+        { "name": "new-craft", "title": "Craft CMS", "package": "craftcms/craft", "no_lock_in_repository": true },
+        { "name": "new-statamic", "title": "Statamic", "package": "statamic/statamic", "no_lock_in_repository": true },
+        { "name": "new-pimcore", "title": "Pimcore", "package": "pimcore/skeleton", "no_lock_in_repository": true },
         { "name": "new-slim", "title": "Slim", "package": "slim/slim-skeleton" },
         { "name": "new-cakephp", "title": "CakePHP", "package": "cakephp/app" },
         { "name": "new-yii2", "title": "Yii 2", "package": "yiisoft/yii2-app-basic" }
