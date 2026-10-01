@@ -65,6 +65,13 @@ cp viewer/frame.js viewer-site/frame/frame.js
 python3 scripts/build_reports.py --capsules data/reports --renderer "$RENDERER" \
   --html-out viewer-site/reports
 
+# Every earlier weekly run as well, at reports/watch/<date>/<project>: /watch/ links each run the
+# history names. The capsules come out of git rather than out of the tree, which keeps one week of
+# them; see scripts/watch_archive.py.
+python3 scripts/watch_archive.py --out build/watch-archive
+python3 scripts/build_reports.py --capsules build/watch-archive --renderer "$RENDERER" \
+  --html-out viewer-site/reports/watch
+
 cp viewer/app.html viewer-site/index.html
 cp viewer/app.css viewer/app.js viewer-site/
 cp viewer/_headers viewer-site/_headers
