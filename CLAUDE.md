@@ -46,7 +46,8 @@ content/               # the site's own docs_dir overlay, copied over .lockrot/d
   blog/index.md        # blog landing; the Material blog plugin renders the list
   blog/.authors.yml    # author ids used in post front matter
   blog/posts/          # one file per post, see "Writing a post"
-  assets/              # extra.css (terminal sample, demo GIF box, link colour and underline), og.png
+  assets/              # extra.css (terminal sample, demo GIF box, link colour and underline, the watch
+                       # tables), og.png, watch.js + vendor/tablesort/ (sortable tables on /watch/)
   overrides/main.html  # <title> rule and OpenGraph tags (Material's social plugin needs Cairo)
   overrides/partials/copyright.html  # footer: Material's partial plus "built from lockrot <ref>"
   overrides/partials/jsonld.html     # JSON-LD: SoftwareApplication + FAQPage on the home page, BlogPosting on posts, breadcrumbs elsewhere
@@ -68,7 +69,8 @@ scripts/               # fetch-lockrot.sh, fetch-renderer.sh, check-nav.sh, buil
                        # a post's og_image must exist; the sitemap's <lastmod> is the date the page
                        # changed, not the build date) and its unit test test_mkdocs_hooks.py
                        # report_page.py, build_reports.py (a --format=html report, stored and put back
-                       # together), watch_plan.py, build_watch_page.py — all with test_*.py beside them
+                       # together), watch_plan.py, build_watch_page.py, watch_archive.py (earlier runs,
+                       # out of git) — all with test_*.py beside them
 viewer/                # the report viewer, deployed to viewer.lockrot.dev, not to this site
   app.html app.css app.js  # the page: takes a document, hands it to the frame, owns the address
   frame.html           # the frame page for a released renderer (lockrot 0.12.0+)
@@ -229,8 +231,10 @@ releases and fifteen starters in `data/watch/projects.json` and rewrites `/watch
   install, and it is the only version two runs can be compared across; a development branch moves
   for reasons that have nothing to do with dependency rot. Three tries per project — GitHub's
   `releases/latest`, then the releases list filtered by `STABLE_TAG` (a version core, optionally a
-  `-p3`-style patch suffix, never alpha, beta, RC or dev), then the tags — and the release it
-  settles on must actually carry `composer.json` and `composer.lock`, which several projects do not.
+  `-p3`-style patch suffix, never alpha, beta, RC or dev), then the tags — tried highest version
+  first (`watch_plan.version_key`), never in the API's order: releases are listed by the date they
+  were made, so a backport to an older branch would otherwise win. The release it settles on must
+  actually carry `composer.json` and `composer.lock`, which several projects do not.
   A project where none of the newest six releases does fails the run on purpose: dropping it would
   publish a page quietly one project smaller with a total that moved for an unstated reason.
   The tag, the commit and the date go into the run's manifest, from there into the page's table and
@@ -260,7 +264,17 @@ releases and fifteen starters in `data/watch/projects.json` and rewrites `/watch
 - **`content/watch.md` is generated and committed.** The prose lives in
   `scripts/build_watch_page.py`; do not hand-edit the page. It is committed because `lastmod` is the
   commit date of the file a page is built from, and a page whose numbers change weekly while its
-  file does not would tell every crawler it had not moved.
+  file does not would tell every crawler it had not moved. Its tables are HTML, not Markdown, because
+  a cell has to carry attributes: the `data-sort` value tablesort (vendored, see `mkdocs.yml`) orders
+  by, the shade of a count, and how far it moved since the previous run in `history.csv`. The table
+  carries no class of its own — Material styles and scrolls only `table:not([class])` — so the CSS
+  hangs off the `div.lockrot-watch` around it.
+- **Every earlier run stays published.** The capsules in `data/reports/watch/` are one week deep;
+  `scripts/watch_archive.py` reads every run the history names back out of git (the newest commit
+  holding each date's manifest) and `build-viewer.sh` renders them to `/reports/watch/<date>/<project>`
+  with the current renderer, which reads the 0.10.0 documents fine (checked). It fails a shallow
+  clone and a history date git cannot produce, because `/watch/` links every one of them. The cost
+  is about 11 MB of pages per run on the viewer's host.
 - **The run publishes through a pull request that merges itself, on `ROT_WATCH_PUSH_TOKEN`.** The
   `main` ruleset requires a pull request and a green `build`, and its bypass list is empty — a
   repository owned by a user account is offered no GitHub Actions bypass to put there, so the
@@ -274,8 +288,9 @@ releases and fifteen starters in `data/watch/projects.json` and rewrites `/watch
   run, which stays the safety net. `content/watch.md` is filtered out of CodeRabbit for the same
   reason the data is: main requires every review thread resolved, and a comment on a generated file
   would strand the page rather than delay it.
-- **`content/assets/data/watch/history.csv` is append-only**, keyed by date and repository, and
-  every row carries the lockrot version that produced it. A number moves when a project changes,
+- **`content/assets/data/watch/history.csv` is append-only**, keyed by date and the run's `name`
+  (the last column — three starters share `symfony/skeleton`, so the repository or package is not
+  a key), and every row carries the lockrot version that produced it. A number moves when a project changes,
   when Packagist changes, or when the tool learns something; a trend that cannot tell those apart
   is not a trend.
 
