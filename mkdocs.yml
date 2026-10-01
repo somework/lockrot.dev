@@ -120,6 +120,14 @@ plugins:
 extra_css:
   - assets/extra.css
 
+# Sortable tables on /watch/. tablesort 5.7.1 from npm, MIT (LICENCE.txt beside it); the tarball
+# matched the registry's integrity sha512-wm+xSponmlN1spiuwGlrvNGoG8fEso+y86OOjS+Pl0Qsje/cOVSfUvELcXILWc8/sgEdY/NGMPo0qhFGyYKnwQ==
+# Order matters: the number sort extends Tablesort, and watch.js uses both.
+extra_javascript:
+  - assets/vendor/tablesort/tablesort.min.js
+  - assets/vendor/tablesort/tablesort.number.min.js
+  - assets/watch.js
+
 extra:
   # The lockrot ref the reference pages were built from; scripts/build.sh exports it.
   lockrot_ref: !ENV [LOCKROT_REF, "main"]

@@ -75,3 +75,190 @@ body[data-md-color-scheme="slate"] {
 .md-typeset a:not(.headerlink):not(.md-button):is(:hover, :focus-visible) {
   text-decoration-color: currentcolor;
 }
+
+/* The weekly watch's tables (scripts/build_watch_page.py writes them as HTML, inside
+   div.lockrot-watch so the table itself keeps no class and Material still styles and scrolls it).
+   A count is shaded by how many packages it is, on fixed steps (1, 2-4, 5-9, 10+) so a shade means
+   the same thing in every column and every week; zero recedes. The colours are one hue per scheme,
+   each checked as text on that scheme's background: #b3261e on white 6.5:1 and #1b7a3a 5.4:1;
+   #ff8a80 on slate 7.4:1 and #7bd88f 9.0:1. The sign carries the direction too, not colour alone. */
+body {
+  --lockrot-heat: #d1453b;
+  --lockrot-up: #b3261e;
+  --lockrot-down: #1b7a3a;
+}
+
+body[data-md-color-scheme="slate"] {
+  --lockrot-heat: #ff6b5e;
+  --lockrot-up: #ff8a80;
+  --lockrot-down: #7bd88f;
+}
+
+.md-typeset .lockrot-watch table:not([class]) {
+  /* Material makes the table its own scroll box, inside a wrapper that also scrolls. Only the wrapper
+     scrolls here: a sticky cell sticks to its nearest scroll box, and the table never moves. */
+  overflow: visible;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.md-typeset .lockrot-watch table:not([class]) :is(th, td) {
+  padding: 0.6em 0.7em;
+}
+
+/* Selectors carry table:not([class]) to outrank Material's own table rules, which they restyle. */
+.md-typeset .lockrot-watch table:not([class]) th {
+  min-width: 0;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+/* A count's heading may wrap after a verdict's hyphen (the <wbr> the generator writes), so
+   `left-behind` and `old-promise` do not set two of the widest columns on the page. */
+.md-typeset .lockrot-watch table:not([class]) th.lockrot-num {
+  white-space: normal;
+}
+
+/* Verdict names stay in code font, as everywhere on the site, without the chip: eight chips in one
+   heading row read as noise. */
+.md-typeset .lockrot-watch table:not([class]) th code {
+  padding: 0;
+  background: none;
+  font-size: 0.95em;
+  /* Material lets code break anywhere; a heading breaks only where the generator put a <wbr>. */
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.md-typeset .lockrot-watch table:not([class]) :is(th.lockrot-num, td[data-sort]:not(:first-child)) {
+  text-align: right;
+}
+
+/* The project column stays in view while the counts scroll under it on a narrow screen. */
+.md-typeset .lockrot-watch table:not([class]) :is(th, td):first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: var(--md-default-bg-color);
+  /* The column's edge, so the counts are seen to pass under it. */
+  box-shadow: inset -0.05rem 0 0 var(--md-typeset-table-color);
+}
+
+.md-typeset .lockrot-watch table:not([class]) td:first-child {
+  white-space: nowrap;
+}
+
+.md-typeset .lockrot-watch table:not([class]) .lockrot-owner {
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .lockrot-watch table:not([class]) :is(.lockrot-release, .lockrot-created) code {
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.md-typeset .lockrot-watch table:not([class]) :is(.lockrot-release, .lockrot-created) {
+  white-space: nowrap;
+}
+
+.md-typeset .lockrot-watch table:not([class]) .lockrot-zero {
+  color: var(--md-default-fg-color--lighter);
+}
+
+.md-typeset .lockrot-watch table:not([class]) .lockrot-heat-1 { background-color: color-mix(in srgb, var(--lockrot-heat) 8%, transparent); }
+.md-typeset .lockrot-watch table:not([class]) .lockrot-heat-2 { background-color: color-mix(in srgb, var(--lockrot-heat) 15%, transparent); }
+.md-typeset .lockrot-watch table:not([class]) .lockrot-heat-3 { background-color: color-mix(in srgb, var(--lockrot-heat) 24%, transparent); font-weight: 600; }
+.md-typeset .lockrot-watch table:not([class]) .lockrot-heat-4 { background-color: color-mix(in srgb, var(--lockrot-heat) 36%, transparent); font-weight: 700; }
+
+.md-typeset .lockrot-watch table:not([class]) .lockrot-delta {
+  margin-left: 0.25em;
+  font-size: 0.78em;
+  font-weight: 400;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .lockrot-watch table:not([class]) .lockrot-delta-up { color: var(--lockrot-up); }
+.md-typeset .lockrot-watch table:not([class]) .lockrot-delta-down { color: var(--lockrot-down); }
+
+.md-typeset .lockrot-watch table:not([class]) .lockrot-new {
+  margin-left: 0.3em;
+  padding: 0 0.45em;
+  border: 1px solid currentcolor;
+  border-radius: 0.6em;
+  font-size: 0.78em;
+  color: var(--md-typeset-a-color);
+}
+
+.md-typeset .lockrot-watch table:not([class]) tfoot td {
+  border-top: 0.1rem solid var(--md-default-fg-color--lighter);
+  font-weight: 700;
+  text-align: right;
+}
+
+.md-typeset .lockrot-watch table:not([class]) tfoot td:first-child {
+  text-align: left;
+}
+
+/* Sorting: a sortable heading looks pressable, shows its direction once used, and its keyboard
+   focus is visible (tablesort makes it focusable and sorts on Enter). */
+.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"]) {
+  padding-right: 1.4em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"], :first-child) {
+  position: relative;
+}
+
+/* The arrow sits in the heading's padding rather than in its text, so it never wraps onto a line of
+   its own. The first column is sticky, which is positioned already and holds the arrow the same way;
+   giving it `relative` here would unstick it. */
+.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"])::after {
+  position: absolute;
+  right: 0.4em;
+  bottom: 0.6em;
+  content: "↕";
+  color: var(--md-default-fg-color--lighter);
+  transition: color var(--lockrot-duration-fast) ease-out;
+}
+
+.md-typeset .lockrot-watch table:not([class]) th[aria-sort="ascending"]::after { content: "↑"; color: var(--md-typeset-a-color); }
+.md-typeset .lockrot-watch table:not([class]) th[aria-sort="descending"]::after { content: "↓"; color: var(--md-typeset-a-color); }
+
+.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:not([data-sort-method="none"]):hover::after {
+  color: var(--md-typeset-a-color);
+}
+
+.md-typeset .lockrot-watch table:not([class]) th[role="columnheader"]:focus-visible {
+  outline: 0.1rem solid var(--md-accent-fg-color);
+  outline-offset: -0.1rem;
+}
+
+/* Earlier runs: one line per run, opening onto the reports it published. */
+.md-typeset details.lockrot-run {
+  margin: 0.4em 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: none;
+  font-size: 0.72rem;
+}
+
+.md-typeset details.lockrot-run > summary {
+  margin: 0;
+  padding: 0.3em 0;
+  background: none;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.md-typeset details.lockrot-run > summary::before,
+.md-typeset details.lockrot-run > summary::after {
+  display: none;
+}
+
+.md-typeset details.lockrot-run > p {
+  margin: 0.2em 0 0.8em 1em;
+  line-height: 1.8;
+}
