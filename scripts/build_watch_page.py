@@ -310,10 +310,20 @@ def previous_run(history: list[dict], date: str) -> tuple[str | None, dict]:
 
 
 def read_history(path: Path) -> list[dict]:
+    """The history's rows. Every row needs its run's name: the previous run is looked up by it and
+    the archive links each report by it, so a row without one is refused rather than published as a
+    link to nothing."""
     if not path.is_file():
         return []
     with path.open(newline="", encoding="utf-8") as fh:
-        return list(csv.DictReader(fh))
+        rows_ = list(csv.DictReader(fh))
+    unnamed = [i for i, row in enumerate(rows_, start=2) if not (row.get("name") or "").strip()]
+    if unnamed:
+        raise SystemExit(
+            f"build_watch_page: {path} has rows with no name (lines {', '.join(map(str, unnamed[:5]))}); "
+            "fill them from that run's manifest"
+        )
+    return rows_
 
 
 def plural(count: int, word: str) -> str:

@@ -607,6 +607,16 @@ class StarterTest(unittest.TestCase):
 
 
 class HistoryTest(unittest.TestCase):
+    def test_a_row_without_a_name_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "history.csv"
+            path.write_text("date,name\n2026-09-15,one\n2026-09-15,\n", encoding="utf-8")
+
+            with self.assertRaises(SystemExit) as raised:
+                bw.read_history(path)
+
+        self.assertIn("lines 3", str(raised.exception))
+
     def test_a_rerun_of_the_same_day_replaces_that_day_rather_than_doubling_it(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "history.csv"
