@@ -94,8 +94,8 @@ jobs:
           # setup-php would write the workflow's GITHUB_TOKEN into Composer's global auth.json, and
           # lockrot then uses Composer's credential for api.github.com instead of ROT_WATCH_TOKEN:
           # every job on the 1,000-an-hour token, and the counts quietly short when it runs out.
-          # lockrot-action passes '' to setup-php for the same reason; nothing here needs a token
-          # from Composer.
+          # lockrot-action passes '' to setup-php for the same reason. The Composer steps get the
+          # token through COMPOSER_AUTH in their own environment instead.
           github-token: ''
       # What Composer's own check says about the same lock, for the page's "Not in composer audit"
       # column: the packages lockrot flags that this does not name at all. Before lockrot, so it
@@ -108,6 +108,12 @@ jobs:
         working-directory: work
         env:
           COMPOSER_NO_INTERACTION: "1"
+          # Composer's own GitHub credential, for this step only: the same ROT_WATCH_TOKEN lockrot
+          # gets, so a VCS repository on GitHub is never asked anonymously. In the environment of
+          # the step, not in auth.json, so the lockrot step does not inherit it — with Composer
+          # holding one, lockrot would send Composer's header in place of its own. --no-plugins
+          # and --no-scripts keep any package's code from running beside it.
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ROT_WATCH_TOKEN || github.token }}"}}'
         run: |
           set -euo pipefail
           # Actions runs this under `bash -e`, so the bitmask exit has to be caught, not just ignored.
@@ -180,8 +186,8 @@ jobs:
           # setup-php would write the workflow's GITHUB_TOKEN into Composer's global auth.json, and
           # lockrot then uses Composer's credential for api.github.com instead of ROT_WATCH_TOKEN:
           # every job on the 1,000-an-hour token, and the counts quietly short when it runs out.
-          # lockrot-action passes '' to setup-php for the same reason; nothing here needs a token
-          # from Composer.
+          # lockrot-action passes '' to setup-php for the same reason. The Composer steps get the
+          # token through COMPOSER_AUTH in their own environment instead.
           github-token: ''
       - name: Create the project
         env:
@@ -190,6 +196,12 @@ jobs:
           # A space-separated list, or empty: `symfony new --webapp` is the skeleton plus a pack.
           EXTRA: ${{ join(matrix.starter.require, ' ') }}
           COMPOSER_NO_INTERACTION: "1"
+          # Composer's own GitHub credential, for this step only: the same ROT_WATCH_TOKEN lockrot
+          # gets, so a VCS repository on GitHub is never asked anonymously. In the environment of
+          # the step, not in auth.json, so the lockrot step does not inherit it — with Composer
+          # holding one, lockrot would send Composer's header in place of its own. --no-plugins
+          # and --no-scripts keep any package's code from running beside it.
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ROT_WATCH_TOKEN || github.token }}"}}'
         run: |
           set -euo pipefail
           composer create-project --no-install --no-scripts --no-plugins "$PACKAGE:$VERSION" work
@@ -211,6 +223,12 @@ jobs:
         working-directory: work
         env:
           COMPOSER_NO_INTERACTION: "1"
+          # Composer's own GitHub credential, for this step only: the same ROT_WATCH_TOKEN lockrot
+          # gets, so a VCS repository on GitHub is never asked anonymously. In the environment of
+          # the step, not in auth.json, so the lockrot step does not inherit it — with Composer
+          # holding one, lockrot would send Composer's header in place of its own. --no-plugins
+          # and --no-scripts keep any package's code from running beside it.
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ROT_WATCH_TOKEN || github.token }}"}}'
         run: |
           set -euo pipefail
           # Actions runs this under `bash -e`, so the bitmask exit has to be caught, not just ignored.
