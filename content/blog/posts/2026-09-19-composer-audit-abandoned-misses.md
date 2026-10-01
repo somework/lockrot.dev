@@ -242,5 +242,5 @@ line the day sits on.
 Without a token, GitHub allows 60 requests an hour and lockrot checks repository activity for at
 most 50 packages per host per run, among those already old on release age, so a large lock
 reports fewer `silent` findings than it has; see
-[How it fetches metadata](../../internals.md). This run had a token, and none of the 31 reports
+[Repository hosts and credentials](../../internals.md#repository-hosts-and-credentials). This run had a token, and none of the 31 reports
 carries the note lockrot prints when the cap applied.
