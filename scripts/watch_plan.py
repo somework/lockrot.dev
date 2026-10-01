@@ -16,6 +16,11 @@ Finding that release is not one API call, because projects disagree about what a
     release), and never an alpha, beta, RC, dev or preview;
   - some tag without releasing at all, so the tag list is the last resort.
 
+Whatever the source, the candidates are tried in version order, highest first, and not in the order
+the API lists them. GitHub lists releases by the date they were made, so a security fix to an older
+branch published after the newest release would otherwise come first, and the page would quietly
+report an older line of the project.
+
 The chosen release then has to actually carry `composer.json` and `composer.lock`. Several projects
 tag a release whose lock lives elsewhere, or is not committed at all; the run tries the newest few
 candidates and takes the first that has both. A project where none does fails the run rather than
@@ -43,8 +48,28 @@ PACKAGIST = "https://repo.packagist.org/p2/{package}.json"
 # re-releases (`-p3`, `.1`, `-patch2`). Anything that names a pre-release is not one.
 STABLE_TAG = re.compile(r"^v?\d+(\.\d+){0,3}(-(p|patch|sp)\d+)?$", re.I)
 
+# The re-release suffix STABLE_TAG allows, read apart from the version core: `2.4.8-p3` sorts after
+# `2.4.8` and before `2.4.9`.
+PATCH_SUFFIX = re.compile(r"-(?:p|patch|sp)(\d+)$", re.I)
+
+# Width of the version core a tag is compared on; `26.09` and `26.09.0` compare equal.
+VERSION_PARTS = 4
+
 # How many candidate releases to try before giving up on a project.
 CANDIDATES = 6
+
+
+def version_key(tag: str) -> tuple[int, ...]:
+    """A tag's version as a sortable tuple: the numbers of its core, padded, then the patch suffix.
+
+    Read from the digits rather than from one tag syntax, because a project's own `tag_pattern` can
+    spell a version as `RELEASE_5_2_3` or `release-3.3.19`.
+    """
+    suffix = PATCH_SUFFIX.search(tag)
+    core = tag[: suffix.start()] if suffix else tag
+    numbers = [int(n) for n in re.findall(r"\d+", core)][:VERSION_PARTS]
+    numbers += [0] * (VERSION_PARTS - len(numbers))
+    return (*numbers, int(suffix.group(1)) if suffix else 0)
 
 
 def get(path: str, token: str | None):
@@ -71,7 +96,7 @@ def get(path: str, token: str | None):
 
 
 def candidates(repo: str, token: str | None, pattern: re.Pattern) -> list[str]:
-    """Release tags for this project, newest first, pre-releases left out."""
+    """Release tags for this project, highest version first, pre-releases left out."""
     names = []
     latest = get(f"/repos/{repo}/releases/latest", token)
     if latest and pattern.match(latest["tag_name"]):
@@ -84,14 +109,13 @@ def candidates(repo: str, token: str | None, pattern: re.Pattern) -> list[str]:
             names.append(release["tag_name"])
 
     if not names:
-        # No releases, only tags. They come back in the order the API lists them, which is the
-        # order the project's refs are in — good enough, since the filter above rules out the
-        # pre-release tags that would otherwise sit on top.
-        for tag in get(f"/repos/{repo}/tags?per_page=50", token) or []:
-            if pattern.match(tag["name"]):
+        # No releases, only tags. A full page, because the order below is ours and not the API's:
+        # the newest tag only has to be somewhere among them.
+        for tag in get(f"/repos/{repo}/tags?per_page=100", token) or []:
+            if pattern.match(tag["name"]) and tag["name"] not in names:
                 names.append(tag["name"])
 
-    return names[:CANDIDATES]
+    return sorted(names, key=version_key, reverse=True)[:CANDIDATES]
 
 
 def commit_of(repo: str, tag: str, token: str | None) -> str | None:
@@ -159,12 +183,11 @@ def newest_package_version(package: str) -> str:
     except (urllib.error.URLError, TimeoutError, KeyError, json.JSONDecodeError) as err:
         raise SystemExit(f"watch_plan: cannot read {package} from Packagist: {err}") from err
 
-    for version in versions:
-        name = version["version"]
-        if STABLE_TAG.match(name):
-            return name
-
-    raise SystemExit(f"watch_plan: {package} has no stable version on Packagist")
+    # The highest stable version, not the first one listed: the order is Packagist's to change.
+    stable = [version["version"] for version in versions if STABLE_TAG.match(version["version"])]
+    if not stable:
+        raise SystemExit(f"watch_plan: {package} has no stable version on Packagist")
+    return max(stable, key=version_key)
 
 
 def resolve_starter(starter: dict, target_php: str) -> dict:
