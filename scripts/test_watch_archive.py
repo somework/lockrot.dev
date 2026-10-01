@@ -130,6 +130,20 @@ class ArchiveTest(unittest.TestCase):
 
         self.assertIn("2026-09-08", str(raised.exception))
 
+    def test_a_run_date_that_is_not_a_date_never_becomes_a_path(self):
+        # out/../keep would be emptied and rewritten if the date were taken as it stands.
+        keep = Path(self.tmp.name) / "keep"
+        keep.mkdir()
+        (keep / "file").write_text("x", encoding="utf-8")
+        write_run(self.repo, "../keep", {"one": 1})
+        commit(self.repo, "run")
+
+        with self.assertRaises(SystemExit) as raised:
+            wa.lay_out(self.repo, self.out, history(self.repo))
+
+        self.assertIn("'../keep'", str(raised.exception))
+        self.assertTrue((keep / "file").is_file())
+
     def test_a_shallow_clone_fails_rather_than_publishing_one_week(self):
         write_run(self.repo, "2026-09-08", {"one": 1})
         commit(self.repo, "run 1")

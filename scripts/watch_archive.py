@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -26,6 +27,15 @@ from pathlib import Path
 
 RUN_DIR = "data/reports/watch"
 MANIFEST = "manifest.json"
+# A run's date names a directory here and a URL on the viewer's host, so it is checked, not trusted.
+DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def run_date(manifest: bytes | str, where: str) -> str:
+    date = json.loads(manifest)["run"]["date"]
+    if not isinstance(date, str) or not DATE.fullmatch(date):
+        raise SystemExit(f"watch_archive: {where} names the run {date!r}, not a YYYY-MM-DD date")
+    return date
 
 
 def git(*args: str, cwd: Path, stdin: bytes | None = None) -> bytes:
@@ -59,9 +69,9 @@ def runs_in_git(repo: Path) -> dict[str, str]:
         listed = git("ls-tree", "--name-only", commit, f"{RUN_DIR}/{MANIFEST}", cwd=repo).strip()
         if not listed:
             continue
-        manifest = json.loads(git("show", f"{commit}:{RUN_DIR}/{MANIFEST}", cwd=repo))
+        date = run_date(git("show", f"{commit}:{RUN_DIR}/{MANIFEST}", cwd=repo), f"{commit}:{RUN_DIR}/{MANIFEST}")
         # git log lists newest first, so the first commit seen for a date is the one that won.
-        runs.setdefault(manifest["run"]["date"], commit)
+        runs.setdefault(date, commit)
     return runs
 
 
@@ -106,7 +116,7 @@ def lay_out(repo: Path, out: Path, history: Path) -> dict[str, int]:
 
     current = repo / RUN_DIR / MANIFEST
     if current.is_file():
-        date = json.loads(current.read_text(encoding="utf-8"))["run"]["date"]
+        date = run_date(current.read_text(encoding="utf-8"), str(current))
         run = out / date
         shutil.rmtree(run, ignore_errors=True)
         run.mkdir(parents=True)

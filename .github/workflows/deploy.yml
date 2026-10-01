@@ -33,14 +33,11 @@ jobs:
           cache: pip
       - run: pip install --require-hashes -r requirements.txt
       - run: scripts/build.sh
-      - uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
       # The report viewer, on a host of its own. It is a second Worker because response headers
       # decide it, not taste: see wrangler.viewer.jsonc. Built from the same lockrot checkout the
-      # site was built from, so the renderer in it is the one that release ships.
+      # site was built from, so the renderer in it is the one that release ships. Built before
+      # either host is deployed: /watch/ links the viewer's archive pages, and a viewer build that
+      # fails after the site went out would leave those links pointing at nothing.
       - run: scripts/build-viewer.sh
         env:
           # fetch-renderer.sh verifies the renderer release's build provenance with
@@ -50,6 +47,11 @@ jobs:
         run: |
           set -eu
           if [ -d viewer-site ]; then echo "built=true" >> "$GITHUB_OUTPUT"; else echo "built=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
       # A lockrot older than 0.10.0 ships no renderer, and build-viewer.sh says so and writes
       # nothing rather than failing. Deploying an empty directory over a working viewer would be
       # the worse answer, so the step is skipped instead.
