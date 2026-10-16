@@ -25,6 +25,7 @@ import argparse
 import csv
 import html
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -39,10 +40,30 @@ HISTORY_FIELDS = [
     "date", "lockrot", "kind", "repo", "package", "tag", "version", "commit", "packages",
     "advisories", "abandoned", "silent", "pinned", "left-behind", "old-promise", "stale",
     "unknown", "marked_on_packagist", "name", "composer_missed",
+    # From report-2 on (lockrot 0.14.0). A report-1 row leaves the report-2 facts empty, takes its
+    # grades from 0.13's priorities, and says so in grade_basis.
+    "graded", "vulnerable",
+    "carrying_abandoned", "carrying_silent", "carrying_pinned", "carrying_left-behind",
+    "carrying_old-promise", "carrying_stale", "carrying_vulnerable",
+    "critical", "high", "medium", "low", "multi_flag", "score_model", "report_schema", "grade_basis",
 ]
 
-# The verdicts the page has a column for, in the order the tool ranks them.
+# The verdicts the page has a column for, in the order the tool ranks them. Under report-2 they are
+# the maintenance flags, and a column counts the packages whose `lead` is that flag: the number
+# 0.13 printed as the verdict count.
 COLUMNS = ["abandoned", "silent", "pinned", "left-behind", "old-promise", "stale"]
+
+# Every flag a report-2 document carries, which the carrying_<flag> history columns follow.
+FLAGS = [*COLUMNS, "vulnerable"]
+
+# The grades a report-2 finding gets, and the 0.13 priorities a report-1 row takes them from.
+GRADES = ["critical", "high", "medium", "low"]
+
+# The report schemas and score models this script has been taught to read. A document outside them
+# stops the build: a new number can rename a count, and a new model changes what a grade means.
+REPORT_SCHEMAS = {1, 2}
+SCORE_MODELS = {1}
+REPORT_URL = re.compile(r"https://lockrot\.dev/schema/report-(\d+)\.json")
 
 # The counts a row is compared with the previous run on: the verdicts and the advisories.
 COUNTED = ["advisories", *COLUMNS]
@@ -88,9 +109,7 @@ Packagist and the repository host about the packages in them.
 {table}
 
 A project's name opens the full report lockrot wrote for it; a column heading sorts the table.
-*Flagged* is every package with one of the six verdicts to its right — each package has exactly one,
-so they add up — and is the number at the top of that report; the percentage is its share of the
-lock. {composer_note}A small number beside a count is how far it moved since the previous run, and *new* marks a project
+{flagged_note}{composer_note}A small number beside a count is how far it moved since the previous run, and *new* marks a project
 that cut a release in between; *moved* marks one whose newest line changed, and that row is not
 compared with the previous run. Each row names the release it read and the commit that release points
 at, so any number here can be
@@ -109,17 +128,13 @@ nothing installed and no script or plugin executed — and reads the lock file t
 
 {starter_table}
 
-The advisories column counts packages with a security advisory against the installed version, from
-the same feed `composer audit` reads. It is here and not in the table above because these reports
-are made with `--all`: every package is in the document, so an advisory on an otherwise healthy one
-is visible. The applications are read without `--all`, where a healthy package is not a finding and
-never reaches the page.
+{advisories_note}
 
 Several projects in this table cannot be in the one above, and for one reason: {lockless} do not
 commit a lock file to their repository. Their lock is born at `create-project` time, which is the only place it can be read —
 and is the version their users actually run.
 
-A verdict is an observation, not a judgement, and the two that carry most of the table say
+A {fact} is an observation, not a judgement, and the two that carry most of the table say
 different things. `abandoned` is the Packagist marker or an archived repository — someone said so.
 `silent` is {silent_span}, which is lockrot's default threshold and not a law of nature: a package that encodes base64url does not need a release in 2035
 either. That is what the [allowlist](configuration.md#the-allowlist) is for, and a project that has
@@ -221,29 +236,118 @@ def composer_missed(report: dict, view: dict | None) -> int | str:
     """
     if view is None:
         return ""
-    flagged_names = [f["package"] for f in report["findings"] if f["verdict"] in COLUMNS]
-    if len(flagged_names) != sum(report["counts"][c] for c in COLUMNS):
+    if report_schema(report) == 1:
+        flagged_names = [f["package"] for f in report["findings"] if f["verdict"] in COLUMNS]
+    else:
+        # A report-2 verdict is a grade; `lead` is the 0.13 word, null on a package no maintenance
+        # flag leads.
+        flagged_names = [f["package"] for f in report["findings"] if f.get("lead") is not None]
+    if len(flagged_names) != sum(leading(report).values()):
         raise SystemExit("build_watch_page: a report's findings do not add up to its counts")
     named = set(view["abandoned"]) | set(view["advisories"])
     return sum(1 for package in flagged_names if package not in named)
 
 
 def marked(report: dict) -> int:
-    """Packages carrying Packagist's own abandoned marker (signal S1), out of the findings."""
+    """Packages carrying Packagist's own abandoned marker (signal S1), out of the findings. A marking
+    Composer's abandoned ignore list matched (report-2's `abandoned_ignored`) raises no S1, and
+    Packagist still marked the package."""
     return sum(
         1
         for finding in report["findings"]
-        if any(signal.get("id") == "S1" for signal in finding.get("signals", []))
+        if finding.get("abandoned_ignored") is not None
+        or any(signal.get("id") == "S1" for signal in finding.get("signals", []))
     )
 
 
 def advisories(report: dict) -> int:
-    """Packages carrying at least one security advisory (signal S9), out of the findings."""
+    """Packages carrying at least one security advisory: under report-1 the findings with signal S9,
+    under report-2 the packages with a counted advisory, looked up for every locked package."""
+    if report_schema(report) == 2:
+        return report["flags"]["vulnerable"]["carrying"]
     return sum(
         1
         for finding in report["findings"]
         if any(signal.get("id") == "S9" for signal in finding.get("signals", []))
     )
+
+
+def report_schema(report: dict) -> int:
+    """The report schema number of a document, or a stop when the page cannot read it.
+
+    `$schema` is checked as well as the number, so an explain or baseline document never passes for
+    a report. report-1 types `$schema` as optional, so a report-1 without one is read by its number;
+    every later schema requires it.
+    """
+    url = report.get("$schema")
+    number = (report.get("lockrot") or {}).get("schema")
+    match = REPORT_URL.fullmatch(url) if isinstance(url, str) else None
+    if url is not None and match is None:
+        raise SystemExit(f"build_watch_page: {url} is not a lockrot report schema")
+    # bool is an int to Python, and true would otherwise read as report-1.
+    if type(number) is not int or number not in REPORT_SCHEMAS:
+        raise SystemExit(f"build_watch_page: report schema {number} needs build_watch_page update")
+    if match is not None and int(match[1]) != number:
+        raise SystemExit(f"build_watch_page: the document names {url} and says lockrot.schema {number}")
+    if url is None and number != 1:
+        raise SystemExit(f"build_watch_page: a report-{number} document carries no $schema")
+    return number
+
+
+def maintenance_flags(report: dict) -> list | None:
+    """What lockrot counts as flagged for maintenance: report-1's flagged verdicts, or the flags of
+    report-2's maintenance part, read by its id and never by position."""
+    run = report.get("run", {})
+    if report_schema(report) == 1:
+        return run.get("flagged_verdicts")
+    model = run.get("score_model") or {}
+    if model.get("id") not in SCORE_MODELS:
+        raise SystemExit(f"build_watch_page: score model {model.get('id')} needs build_watch_page update")
+    parts = [part for part in model.get("parts", []) if part.get("id") == "maintenance"]
+    return parts[0].get("flag_ids") if parts else None
+
+
+def leading(report: dict) -> dict:
+    """The six columns' counts: report-1's verdict counts, or each flag's `leading` count under
+    report-2, which is the same number for the same data."""
+    if report_schema(report) == 1:
+        return {column: report["counts"][column] for column in COLUMNS}
+    return {column: report["flags"][column]["leading"] for column in COLUMNS}
+
+
+def grades(report: dict) -> dict:
+    """The history's report-2 columns. A report-1 row takes its grades from 0.13's priorities,
+    where the report has them, and leaves the facts report-1 does not carry empty."""
+    if report_schema(report) == 1:
+        priorities = report.get("priorities") or {}
+        return {
+            "graded": sum(priorities.get(g, 0) for g in GRADES) if priorities else "",
+            "vulnerable": "",
+            **{f"carrying_{flag}": "" for flag in FLAGS},
+            **{g: priorities.get(g, "") for g in GRADES},
+            "multi_flag": "",
+            "score_model": 0,
+            "report_schema": 1,
+            "grade_basis": "priority013",
+        }
+    model = report["run"]["score_model"]["id"]
+    return {
+        # The number at the top of the report: every graded finding, advisories included.
+        "graded": report["packages_flagged"],
+        "vulnerable": report["flags"]["vulnerable"]["carrying"],
+        **{f"carrying_{flag}": report["flags"][flag]["carrying"] for flag in FLAGS},
+        **{g: report["counts"][g] for g in GRADES},
+        "multi_flag": report["packages_multi_flag"],
+        "score_model": model,
+        "report_schema": 2,
+        "grade_basis": f"model{model}",
+    }
+
+
+def row_schema(row: dict) -> int:
+    """A run row's or a history row's report schema. A history row written before the column was
+    added came from report-1."""
+    return int(row.get("report_schema") or 1)
 
 
 def rows(manifest: dict, capsules: dict, composer: dict | None = None) -> list[dict]:
@@ -254,6 +358,7 @@ def rows(manifest: dict, capsules: dict, composer: dict | None = None) -> list[d
         if name not in capsules:
             raise SystemExit(f"build_watch_page: the run left no report for {name}")
         report = capsules[name]
+        report_schema(report)
         counts = report["counts"]
         out.append(
             {
@@ -276,13 +381,14 @@ def rows(manifest: dict, capsules: dict, composer: dict | None = None) -> list[d
                 "packages": report["packages_checked"],
                 "marked_on_packagist": marked(report),
                 "name": name,
-                **{column: counts[column] for column in COLUMNS},
+                **leading(report),
                 # No column of its own on the page — a package lockrot could not check is a note,
                 # not a finding — but the history keeps it, because a week where it jumps means
                 # the run could not reach a host, not that a project changed.
                 "unknown": counts["unknown"],
                 "composer_missed": composer_missed(report, composer.get(name)),
                 "composer": (composer.get(name) or {}).get("version", ""),
+                **grades(report),
             }
         )
     return out
@@ -481,17 +587,24 @@ def starter_cells(row: dict, before: dict | None, since: str | None) -> str:
     )
 
 
-def header(first: list[str], counted: list[str]) -> str:
-    """The heading row. Every count sorts as a number; the text columns sort as text."""
+def header(first: list[str], counted: list[str], report_2: bool = False) -> str:
+    """The heading row. Every count sorts as a number; the text columns sort as text. A report-2
+    table adds Graded, the number at the top of each report, before the maintenance count."""
     cells = [f"<th>{name}</th>" for name in first[:1]]
     cells += [f'<th data-sort-method="none">{name}</th>' for name in first[1:]]
     cells.append('<th class="lockrot-num" data-sort-method="number" data-sort-reverse>Packages</th>')
+    if report_2:
+        cells.append(
+            '<th class="lockrot-num" data-sort-method="number" data-sort-reverse'
+            ' title="Every package with a grade, advisories included: the number at the top of the report">'
+            "Graded</th>"
+        )
     # The rows arrive in Flagged order (order()), and the heading says so with aria-sort. Not
     # data-sort-default: tablesort would re-sort on load and break every tie the other way round.
     # assets/watch.js tells tablesort this heading is the current sort, so a click elsewhere clears it.
     cells.append(
         '<th class="lockrot-num lockrot-flagged" data-sort-method="number" data-sort-reverse'
-        ' aria-sort="descending">Flagged</th>'
+        f' aria-sort="descending">{"Flagged for maintenance" if report_2 else "Flagged"}</th>'
     )
     cells.append(
         '<th class="lockrot-num lockrot-missed" data-sort-method="number" data-sort-reverse'
@@ -513,11 +626,17 @@ def totals(rows_: list[dict], previous: dict, since: str | None, label: str, cou
     comparable = all(r["name"] in previous for r in rows_)
 
     def before(column: str) -> int | None:
-        return sum(int(previous[r["name"]][column] or 0) for r in rows_) if comparable else None
+        if not comparable:
+            return None
+        values = [before_count(r, previous[r["name"]], column) for r in rows_]
+        return None if None in values else sum(int(v or 0) for v in values)
 
     cells = [f"<td>{label}</td>", "<td></td>"]
     packages = sum(int(r["packages"]) for r in rows_)
     cells.append(f"<td>{packages}{delta(packages, before('packages'), since, neutral=True)}</td>")
+    if is_report_2(rows_):
+        graded = sum(int(r["graded"]) for r in rows_)
+        cells.append(f"<td>{graded}{delta(graded, before('graded'), since)}</td>")
     total = sum(flagged(r) for r in rows_)
     total_before = sum(flagged(previous[r["name"]]) for r in rows_) if comparable else None
     cells.append(f'<td class="lockrot-flagged">{total} {share(total, packages)}{delta(total, total_before, since)}</td>')
@@ -538,6 +657,18 @@ def totals(rows_: list[dict], previous: dict, since: str | None, label: str, cou
     return "<tfoot><tr>" + "".join(cells) + "</tr></tfoot>"
 
 
+def before_count(row: dict, before: dict | None, column: str) -> str | int | None:
+    """The previous run's count to compare a count with, or None when that run measured it on
+    another basis: a grade under another score model, the advisories under another report schema."""
+    if before is None:
+        return None
+    if column == "graded" and before.get("grade_basis") != row["grade_basis"]:
+        return None
+    if column == "advisories" and row_schema(before) != row_schema(row):
+        return None
+    return before.get(column)
+
+
 def comparable(rows_: list[dict], previous: dict) -> dict:
     """The previous run's rows these rows can be compared with: same project, same line."""
     found = {r["name"]: same_line(r, previous_of(r, previous)) for r in rows_}
@@ -556,11 +687,14 @@ def table(
     raw = previous or {}
     previous = comparable(rows_, raw)
     older = older or {}
+    report_2 = is_report_2(rows_)
     body = []
     for row in order(rows_):
         before = previous.get(row["name"])
         cells = [project_cell(row, older.get(row["name"], 0)), release_cell(row, previous_of(row, raw), since)]
         cells.append(count_cell(int(row["packages"]), (before or {}).get("packages"), since))
+        if report_2:
+            cells.append(count_cell(int(row["graded"]), before_count(row, before, "graded"), since, "graded"))
         cells.append(flagged_cell(row, before, since))
         cells.append(missed_cell(row, before, since))
         cells += [count_cell(int(row[c]), (before or {}).get(c), since, c) for c in COLUMNS]
@@ -568,7 +702,7 @@ def table(
     return (
         # Material styles, and makes scrollable, only a table with no class of its own.
         '<div class="lockrot-watch"><table>'
-        + header(["Project", "Release"], COLUMNS)
+        + header(["Project", "Release"], COLUMNS, report_2)
         + "<tbody>" + "".join(body) + "</tbody>"
         + totals(rows_, previous, since, plural(len(rows_), label), COLUMNS)
         + "</table></div>"
@@ -583,20 +717,23 @@ def starter_table(rows_: list[dict], previous: dict | None = None, since: str | 
     read without it, where such a package is not a finding and never reaches the page.
     """
     previous = comparable(rows_, previous or {})
+    report_2 = is_report_2(rows_)
     body = []
     for row in order(rows_):
         before = previous.get(row["name"])
         cells = [starter_cells(row, before, since)]
         cells.append(count_cell(int(row["packages"]), (before or {}).get("packages"), since))
+        if report_2:
+            cells.append(count_cell(int(row["graded"]), before_count(row, before, "graded"), since, "graded"))
         cells.append(flagged_cell(row, before, since))
         cells.append(missed_cell(row, before, since))
-        cells += [count_cell(int(row[c]), (before or {}).get(c), since, c) for c in COUNTED]
+        cells += [count_cell(int(row[c]), before_count(row, before, c), since, c) for c in COUNTED]
         body.append("<tr>" + "".join(cells) + "</tr>")
     label = plural(len(rows_), "starter")
     return (
         # Material styles, and makes scrollable, only a table with no class of its own.
         '<div class="lockrot-watch"><table>'
-        + header(["New project", "Created from"], COUNTED)
+        + header(["New project", "Created from"], COUNTED, report_2)
         + "<tbody>" + "".join(body) + "</tbody>"
         + totals(rows_, previous, since, label, COUNTED)
         + "</table></div>"
@@ -739,6 +876,48 @@ def composer_note(rows_: list[dict]) -> str:
     )
 
 
+def is_report_2(rows_: list[dict]) -> bool:
+    """Whether a table's rows came from report-2. One run is one lockrot, so they all agree."""
+    return bool(rows_) and all(row_schema(r) == 2 for r in rows_)
+
+
+def flagged_note(rows_: list[dict]) -> str:
+    """What the Flagged column counts, in the words of the report schema the run wrote."""
+    if not is_report_2(rows_):
+        return (
+            "*Flagged* is every package with one of the six verdicts to its right — each package has "
+            "exactly one,\nso they add up — and is the number at the top of that report; the "
+            "percentage is its share of the\nlock. "
+        )
+    return (
+        "*Flagged for maintenance* is every package that one of the six flags to its right leads — "
+        "each package has at most one `lead`, so they add up — and the percentage is its share of the "
+        "lock. From lockrot 0.14.0 on the verdict is a grade. The flags are the facts. `lead` is the "
+        "0.13 word, so these columns go on with the counts 0.13 printed as verdicts. The sum is "
+        "printed: *Graded* is every package with a grade, advisories included, and is the number at "
+        "the top of that report. "
+    )
+
+
+def advisories_note(rows_: list[dict]) -> str:
+    """Why the advisories column is in the starters' table, in the terms of the run's report schema."""
+    if not is_report_2(rows_):
+        return (
+            "The advisories column counts packages with a security advisory against the installed version, from\n"
+            "the same feed `composer audit` reads. It is here and not in the table above because these reports\n"
+            "are made with `--all`: every package is in the document, so an advisory on an otherwise healthy one\n"
+            "is visible. The applications are read without `--all`, where a healthy package is not a finding and\n"
+            "never reaches the page."
+        )
+    return (
+        "The advisories column counts packages with a security advisory against the installed version, "
+        "from the same feed `composer audit` reads, looked up for every locked package (the `vulnerable` "
+        "flag). From lockrot 0.14.0 on it is a count of the whole lock, not of the findings, so a week "
+        "that crosses from 0.13 to 0.14 does not compare it with the week before. The applications' "
+        "advisories are in *Graded* above."
+    )
+
+
 def lines_section(
     lines_: list[dict], releases: list[dict], previous: dict, since: str | None, run: dict, window: int
 ) -> str:
@@ -809,18 +988,31 @@ def run_settings(reports: dict, manifest: dict | None = None) -> dict:
     window lockrot gives a release branch — each the value most reports carry, with the projects
     that differ named.
 
-    lockrot's own list of flagged verdicts, which no project can change, has to be the page's
-    columns in order: Flagged adds those columns up, and a release that flags one more verdict would
-    otherwise make every total on the page quietly short. The plan's window for older lines has to
-    be lockrot's default `release-warn-years`, which is what most reports carry.
+    Every report passes report_schema() first, before any count is read. lockrot's own list of what
+    it flags for maintenance, which no project can change, has to be the page's columns in order:
+    Flagged adds those columns up, and a release that flags one more verdict would otherwise make
+    every total on the page quietly short. A report-2's flags have to be the history's carrying_
+    columns for the same reason. The plan's window for older lines has to be lockrot's default
+    `release-warn-years`, which is what most reports carry.
     """
-    runs = {name: report.get("run", {}) for name, report in reports.items()}
-    for run in runs.values():
-        if run.get("flagged_verdicts") != COLUMNS:
+    numbers = {name: report_schema(report) for name, report in reports.items()}
+    if len(set(numbers.values())) > 1:
+        # One table cannot be headed in two schemas' words, and one run is one lockrot.
+        mixed = ", ".join(f"{name}: {number}" for name, number in sorted(numbers.items()))
+        raise SystemExit(f"build_watch_page: the reports of one run carry different report schemas ({mixed})")
+    for report in reports.values():
+        flags = maintenance_flags(report)
+        if flags != COLUMNS:
             raise SystemExit(
-                f"build_watch_page: lockrot flags {run.get('flagged_verdicts')}, the page has columns "
+                f"build_watch_page: lockrot flags {flags}, the page has columns "
                 f"for {COLUMNS}; give the page the new verdict before publishing it"
             )
+        if report_schema(report) == 2 and report["run"].get("flag_ids") != FLAGS:
+            raise SystemExit(
+                f"build_watch_page: lockrot writes the flags {report['run'].get('flag_ids')}, the history "
+                f"has carrying_ columns for {FLAGS}; give the history the new flag before publishing it"
+            )
+    runs = {name: report.get("run", {}) for name, report in reports.items()}
 
     def threshold(run: dict, key: str):
         return (run.get("thresholds") or {}).get(key)
@@ -927,6 +1119,9 @@ def main(argv: list[str]) -> int:
             history="assets/data/watch/history.csv",
             archive=archive(read_history(args.history)),
             composer_note=composer_note(rows_),
+            flagged_note=flagged_note(releases),
+            advisories_note=advisories_note(starters),
+            fact="flag" if is_report_2(releases) else "verdict",
             headline=headline(releases),
             lockless=lockless(json.loads(args.projects.read_text(encoding="utf-8")), rows_),
             target_php=settings["target_php"],

@@ -13,13 +13,20 @@
 # A tag older than 0.9.0 ships schemas without an id (they were internal then); those are skipped,
 # so building the site from an older tag still works. An id that is not a lockrot.dev/schema/ URL is
 # a mistake worth failing on: it would publish a file at a path nothing points at.
+#
+# Two sources, in this order: the tag the site is built from (.lockrot/), then the schemas-only
+# checkout of SCHEMAS_REF (.schemas/, scripts/fetch-schemas.sh), which publishes only a name the tag
+# did not. The -2 files are then online from the release-PR merge, before the tag that ships them.
+# The report-1 files stay online for as long as the tag keeps shipping them in resources/.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 [ -d .lockrot/resources ] || { echo "copy-schemas: run scripts/fetch-lockrot.sh first" >&2; exit 1; }
 
 published=0
-for schema in .lockrot/resources/*.schema.json; do
+from_ref=0
+names=" "
+for schema in .lockrot/resources/*.schema.json .schemas/resources/*.schema.json; do
   [ -e "$schema" ] || continue
   id="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("id", ""))' "$schema")"
   case "$id" in
@@ -38,8 +45,16 @@ for schema in .lockrot/resources/*.schema.json; do
           exit 1
           ;;
       esac
+      case "$schema" in
+        .schemas/*)
+          # The tag's file wins for a number both hold.
+          case "$names" in *" $name "*) continue ;; esac
+          from_ref=$((from_ref + 1))
+          ;;
+      esac
       mkdir -p build/docs/schema
       cp "$schema" "build/docs/schema/$name"
+      names="$names$name "
       published=$((published + 1))
       ;;
     *)
@@ -49,4 +64,4 @@ for schema in .lockrot/resources/*.schema.json; do
   esac
 done
 
-echo "copy-schemas: $published schema(s) published under /schema/"
+echo "copy-schemas: $published schema(s) published under /schema/, $from_ref of them from SCHEMAS_REF"

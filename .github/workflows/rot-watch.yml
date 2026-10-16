@@ -125,9 +125,11 @@ jobs:
       - uses: somework/lockrot-action@f3d8751d0157ce9384e1f7acc84d6498cfee2e07 # v1.1.0
         with:
           working-directory: work
-          # The newest release, verified against the sha256 published with it. This page says which
-          # version produced a number, so following the tag is the point rather than a risk.
-          version: latest
+          # 0.13.0, verified against the sha256 published with it, until lockrot-action v1.2.0: v1.1.0
+          # writes its job summary from a second run that drops lockrot 0.14's vulnerable-only
+          # findings. The page says which version produced a number, and build_watch_page.py reads
+          # report-2 as well, so moving to 0.14 is a change of this line and the action pin alone.
+          version: 0.13.0
           format: html
           output: ${{ github.workspace }}/report.html
           target-php: ${{ matrix.project.target_php }}
@@ -240,7 +242,8 @@ jobs:
       - uses: somework/lockrot-action@f3d8751d0157ce9384e1f7acc84d6498cfee2e07 # v1.1.0
         with:
           working-directory: work
-          version: latest
+          # The same version as the releases above, for the same reason.
+          version: 0.13.0
           format: html
           output: ${{ github.workspace }}/report.html
           target-php: ${{ matrix.starter.target_php }}

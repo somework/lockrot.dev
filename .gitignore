@@ -17,5 +17,9 @@ __pycache__/
 # wrangler writes the Cloudflare account id here after a local deploy. Not a secret the way a
 # token is, but it is an account identifier in a public repository, and it is a build artefact.
 /.wrangler/
-# The report renderer release scripts/fetch-renderer.sh downloads.
+# The report renderer releases scripts/fetch-renderer.sh downloads: the one lockrot vendors, and
+# lockrot-report 0.13.0 for the stored report-1 capsules (scripts/build-viewer.sh).
 /.renderer/
+/.renderer-report-1/
+# The schemas-only checkout of SCHEMAS_REF (scripts/fetch-schemas.sh).
+/.schemas/
