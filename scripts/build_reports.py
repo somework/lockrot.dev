@@ -44,8 +44,9 @@ def reads(renderer: Path) -> set[int]:
     manifest = renderer / "manifest.json"
     if not manifest.is_file():
         return {1}
-    numbers = json.loads(manifest.read_text(encoding="utf-8")).get("schema", {}).get("report")
-    if not numbers:
+    schema = json.loads(manifest.read_text(encoding="utf-8")).get("schema")
+    numbers = schema.get("report") if isinstance(schema, dict) else None
+    if not isinstance(numbers, list) or not numbers:
         raise SystemExit(f"build_reports: {manifest} names no report schema it reads")
     return set(numbers)
 

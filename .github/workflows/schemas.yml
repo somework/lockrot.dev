@@ -20,8 +20,6 @@ on:
     types: [lockrot-schemas]
 permissions:
   contents: read
-  # `gh workflow run deploy.yml`. A workflow_dispatch event from GITHUB_TOKEN starts a run.
-  actions: write
 concurrency:
   group: schemas
   cancel-in-progress: false
@@ -54,6 +52,10 @@ jobs:
     needs: check
     runs-on: ubuntu-latest
     environment: schemas
+    permissions:
+      contents: read
+      # `gh workflow run deploy.yml`. A workflow_dispatch event from GITHUB_TOKEN starts a run.
+      actions: write
     steps:
       - name: Store the commit in SCHEMAS_REF
         env:

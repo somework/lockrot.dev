@@ -68,6 +68,15 @@ class RendererChoiceTest(unittest.TestCase):
 
             self.assertEqual({1}, build_reports.reads(renderer(tmp / "r011", "0.11.0", None)))
 
+    def test_stops_on_a_manifest_that_names_no_report_schema_list(self):
+        for schema in ({"report": 2}, [2], {"report": []}, None):
+            with self.subTest(schema=schema), tempfile.TemporaryDirectory() as tmp:
+                root = renderer(Path(tmp) / "r", "0.14.0", [2])
+                (root / "manifest.json").write_text(json.dumps({"schema": schema}), encoding="utf-8")
+
+                with self.assertRaises(SystemExit):
+                    build_reports.reads(root)
+
     def test_stops_when_no_renderer_reads_a_capsule_s_number(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp)

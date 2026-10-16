@@ -260,6 +260,12 @@ class CheckSchemaLiveTest(unittest.TestCase):
 
             self.assertIn(url, check_schema_live.check(url))
 
+    def test_refuses_a_url_that_is_not_http(self):
+        with self.assertRaises(SystemExit) as raised:
+            check_schema_live.check("file:///etc/passwd")
+
+        self.assertIn("is not an http(s) URL", str(raised.exception))
+
     def test_stops_on_a_404(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = self.serve(Path(tmp))

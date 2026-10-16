@@ -22,6 +22,9 @@ TIMEOUT_SECONDS = 30
 
 
 def check(url: str) -> str:
+    # urlopen also opens file: and other schemes; a schema URL is a web address.
+    if not url.startswith(("https://", "http://")):
+        raise SystemExit(f"check_schema_live: {url} is not an http(s) URL")
     try:
         with urllib.request.urlopen(urllib.request.Request(url, headers={"Accept": "application/json"}), timeout=TIMEOUT_SECONDS) as response:
             raw = response.read()
