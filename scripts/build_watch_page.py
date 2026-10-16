@@ -886,8 +886,8 @@ def flagged_note(rows_: list[dict]) -> str:
     return (
         "*Flagged for maintenance* is every package that one of the six flags to its right leads — "
         "each package has at most one `lead`, so they add up — and the percentage is its share of the "
-        "lock. From lockrot 0.14.0 on the verdict is a grade; the flags are the facts; `lead` is the "
-        "0.13 word, so these columns go on with the counts 0.13 printed as verdicts; and the sum is "
+        "lock. From lockrot 0.14.0 on the verdict is a grade. The flags are the facts. `lead` is the "
+        "0.13 word, so these columns go on with the counts 0.13 printed as verdicts. The sum is "
         "printed: *Graded* is every package with a grade, advisories included, and is the number at "
         "the top of that report. "
     )

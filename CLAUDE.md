@@ -75,7 +75,7 @@ scripts/               # fetch-lockrot.sh, fetch-renderer.sh, check-nav.sh, buil
                        # together), watch_plan.py, build_watch_page.py, watch_archive.py (earlier runs,
                        # out of git), fetch-schemas.sh, copy-schemas.sh, schema_pages.py and
                        # check_schema_live.py (see "Schemas before the tag") — all with test_*.py beside
-                       # them; fixtures/report-2/ holds the lockrot documents those tests read
+                       # them. fixtures/report-2/ holds the lockrot documents those tests read
 viewer/                # the report viewer, deployed to viewer.lockrot.dev, not to this site
   app.html app.css app.js  # the page: takes a document, hands it to the frame, owns the address
   frame.html           # the frame page for a released renderer (lockrot 0.12.0+)
@@ -133,7 +133,7 @@ they go in — the reference pages there are the source of truth, not memory.
   added to the nav — on purpose, so it is never silently unreachable. The nav and `content/llms.txt`
   also name a few pages that only some builds hold (`OPTIONAL_PAGES` in `scripts/mkdocs_hooks.py`):
   lockrot 0.14.0's two new pages and the report schema numbers' pages. The hook drops their rows from
-  a build without the page; any other missing page still fails `--strict`.
+  a build without the page. Any other missing page still fails `--strict`.
 - The landing page `content/index.md` started as a copy of lockrot's `docs/index.md` and now lives
   here; its "Read on" table names the reference pages, keep it in step with the nav.
 - The landing page also states facts of its own — the "Questions" section (rate caps, the 10-line
@@ -344,10 +344,10 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
   and the six columns read each maintenance flag's `leading` count, which is the 0.13 verdict count
   for the same data. `run_settings()` stops before any count on a report schema, a score model or a
   flag set the script does not know. The history appends the report-2 columns after the 0.13 ones
-  (`HISTORY_FIELDS`); a report-1 row leaves the report-2 facts empty and takes its grades from
+  (`HISTORY_FIELDS`). A report-1 row leaves the report-2 facts empty and takes its grades from
   0.13's priorities (`grade_basis: priority013`). Graded is compared only within one
   `grade_basis`, the advisories only within one `report_schema`. `rot-watch.yml` runs lockrot 0.13.0
-  until lockrot-action v1.2.0; the move to 0.14 is that version line and the action pin.
+  until lockrot-action v1.2.0. The move to 0.14 is that version line and the action pin.
 
 ## Deploy
 
@@ -385,7 +385,7 @@ the repository variable `SCHEMAS_REF` and runs Deploy. Every build passes `vars.
 `scripts/fetch-schemas.sh`, which fetches only `resources/*.schema.json` of that commit, and
 `copy-schemas.sh` publishes a name the tag does not, so the tag's file wins. Check the URL with
 `scripts/check_schema_live.py` after the approval and again before the tag. After the rebuild from
-the tag, clear the variable by hand (`gh variable delete SCHEMAS_REF`); `deploy.yml` never holds a
+the tag, clear the variable by hand (`gh variable delete SCHEMAS_REF`). `deploy.yml` never holds a
 token that can write it. The `schemas` environment holds `SCHEMAS_VARIABLE_TOKEN`, a fine-grained
 token on this repository with Variables: write.
 

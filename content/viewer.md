@@ -50,8 +50,8 @@ work it out. [What it reports](verdicts.md) has the full ladder, and every signa
 the evidence it needs.
 
 From lockrot 0.14.0 on, a report says the same things in other words. The verdict is a grade, from
-`critical` to `low`; the flags are the facts, the six words above and `vulnerable`; `lead` is the
-0.13 word, the flag that leads a package's score; the sum is printed, so each finding shows how its
+`critical` to `low`. The flags are the facts: the six words above and `vulnerable`. `lead` is the
+0.13 word, the flag that leads a package's score. The sum is printed, so each finding shows how its
 score adds up. The reports this site published from 0.13 runs are still drawn by lockrot-report
 0.13.0, the renderer that reads them.
 
