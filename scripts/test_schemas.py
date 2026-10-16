@@ -144,6 +144,22 @@ class FetchSchemasTest(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertFalse((root / ".schemas").exists())
 
+    def test_refuses_a_ref_that_holds_no_schema_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            repo = tmp / "lockrot"
+            write(repo / "README.md", "no schemas here\n")
+            git(repo, "init", "--quiet")
+            git(repo, "config", "uploadpack.allowAnySHA1InWant", "true")
+            git(repo, "add", ".")
+            git(repo, "commit", "--quiet", "-m", "readme")
+            root = site(tmp / "site", "fetch-schemas.sh")
+
+            result = self.fetch(root, repo, git(repo, "rev-parse", "HEAD"))
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("holds no resources/*.schema.json", result.stderr)
+
     def test_refuses_a_ref_that_is_not_a_full_commit_sha(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp)

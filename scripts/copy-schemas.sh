@@ -16,8 +16,8 @@
 #
 # Two sources, in this order: the tag the site is built from (.lockrot/), then the schemas-only
 # checkout of SCHEMAS_REF (.schemas/, scripts/fetch-schemas.sh), which publishes only a name the tag
-# did not. Every report-1 file stays online, and the -2 files are online from the release-PR merge,
-# before the tag that ships them.
+# did not. The -2 files are then online from the release-PR merge, before the tag that ships them.
+# The report-1 files stay online for as long as the tag keeps shipping them in resources/.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

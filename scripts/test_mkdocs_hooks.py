@@ -162,6 +162,11 @@ class OptionalPages(unittest.TestCase):
 
         self.assertEqual("- [Verdicts](https://lockrot.dev/verdicts/): the verdicts\n", out)
 
+    def test_keeps_a_row_that_only_mentions_an_absent_page(self):
+        text = "- [Verdicts](https://lockrot.dev/verdicts/): see also https://lockrot.dev/changes/0.14/\n"
+
+        self.assertEqual(text, llms_without(text, ["changes/0.14.md"]))
+
 
 class SchemaNote(unittest.TestCase):
     def test_lists_each_number_with_its_page_and_its_file(self):

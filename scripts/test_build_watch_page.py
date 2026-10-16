@@ -704,8 +704,17 @@ class ReportSchemaTest(unittest.TestCase):
         rep = fixture("magento2-0.14.0.json.gz")
         rep["lockrot"]["schema"] = 1
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(SystemExit) as raised:
             bw.report_schema(rep)
+
+        self.assertIn("says lockrot.schema 1", str(raised.exception))
+
+    def test_stops_on_a_schema_number_that_is_not_an_integer(self):
+        for number in (True, [2], "2", None):
+            rep = fixture("B.json")
+            rep["lockrot"]["schema"] = number
+            with self.subTest(number=number), self.assertRaises(SystemExit):
+                bw.report_schema(rep)
 
     def test_stops_on_a_score_model_it_does_not_know(self):
         rep = fixture("magento2-0.14.0.json.gz")

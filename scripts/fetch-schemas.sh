@@ -31,11 +31,18 @@ trap 'rm -rf "$work"' EXIT
 git -C "$work" init --quiet
 git -C "$work" fetch --quiet --depth 1 "$REPO" "$REF"
 
+# Listed first, so that a failing git stops the build here (set -e does not see a process substitution).
+listing="$(git -C "$work" ls-tree --name-only FETCH_HEAD resources/)"
+schemas="$(printf '%s\n' "$listing" | grep -E '^resources/[^/]+\.schema\.json$' || true)"
+# A commit with no schema file is a wrong sha or a moved resources/: publishing nothing from it would
+# leave the -2 URLs answering 404 behind a green deploy.
+[ -n "$schemas" ] || { echo "fetch-schemas: $REF holds no resources/*.schema.json" >&2; exit 1; }
+
 mkdir -p .schemas/resources
 count=0
 while IFS= read -r path; do
   git -C "$work" show "FETCH_HEAD:$path" > ".schemas/$path"
   count=$((count + 1))
-done < <(git -C "$work" ls-tree --name-only FETCH_HEAD resources/ | grep -E '^resources/[^/]+\.schema\.json$' || true)
+done <<< "$schemas"
 echo "$REF" > .schemas/REF
 echo "fetch-schemas: $count schema file(s) of $REPO at $REF in .schemas/"

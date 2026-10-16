@@ -283,8 +283,11 @@ def report_schema(report: dict) -> int:
     match = REPORT_URL.fullmatch(url) if isinstance(url, str) else None
     if url is not None and match is None:
         raise SystemExit(f"build_watch_page: {url} is not a lockrot report schema")
-    if number not in REPORT_SCHEMAS or (match is not None and int(match[1]) != number):
+    # bool is an int to Python, and true would otherwise read as report-1.
+    if type(number) is not int or number not in REPORT_SCHEMAS:
         raise SystemExit(f"build_watch_page: report schema {number} needs build_watch_page update")
+    if match is not None and int(match[1]) != number:
+        raise SystemExit(f"build_watch_page: the document names {url} and says lockrot.schema {number}")
     return number
 
 
@@ -315,7 +318,7 @@ def grades(report: dict) -> dict:
     if report_schema(report) == 1:
         priorities = report.get("priorities") or {}
         return {
-            "graded": sum(priorities[g] for g in GRADES) if priorities else "",
+            "graded": sum(priorities.get(g, 0) for g in GRADES) if priorities else "",
             "vulnerable": "",
             **{f"carrying_{flag}": "" for flag in FLAGS},
             **{g: priorities.get(g, "") for g in GRADES},

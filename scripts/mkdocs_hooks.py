@@ -115,8 +115,10 @@ def last_modified(src_uri: str, own_dates: dict[str, str], lockrot_dates: dict[s
     does not move its date), and one the blog plugin generates — the blog index, the archive and the
     category lists, which change when a post does.
 
-    changelog.md is the page that is not its own file: it includes lockrot's CHANGELOG.md, and the
-    release that writes a changelog entry usually leaves docs/changelog.md alone.
+    A page built from a file of another name takes that file's date: OWN_SOURCES for one of this
+    repository's (the frozen report-1 schema page), LOCKROT_SOURCES for one of the lockrot
+    checkout's. changelog.md includes lockrot's CHANGELOG.md, and the release that writes a changelog
+    entry usually leaves docs/changelog.md alone.
     """
     own = own_dates.get(f"content/{src_uri}") or own_dates.get(OWN_SOURCES.get(src_uri, ""))
     if own:
@@ -150,9 +152,10 @@ def prune_nav(nav: list, exists: Callable[[str], bool]) -> list:
 
 
 def llms_without(text: str, absent: list[str]) -> str:
-    """llms.txt without the lines that link a page the build does not hold."""
-    urls = [f"https://lockrot.dev/{page.removesuffix('.md')}/" for page in absent]
-    return "".join(line for line in text.splitlines(keepends=True) if not any(url in line for url in urls))
+    """llms.txt without the rows whose link is a page the build does not hold. A row that only
+    mentions such a URL in its text keeps its place."""
+    links = [f"](https://lockrot.dev/{page.removesuffix('.md')}/)" for page in absent]
+    return "".join(line for line in text.splitlines(keepends=True) if not any(link in line for link in links))
 
 
 def schema_note(paths: set[str]) -> str:
@@ -185,6 +188,8 @@ def on_config(config):
     )
     absent = _absent(config)
     if config.get("nav") and absent:
+        # INFO, not a warning: a build from a tag without these pages is a normal build.
+        log.info("mkdocs_hooks: this build holds none of %s; their nav and llms.txt rows are dropped", ", ".join(absent))
         config["nav"] = prune_nav(config["nav"], lambda page: page not in absent)
     return config
 

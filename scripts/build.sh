@@ -18,7 +18,7 @@ mkdir -p build/docs
 # Only what the site renders: pages and assets. Not lockrot's own overrides, requirements or
 # redirects — the site owns those under content/. Pages in subdirectories too (verdicts/model-1.md),
 # at the same path, which is the URL their links and the nav give them.
-rsync -a --prune-empty-dirs --exclude='/overrides/' --include='*/' --include='*.md' --exclude='*' \
+rsync -a --prune-empty-dirs --exclude='/overrides/' --exclude='/assets/' --include='*/' --include='*.md' --exclude='*' \
   .lockrot/docs/ build/docs/
 cp -R .lockrot/docs/assets build/docs/assets
 # lockrot's docs/changelog.md includes "../CHANGELOG.md", which from build/docs is build/CHANGELOG.md.
