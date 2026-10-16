@@ -73,8 +73,8 @@ scripts/               # fetch-lockrot.sh, fetch-renderer.sh, check-nav.sh, buil
                        # changed, not the build date) and its unit test test_mkdocs_hooks.py
                        # report_page.py, build_reports.py (a --format=html report, stored and put back
                        # together), watch_plan.py, build_watch_page.py, watch_archive.py (earlier runs,
-                       # out of git), fetch-schemas.sh, copy-schemas.sh, schema_pages.py and
-                       # check_schema_live.py (see "Schemas before the tag") — all with test_*.py beside
+                       # out of git), fetch-schemas.sh, copy-schemas.sh, schema_pages.py,
+                       # check_schemas_ref.py and check_schema_live.py (see "Schemas before the tag") — all with test_*.py beside
                        # them. fixtures/report-2/ holds the lockrot documents those tests read
 viewer/                # the report viewer, deployed to viewer.lockrot.dev, not to this site
   app.html app.css app.js  # the page: takes a document, hands it to the frame, owns the address
@@ -379,10 +379,12 @@ hook warns and `--strict` fails the build rather than quietly going back to buil
 
 A lockrot document names its schema's URL from the moment its release is tagged, and the site
 follows tags. So a new schema number goes online at the merge of lockrot's release pull request:
-lockrot's `schemas.yml` sends the `lockrot-schemas` dispatch with the merge commit, this repository's
-`schemas.yml` waits in the `schemas` environment for the maintainer's approval, stores the commit in
-the repository variable `SCHEMAS_REF` and runs Deploy. Every build passes `vars.SCHEMAS_REF` to
-`scripts/fetch-schemas.sh`, which fetches only `resources/*.schema.json` of that commit, and
+lockrot's `schemas.yml` sends the `lockrot-schemas` dispatch with the merge commit. This repository's
+`schemas.yml` first checks the commit (`scripts/check_schemas_ref.py`: on lockrot's `main`, holding a
+schema numbered 2 or more), then waits in the `schemas` environment for the maintainer's approval,
+stores the commit in the repository variable `SCHEMAS_REF` and runs Deploy. Every build passes
+`vars.SCHEMAS_REF` to `scripts/fetch-schemas.sh`, which refuses a commit off lockrot's `main` and
+fetches only `resources/*.schema.json` of that commit, and
 `copy-schemas.sh` publishes a name the tag does not, so the tag's file wins. Check the URL with
 `scripts/check_schema_live.py` after the approval and again before the tag. After the rebuild from
 the tag, clear the variable by hand (`gh variable delete SCHEMAS_REF`). `deploy.yml` never holds a

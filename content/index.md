@@ -99,8 +99,6 @@ read, and the chain of requirements that pulled the package in — what `compose
 package, for every finding at once: every direct requirement it is reachable from, not only the
 shortest one, and each direct requirement says what it pulls in.
 [What it reports](verdicts.md) has all nine verdicts and the priority rules.
-From lockrot 0.14.0 on, these six words are flags. The verdict is a grade. The flags are the facts.
-`lead` is the 0.13 word. The sum is printed.
 
 ## "Composer already warns me about abandoned packages"
 

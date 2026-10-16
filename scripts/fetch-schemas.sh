@@ -28,11 +28,17 @@ fi
 
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
-git -C "$work" init --quiet
-git -C "$work" fetch --quiet --depth 1 "$REPO" "$REF"
+# lockrot's main, blobless: its commits and trees, and only the blobs read below. The commit has to
+# be on main: GitHub serves any commit of the fork network by its sha, an unmerged pull request's
+# too, and the variable can be written by more than schemas.yml's approved job.
+git clone --quiet --filter=blob:none --no-checkout --single-branch --branch main "$REPO" "$work"
+if ! git -C "$work" merge-base --is-ancestor "$REF" HEAD 2>/dev/null; then
+  echo "fetch-schemas: SCHEMAS_REF $REF is not on lockrot's main" >&2
+  exit 1
+fi
 
 # Listed first, so that a failing git stops the build here (set -e does not see a process substitution).
-listing="$(git -C "$work" ls-tree --name-only FETCH_HEAD resources/)"
+listing="$(git -C "$work" ls-tree --name-only "$REF" resources/)"
 schemas="$(printf '%s\n' "$listing" | grep -E '^resources/[^/]+\.schema\.json$' || true)"
 # A commit with no schema file is a wrong sha or a moved resources/: publishing nothing from it would
 # leave the -2 URLs answering 404 behind a green deploy.
@@ -41,7 +47,7 @@ schemas="$(printf '%s\n' "$listing" | grep -E '^resources/[^/]+\.schema\.json$' 
 mkdir -p .schemas/resources
 count=0
 while IFS= read -r path; do
-  git -C "$work" show "FETCH_HEAD:$path" > ".schemas/$path"
+  git -C "$work" show "$REF:$path" > ".schemas/$path"
   count=$((count + 1))
 done <<< "$schemas"
 echo "$REF" > .schemas/REF

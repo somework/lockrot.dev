@@ -30,24 +30,16 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Check the commit is on lockrot's main
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # A full sha, on lockrot's main, holding a schema numbered 2 or more. scripts/fetch-schemas.sh
+      # checks the first two again at every build.
+      - name: Check the commit
         env:
           SHA: ${{ github.event.client_payload.sha }}
           GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -eu
-          # A full commit sha and nothing else. scripts/fetch-schemas.sh checks it again at build.
-          if ! [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
-            echo "schemas: client_payload.sha '$SHA' is not a full commit sha" >&2
-            exit 1
-          fi
-          status="$(gh api "repos/somework/lockrot/compare/main...$SHA" --jq .status)"
-          case "$status" in
-            identical|behind) ;;
-            *) echo "schemas: $SHA is not on lockrot's main (compare: $status)" >&2; exit 1 ;;
-          esac
-          echo "schemas: $SHA on lockrot's main: $(gh api "repos/somework/lockrot/commits/$SHA" --jq '.commit.message | split("\n")[0]')"
+        run: python3 scripts/check_schemas_ref.py "$SHA"
   publish:
     needs: check
     runs-on: ubuntu-latest

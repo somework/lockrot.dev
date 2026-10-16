@@ -684,6 +684,22 @@ class ReportSchemaTest(unittest.TestCase):
 
         self.assertEqual(1, bw.report_schema(rep))
 
+    def test_stops_on_a_report_2_without_its_schema_url(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        del rep["$schema"]
+
+        with self.assertRaises(SystemExit) as raised:
+            bw.report_schema(rep)
+
+        self.assertIn("carries no $schema", str(raised.exception))
+
+    def test_stops_on_a_run_whose_reports_mix_schema_numbers(self):
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"old": fixture("magento2-0.13.0.json.gz"), "new": fixture("magento2-0.14.0.json.gz")})
+
+        self.assertIn("new: 2", str(raised.exception))
+        self.assertIn("old: 1", str(raised.exception))
+
     def test_stops_on_a_report_schema_it_does_not_know(self):
         rep = fixture("magento2-0.14.0.json.gz")
         rep["$schema"] = "https://lockrot.dev/schema/report-3.json"

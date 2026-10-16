@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """scripts/build.sh end to end, in a scratch copy of this repository with a scratch lockrot checkout:
-nested reference pages are published at their own URLs, and the pages a checkout does not hold are
-left out of the nav and of llms.txt rather than failing the strict build.
+nested reference pages are published at their own URLs, the pages a checkout does not hold are left
+out of the nav and of llms.txt rather than failing the strict build, and the release window
+publishes the -2 schemas beside a report-1 tag.
 
-Skipped where MkDocs is not installed. CI installs it before the unit tests run.
+Skipped, with the reason, where MkDocs or one of the site's plugins is not installed. CI installs
+requirements.txt before the unit tests run.
 """
 
 from __future__ import annotations
@@ -33,9 +35,17 @@ ENV = {
     "PATH": f"{Path(sys.executable).parent}{os.pathsep}{os.environ.get('PATH', '')}",
 }
 
+# The modules behind mkdocs.yml's theme and plugins (search is MkDocs' own).
+NEEDED = ("mkdocs", "material", "mkdocs_include_markdown_plugin", "mkdocs_rss_plugin")
+MISSING = [name for name in NEEDED if importlib.util.find_spec(name) is None]
 
-def git(repo: Path, *args: str) -> None:
-    subprocess.run(["git", *args], cwd=repo, env=ENV, check=True, capture_output=True)
+
+def git(repo: Path, *args: str) -> str:
+    return subprocess.run(["git", *args], cwd=repo, env=ENV, check=True, capture_output=True, text=True).stdout.strip()
+
+
+def schema(kind: str, number: int) -> str:
+    return f'{{"id": "https://lockrot.dev/schema/{kind}-{number}.json"}}'
 
 
 def nav_pages() -> list[str]:
@@ -62,12 +72,25 @@ def scratch_lockrot(root: Path, extra_pages: list[str], schema_page: str) -> Non
     (docs / "requirements.txt").write_text("not a page\n", encoding="utf-8")
     resources = root / ".lockrot/resources"
     resources.mkdir()
-    (resources / "lockrot-report-1.schema.json").write_text('{"id": "https://lockrot.dev/schema/report-1.json"}', encoding="utf-8")
+    (resources / "lockrot-report-1.schema.json").write_text(schema("report", 1), encoding="utf-8")
     (root / ".lockrot/CHANGELOG.md").write_text("# Changelog\n", encoding="utf-8")
     (root / ".lockrot/REF").write_text("v9.9.9\n", encoding="utf-8")
     git(root / ".lockrot", "init", "--quiet")
     git(root / ".lockrot", "add", ".")
     git(root / ".lockrot", "commit", "--quiet", "-m", "docs")
+
+
+def scratch_upstream(path: Path) -> str:
+    """A scratch lockrot repository whose main holds the report-2 schema: the release-PR merge."""
+    (path / "resources").mkdir(parents=True)
+    (path / "resources/lockrot-report-1.schema.json").write_text(schema("report", 1), encoding="utf-8")
+    (path / "resources/lockrot-report-2.schema.json").write_text(schema("report", 2), encoding="utf-8")
+    git(path, "init", "--quiet", "--initial-branch=main")
+    git(path, "config", "uploadpack.allowAnySHA1InWant", "true")
+    git(path, "config", "uploadpack.allowFilter", "true")
+    git(path, "add", ".")
+    git(path, "commit", "--quiet", "-m", "release")
+    return git(path, "rev-parse", "HEAD")
 
 
 def scratch_site(root: Path) -> None:
@@ -82,10 +105,15 @@ def scratch_site(root: Path) -> None:
     git(root, "commit", "--quiet", "-m", "site")
 
 
-@unittest.skipIf(importlib.util.find_spec("mkdocs") is None, "MkDocs is not installed")
+@unittest.skipIf(MISSING, f"not installed: {', '.join(MISSING)} (pip install -r requirements.txt)")
 class BuildSiteTest(unittest.TestCase):
-    def build(self, root: Path) -> subprocess.CompletedProcess:
-        return subprocess.run([root / "scripts/build.sh"], cwd=root, env=ENV, capture_output=True, text=True, timeout=300)
+    def build(self, root: Path, **env: str) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [root / "scripts/build.sh"], cwd=root, env={**ENV, **env}, capture_output=True, text=True, timeout=300
+        )
+
+    def assert_built(self, result: subprocess.CompletedProcess) -> None:
+        self.assertEqual(0, result.returncode, result.stdout[-2000:] + result.stderr[-4000:])
 
     def test_publishes_nested_reference_pages_at_their_own_urls(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -95,7 +123,7 @@ class BuildSiteTest(unittest.TestCase):
 
             result = self.build(root)
 
-            self.assertEqual(0, result.returncode, result.stdout[-2000:] + result.stderr[-4000:])
+            self.assert_built(result)
             self.assertTrue((root / "site/verdicts/model-1/index.html").is_file())
             self.assertTrue((root / "site/changes/0.14/index.html").is_file())
             self.assertTrue((root / "site/schema/report-2/index.html").is_file())
@@ -112,7 +140,7 @@ class BuildSiteTest(unittest.TestCase):
 
             result = self.build(root)
 
-            self.assertEqual(0, result.returncode, result.stdout[-2000:] + result.stderr[-4000:])
+            self.assert_built(result)
             self.assertFalse((root / "site/verdicts/model-1").exists())
             self.assertFalse((root / "site/schema/report-1").exists())
             llms = (root / "site/llms.txt").read_text(encoding="utf-8")
@@ -121,6 +149,25 @@ class BuildSiteTest(unittest.TestCase):
             self.assertNotIn("https://lockrot.dev/changes/0.14/", llms)
             index = (root / "site/index.html").read_text(encoding="utf-8")
             self.assertNotIn("model-1", index)
+
+    def test_the_release_window_publishes_the_2_schemas_beside_a_report_1_tag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "site-repo"
+            root.mkdir()
+            scratch_site(root)
+            scratch_lockrot(root, [], "# JSON schemas\n\nhttps://lockrot.dev/schema/report-1.json\n")
+            sha = scratch_upstream(Path(tmp) / "lockrot")
+
+            result = self.build(root, SCHEMAS_REF=sha, LOCKROT_REPO=(Path(tmp) / "lockrot").as_uri())
+
+            self.assert_built(result)
+            self.assertTrue((root / "site/schema/report-2.json").is_file())
+            self.assertTrue((root / "site/schema/report-1/index.html").is_file())
+            self.assertFalse((root / "site/schema/report-2").exists())
+            self.assertFalse((root / "site/verdicts/model-1").exists())
+            schema_index = (root / "site/schema/index.html").read_text(encoding="utf-8")
+            self.assertIn("One page per report schema number", schema_index)
+            self.assertIn('href="report-2.json"', schema_index)
 
 
 if __name__ == "__main__":

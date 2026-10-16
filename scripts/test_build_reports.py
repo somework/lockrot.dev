@@ -87,6 +87,18 @@ class RendererChoiceTest(unittest.TestCase):
 
         self.assertIn("report schema 1", str(raised.exception))
 
+    def test_stops_on_a_capsule_whose_number_is_not_an_integer(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            capsule(tmp / "caps", "odd", 1)
+            path = tmp / "caps/run/odd.json"
+            data = json.loads(path.read_text())
+            data["data"]["report"]["lockrot"]["schema"] = True
+            path.write_text(json.dumps(data))
+
+            with self.assertRaises(SystemExit):
+                build_reports.build(tmp / "caps", [renderer(tmp / "r013", "0.13.0", [1])], tmp / "out", None)
+
     def test_stops_when_two_renderers_read_the_same_number(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp)

@@ -276,7 +276,8 @@ def report_schema(report: dict) -> int:
     """The report schema number of a document, or a stop when the page cannot read it.
 
     `$schema` is checked as well as the number, so an explain or baseline document never passes for
-    a report. report-1 types `$schema` as optional, so a report-1 without one is read by its number.
+    a report. report-1 types `$schema` as optional, so a report-1 without one is read by its number;
+    every later schema requires it.
     """
     url = report.get("$schema")
     number = (report.get("lockrot") or {}).get("schema")
@@ -288,6 +289,8 @@ def report_schema(report: dict) -> int:
         raise SystemExit(f"build_watch_page: report schema {number} needs build_watch_page update")
     if match is not None and int(match[1]) != number:
         raise SystemExit(f"build_watch_page: the document names {url} and says lockrot.schema {number}")
+    if url is None and number != 1:
+        raise SystemExit(f"build_watch_page: a report-{number} document carries no $schema")
     return number
 
 
@@ -992,6 +995,11 @@ def run_settings(reports: dict, manifest: dict | None = None) -> dict:
     columns for the same reason. The plan's window for older lines has to be lockrot's default
     `release-warn-years`, which is what most reports carry.
     """
+    numbers = {name: report_schema(report) for name, report in reports.items()}
+    if len(set(numbers.values())) > 1:
+        # One table cannot be headed in two schemas' words, and one run is one lockrot.
+        mixed = ", ".join(f"{name}: {number}" for name, number in sorted(numbers.items()))
+        raise SystemExit(f"build_watch_page: the reports of one run carry different report schemas ({mixed})")
     for report in reports.values():
         flags = maintenance_flags(report)
         if flags != COLUMNS:

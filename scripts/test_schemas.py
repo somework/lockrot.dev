@@ -16,6 +16,7 @@ import unittest
 from pathlib import Path
 
 import check_schema_live
+import check_schemas_ref
 import schema_pages
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -102,14 +103,15 @@ class CopySchemasTest(unittest.TestCase):
 
 class FetchSchemasTest(unittest.TestCase):
     def lockrot_repo(self, tmp: Path) -> tuple[Path, str]:
-        """A scratch lockrot repository whose newest commit holds a docs page and two schemas."""
+        """A scratch lockrot repository whose main holds a docs page and two schemas."""
         repo = tmp / "lockrot"
         write(repo / "resources/lockrot-report-2.schema.json", schema("report", 2))
         write(repo / "resources/lockrot-explain-2.schema.json", schema("explain", 2))
         write(repo / "resources/report/manifest.json", "{}")
         write(repo / "docs/schema.md", "# unreleased\n")
-        git(repo, "init", "--quiet")
+        git(repo, "init", "--quiet", "--initial-branch=main")
         git(repo, "config", "uploadpack.allowAnySHA1InWant", "true")
+        git(repo, "config", "uploadpack.allowFilter", "true")
         git(repo, "add", ".")
         git(repo, "commit", "--quiet", "-m", "release")
         return repo, git(repo, "rev-parse", "HEAD")
@@ -144,13 +146,43 @@ class FetchSchemasTest(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertFalse((root / ".schemas").exists())
 
+    def test_refuses_a_ref_that_is_not_on_lockrot_s_main(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            repo, _ = self.lockrot_repo(tmp)
+            git(repo, "switch", "--quiet", "-c", "unmerged")
+            write(repo / "resources/lockrot-report-3.schema.json", schema("report", 3))
+            git(repo, "add", ".")
+            git(repo, "commit", "--quiet", "-m", "not merged")
+            root = site(tmp / "site", "fetch-schemas.sh")
+
+            result = self.fetch(root, repo, git(repo, "rev-parse", "HEAD"))
+
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("is not on lockrot's main", result.stderr)
+            self.assertFalse((root / ".schemas").exists())
+
+    def test_fetches_an_older_commit_of_main(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            repo, sha = self.lockrot_repo(tmp)
+            write(repo / "docs/next.md", "# later\n")
+            git(repo, "add", ".")
+            git(repo, "commit", "--quiet", "-m", "later")
+            root = site(tmp / "site", "fetch-schemas.sh")
+
+            result = self.fetch(root, repo, sha)
+
+        self.assertEqual(0, result.returncode, result.stderr)
+
     def test_refuses_a_ref_that_holds_no_schema_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp)
             repo = tmp / "lockrot"
             write(repo / "README.md", "no schemas here\n")
-            git(repo, "init", "--quiet")
+            git(repo, "init", "--quiet", "--initial-branch=main")
             git(repo, "config", "uploadpack.allowAnySHA1InWant", "true")
+            git(repo, "config", "uploadpack.allowFilter", "true")
             git(repo, "add", ".")
             git(repo, "commit", "--quiet", "-m", "readme")
             root = site(tmp / "site", "fetch-schemas.sh")
@@ -169,6 +201,57 @@ class FetchSchemasTest(unittest.TestCase):
             for ref in ("main", sha[:12], f"{sha} --upload-pack=x"):
                 with self.subTest(ref=ref):
                     self.assertNotEqual(0, self.fetch(root, repo, ref).returncode)
+
+
+SHA = "1cf33bc1a2324fc608481c8274c65b400d8c9ccc"
+
+
+def github(status="identical", names=("lockrot-report-1.schema.json", "lockrot-report-2.schema.json"), subject="release: 0.14.0"):
+    """The three GitHub answers check_schemas_ref.check() asks for, by URL."""
+    api = check_schemas_ref.API
+    answers = {
+        f"{api}/compare/main...{SHA}": {"status": status},
+        f"{api}/contents/resources?ref={SHA}": [{"name": n, "type": "file"} for n in names] + [{"name": "report", "type": "dir"}],
+        f"{api}/commits/{SHA}": {"commit": {"message": f"{subject}\n\nbody"}},
+    }
+    return answers.__getitem__
+
+
+class CheckSchemasRefTest(unittest.TestCase):
+    def test_passes_a_commit_of_main_that_holds_a_2_schema(self):
+        message = check_schemas_ref.check(SHA, github())
+
+        self.assertIn("lockrot-report-2.schema.json", message)
+        self.assertIn("'release: 0.14.0'", message)
+
+    def test_passes_an_older_commit_of_main(self):
+        self.assertIn(SHA, check_schemas_ref.check(SHA, github(status="behind")))
+
+    def test_refuses_a_commit_that_is_not_on_main(self):
+        for status in ("ahead", "diverged"):
+            with self.subTest(status=status), self.assertRaises(SystemExit) as raised:
+                check_schemas_ref.check(SHA, github(status=status))
+            self.assertIn("not on lockrot's main", str(raised.exception))
+
+    def test_refuses_a_commit_without_a_2_schema(self):
+        with self.assertRaises(SystemExit) as raised:
+            check_schemas_ref.check(SHA, github(names=("lockrot-report-1.schema.json", "php-ga-dates.json")))
+
+        self.assertIn("holds no", str(raised.exception))
+
+    def test_refuses_what_is_not_a_full_sha_before_asking_github(self):
+        def never(url):
+            raise AssertionError(f"asked {url}")
+
+        for sha in ("main", SHA[:12], SHA + "\n", SHA.upper()):
+            with self.subTest(sha=sha), self.assertRaises(SystemExit):
+                check_schemas_ref.check(sha, never)
+
+    def test_a_subject_cannot_start_a_workflow_command_line(self):
+        message = check_schemas_ref.check(SHA, github(subject="::add-mask::x"))
+
+        self.assertFalse(message.startswith("::"))
+        self.assertEqual(1, len(message.splitlines()))
 
 
 class SchemaPagesTest(unittest.TestCase):

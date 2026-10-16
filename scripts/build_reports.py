@@ -96,7 +96,8 @@ def build(capsules: Path, renderers: list[Path], html_out: Path | None, json_out
                     f"build_reports: {run}/{MANIFEST} does not say what {slug} was read from"
                 )
             number = _schema(capsule.get("data", {}).get("report") or {})
-            if number not in by_number:
+            # bool is an int to Python, and true would otherwise get the report-1 renderer.
+            if type(number) is not int or number not in by_number:
                 raise SystemExit(f"build_reports: no renderer given reads report schema {number} ({capsule_file})")
             template, css, js = by_number[number]
             page = report_page.render(
