@@ -9,11 +9,14 @@ Install: `composer require --dev somework/lockrot`, or download https://lockrot.
 ## Reference
 
 - [Verdicts and priority](https://lockrot.dev/verdicts/): the nine verdicts (abandoned, silent, pinned, left-behind, old-promise, stale, unknown, finished, ok), the signals behind them, how priority is assigned, how security advisories with no fix expected raise it, and the `require ^X to follow` constraint a left-behind finding names from 0.8.0
+- [Score model 1](https://lockrot.dev/verdicts/model-1/): the rules that grade a finding in lockrot 0.14.0 and later, in the order they apply, each with its parameters and an example; every report-2 links its rules here
 - [Configuration](https://lockrot.dev/configuration/): every `extra.lockrot` key, environment overrides, CLI options, caching, the allowlist, and `--explain=vendor/package` (from 0.8.0), which prints why one package got its verdict: every signal's raw data, the repository's release branches with their dates, the thresholds
 - [In CI](https://lockrot.dev/ci/): the GitHub Action, exit codes, and the github, sarif, gitlab, markdown and json formats
 - [Reading a report](https://lockrot.dev/viewer/): what a report says, verdict against priority, and the viewer at https://viewer.lockrot.dev/ that opens one in the browser
 - [Baseline](https://lockrot.dev/baseline/): accept today's findings, fail only on new and worsened ones
 - [JSON schemas](https://lockrot.dev/schema/): the published draft-04 schemas for the report, the explanation, the baseline file and `extra.lockrot` (from 0.9.0), what they type, the rule behind their version numbers, and how to validate a report in CI
+- [Report schema 1](https://lockrot.dev/schema/report-1/): the field tables of report-1, the report of lockrot 0.13 and older, frozen from lockrot v0.13.0
+- [Report schema 2](https://lockrot.dev/schema/report-2/): the field tables of report-2, the report of lockrot 0.14.0 and later. In report-2 the verdict is a grade; the flags are the facts; `lead` is the 0.13 word; the sum is printed
 - [Run notes](https://lockrot.dev/notes/): every note a run can carry, looked up by its code: what the run could not see, whether it fails `--strict-network`, its effect on findings, its typed data and what to do about it
 - [Compatibility](https://lockrot.dev/compatibility/): the draft of the 1.0 promise: which JSON fields, closed and open sets, exit codes, options and configuration keys stay stable, how a release may change a verdict, the names reserved for extensions, and how a deprecation is announced
 - [Install-time summary](https://lockrot.dev/install-time/): what the plugin prints during composer require, update and install
@@ -35,6 +38,7 @@ Install: `composer require --dev somework/lockrot`, or download https://lockrot.
 
 ## Optional
 
+- [Upgrading to 0.14](https://lockrot.dev/changes/0.14/): what to do when lockrot 0.14 reaches a project: regenerate the baseline, change jq queries, or stay on 0.13 with the PHAR, the plugin, the action, Docker or PHIVE
 - [Changelog](https://lockrot.dev/changelog/): what changed, release by release
 - [Source code and issues](https://github.com/somework/lockrot)
 - [GitHub Action and Docker image](https://github.com/somework/lockrot-action)

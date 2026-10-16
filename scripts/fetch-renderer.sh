@@ -6,7 +6,9 @@
 # lockrot 0.12.0 and later vendor the renderer as resources/report/report.html + manifest.json; the
 # manifest names the version. An older checkout carries the hand-written renderer instead, and this
 # script says so and exits 0 — build-viewer.sh then takes the old path. RENDERER_REF=v1.2.3
-# overrides the version, for a preview.
+# overrides the version, for a preview or for a second renderer, and RENDERER_DIR the directory
+# (.renderer by default): build-viewer.sh fetches lockrot-report 0.13.0 into .renderer-report-1 for
+# the stored report-1 capsules, which lockrot-report 0.14 does not read.
 #
 # Every file is checked twice: its build provenance with `gh attestation verify`, and its sha256
 # against the release's manifest. The page itself is checked a third time, against the manifest
@@ -17,6 +19,9 @@ cd "$(dirname "$0")/.."
 REPO=somework/lockrot-report
 VENDORED=.lockrot/resources/report/manifest.json
 FILES=(report.html lockrot-report.js lockrot-report.css manifest.json)
+DIR="${RENDERER_DIR:-.renderer}"
+# The directory is emptied first, so it is a name of the known shape, never a path.
+[[ "$DIR" =~ ^\.renderer(-[a-z0-9]+)*$ ]] || { echo "fetch-renderer: RENDERER_DIR '$DIR' is not .renderer or .renderer-<name>" >&2; exit 1; }
 
 # manifest_value FILE KEY [KEY...]: one string out of a manifest, by its key path.
 manifest_value() {
@@ -36,32 +41,32 @@ if [ -z "$REF" ]; then
   REF="v$(manifest_value "$VENDORED" version)"
 fi
 
-rm -rf .renderer
-mkdir -p .renderer
+rm -rf "$DIR"
+mkdir -p "$DIR"
 for file in "${FILES[@]}"; do
   curl --fail --silent --show-error --location --proto '=https' \
-    --output ".renderer/$file" "https://github.com/$REPO/releases/download/$REF/$file"
+    --output "$DIR/$file" "https://github.com/$REPO/releases/download/$REF/$file"
 done
 
 if [ "${RENDERER_SKIP_ATTESTATION:-}" = "1" ]; then
   echo "fetch-renderer: RENDERER_SKIP_ATTESTATION=1, build provenance NOT verified" >&2
 else
   for file in "${FILES[@]}"; do
-    gh attestation verify ".renderer/$file" --repo "$REPO" >/dev/null
+    gh attestation verify "$DIR/$file" --repo "$REPO" >/dev/null
   done
 fi
 
 for file in report.html lockrot-report.js lockrot-report.css; do
-  expected=$(manifest_value .renderer/manifest.json files "$file")
-  actual=$(python3 -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest())' ".renderer/$file")
+  expected=$(manifest_value "$DIR/manifest.json" files "$file")
+  actual=$(python3 -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest())' "$DIR/$file")
   [ "$expected" = "$actual" ] || { echo "fetch-renderer: $file does not match its manifest" >&2; exit 1; }
 done
 
 if [ -z "${RENDERER_REF:-}" ]; then
   vendored=$(manifest_value "$VENDORED" files report.html)
-  fetched=$(manifest_value .renderer/manifest.json files report.html)
+  fetched=$(manifest_value "$DIR/manifest.json" files report.html)
   [ "$vendored" = "$fetched" ] || { echo "fetch-renderer: $REF's report.html is not the page lockrot vendored" >&2; exit 1; }
 fi
 
-echo "$REF" > .renderer/REF
-echo "fetch-renderer: lockrot-report $REF in .renderer/"
+echo "$REF" > "$DIR/REF"
+echo "fetch-renderer: lockrot-report $REF in $DIR/"

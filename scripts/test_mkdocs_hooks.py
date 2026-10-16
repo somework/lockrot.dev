@@ -4,7 +4,7 @@ can change without any other build error, and the sitemap dates, where a wrong a
 in the built site and only shows up as pages re-announced to the search engines."""
 import unittest
 
-from mkdocs_hooks import dates_from_git_log, faq_from_html, last_modified
+from mkdocs_hooks import dates_from_git_log, faq_from_html, last_modified, llms_without, prune_nav, schema_note
 
 PAGE = """
 <h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
@@ -106,6 +106,78 @@ class LastModified(unittest.TestCase):
 
     def test_a_page_nothing_can_date_keeps_the_build_date(self):
         self.assertEqual(last_modified("404.md", {}, {}, ""), "")
+
+    def test_a_nested_reference_page_gets_the_date_of_its_own_file(self):
+        lockrot = {**LOCKROT, "docs/verdicts/model-1.md": "2026-10-10T00:00:00Z"}
+        self.assertEqual(last_modified("verdicts/model-1.md", DATES, lockrot, "x"), "2026-10-10T00:00:00Z")
+
+    def test_the_report_2_page_follows_the_schema_page_it_includes(self):
+        lockrot = {**LOCKROT, "docs/schema.md": "2026-10-10T00:00:00Z"}
+        self.assertEqual(last_modified("schema/report-2.md", DATES, lockrot, "x"), "2026-10-10T00:00:00Z")
+
+    def test_the_report_1_page_follows_its_frozen_copy(self):
+        own = {**DATES, "frozen/v0.13.0/docs/schema.md": "2026-10-16T00:00:00Z"}
+        self.assertEqual(last_modified("schema/report-1.md", own, LOCKROT, "x"), "2026-10-16T00:00:00Z")
+
+
+NAV = [
+    {"Home": "index.md"},
+    {"What it reports": "verdicts.md"},
+    {"Score model 1": "verdicts/model-1.md"},
+    {"JSON schemas": "schema.md"},
+    {"Report schema 1": "schema/report-1.md"},
+    {"Report schema 2": "schema/report-2.md"},
+    {"Upgrading to 0.14": "changes/0.14.md"},
+    {"Blog": ["blog/index.md"]},
+]
+
+
+class OptionalPages(unittest.TestCase):
+    def test_drops_an_optional_page_the_build_does_not_hold(self):
+        built = {"index.md", "verdicts.md", "schema.md", "schema/report-1.md", "blog/index.md"}
+
+        nav = prune_nav(NAV, built.__contains__)
+
+        self.assertEqual(
+            [{"Home": "index.md"}, {"What it reports": "verdicts.md"}, {"JSON schemas": "schema.md"},
+             {"Report schema 1": "schema/report-1.md"}, {"Blog": ["blog/index.md"]}],
+            nav,
+        )
+
+    def test_keeps_a_page_that_is_not_optional_even_when_missing_so_strict_still_fails(self):
+        nav = prune_nav(NAV, lambda path: False)
+
+        self.assertIn({"Home": "index.md"}, nav)
+        self.assertIn({"Blog": ["blog/index.md"]}, nav)
+        self.assertNotIn({"Score model 1": "verdicts/model-1.md"}, nav)
+
+    def test_drops_the_llms_rows_of_the_pages_the_build_does_not_hold(self):
+        text = (
+            "- [Verdicts](https://lockrot.dev/verdicts/): the verdicts\n"
+            "- [Score model 1](https://lockrot.dev/verdicts/model-1/): the model\n"
+            "- [Upgrading to 0.14](https://lockrot.dev/changes/0.14/): the upgrade\n"
+        )
+
+        out = llms_without(text, ["verdicts/model-1.md", "changes/0.14.md"])
+
+        self.assertEqual("- [Verdicts](https://lockrot.dev/verdicts/): the verdicts\n", out)
+
+
+class SchemaNote(unittest.TestCase):
+    def test_lists_each_number_with_its_page_and_its_file(self):
+        note = schema_note({"schema/report-1.json", "schema/report-2.json", "schema/report-1.md", "schema/report-2.md"})
+
+        self.assertIn("[field tables](schema/report-1.md)", note)
+        self.assertIn("[`report-2.json`](schema/report-2.json)", note)
+
+    def test_names_the_file_alone_for_a_number_without_a_page_yet(self):
+        note = schema_note({"schema/report-1.json", "schema/report-2.json", "schema/report-1.md"})
+
+        self.assertIn("- report-2: [`report-2.json`](schema/report-2.json)", note)
+        self.assertNotIn("schema/report-2.md", note)
+
+    def test_says_nothing_while_one_number_is_published(self):
+        self.assertEqual("", schema_note({"schema/report-1.json", "schema/explain-1.json"}))
 
 
 if __name__ == "__main__":

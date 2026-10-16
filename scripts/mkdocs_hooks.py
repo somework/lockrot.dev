@@ -13,6 +13,11 @@
   reading `lastmod` learns nothing. Here a page's date is the newest commit that touched the file it
   is built from: in content/ for the pages this repository owns, in the lockrot checkout for the
   reference pages.
+- A few pages exist only in some builds: the pages lockrot 0.14.0 adds, and the report schema
+  numbers' pages, which scripts/schema_pages.py writes when their source holds them. The nav and
+  content/llms.txt name them all, and a build without one drops its nav row and its llms.txt row
+  instead of failing --strict on a page that is not there. Any other missing page still fails.
+- /schema/ links each report schema number's page and file, once more than one number is published.
 """
 import html
 import logging
@@ -28,6 +33,17 @@ ROOT = Path(__file__).resolve().parent.parent
 
 # What on_config reads once and on_page_content spends: see last_modified().
 _LASTMOD: dict[str, object] = {"own_dates": {}, "lockrot_dates": {}, "blog_date": ""}
+
+# The pages a build may lack (see the module docstring), by their path below docs_dir.
+OPTIONAL_PAGES = ("verdicts/model-1.md", "changes/0.14.md", "schema/report-1.md", "schema/report-2.md")
+
+# A page built from a file of another name is dated by that file: one of this repository's, or one in
+# the lockrot checkout. changelog.md includes lockrot's CHANGELOG.md; scripts/schema_pages.py builds
+# the schema number pages.
+OWN_SOURCES = {"schema/report-1.md": "frozen/v0.13.0/docs/schema.md"}
+LOCKROT_SOURCES = {"changelog.md": "CHANGELOG.md", "schema/report-2.md": "docs/schema.md"}
+
+_SCHEMA_FILE = re.compile(r"schema/report-(\d+)\.json")
 
 _SECTION = re.compile(r'<h2\b[^>]*\bid="questions"[^>]*>.*?</h2>(.*?)(?=<h2\b|\Z)', re.S)
 _ITEM = re.compile(r"<h3\b[^>]*>(.*?)</h3>(.*?)(?=<h3\b|\Z)", re.S)
@@ -102,12 +118,12 @@ def last_modified(src_uri: str, own_dates: dict[str, str], lockrot_dates: dict[s
     changelog.md is the page that is not its own file: it includes lockrot's CHANGELOG.md, and the
     release that writes a changelog entry usually leaves docs/changelog.md alone.
     """
-    own = own_dates.get(f"content/{src_uri}")
+    own = own_dates.get(f"content/{src_uri}") or own_dates.get(OWN_SOURCES.get(src_uri, ""))
     if own:
         return own
     reference = [lockrot_dates.get(f"docs/{src_uri}", "")]
-    if src_uri == "changelog.md":
-        reference.append(lockrot_dates.get("CHANGELOG.md", ""))
+    if src_uri in LOCKROT_SOURCES:
+        reference.append(lockrot_dates.get(LOCKROT_SOURCES[src_uri], ""))
     if max(reference):
         return max(reference)
     if src_uri.startswith("blog/"):
@@ -115,16 +131,81 @@ def last_modified(src_uri: str, own_dates: dict[str, str], lockrot_dates: dict[s
     return ""
 
 
+def prune_nav(nav: list, exists: Callable[[str], bool]) -> list:
+    """The nav without the rows of the optional pages `exists` says the build does not hold."""
+    out = []
+    for item in nav:
+        if isinstance(item, dict) and len(item) == 1:
+            (title, value), = item.items()
+            if isinstance(value, list):
+                out.append({title: prune_nav(value, exists)})
+                continue
+            item_path = value
+        else:
+            item_path = item
+        if item_path in OPTIONAL_PAGES and not exists(item_path):
+            continue
+        out.append(item)
+    return out
+
+
+def llms_without(text: str, absent: list[str]) -> str:
+    """llms.txt without the lines that link a page the build does not hold."""
+    urls = [f"https://lockrot.dev/{page.removesuffix('.md')}/" for page in absent]
+    return "".join(line for line in text.splitlines(keepends=True) if not any(url in line for url in urls))
+
+
+def schema_note(paths: set[str]) -> str:
+    """The note at the top of /schema/: each published report schema number with its page, when it
+    has one, and its file. Nothing while one number is published, which leaves that page as lockrot
+    wrote it."""
+    numbers = sorted(int(m[1]) for path in paths if (m := _SCHEMA_FILE.fullmatch(path)))
+    if len(numbers) < 2:
+        return ""
+    rows = []
+    for number in numbers:
+        links = [f"[field tables](schema/report-{number}.md)"] if f"schema/report-{number}.md" in paths else []
+        links.append(f"[`report-{number}.json`](schema/report-{number}.json)")
+        rows.append(f"    - report-{number}: " + ", ".join(links))
+    return '!!! note "One page per report schema number"\n\n' + "\n".join(rows) + "\n\n"
+
+
+def _absent(config) -> list[str]:
+    return [page for page in OPTIONAL_PAGES if not (Path(config["docs_dir"]) / page).is_file()]
+
+
 def on_config(config):
-    # Twice per build (and per rebuild under `serve`), not once per page: two git processes.
-    own_dates = git_dates(ROOT, "content")
+    # Three git processes per build (and per rebuild under `serve`), not one per page.
+    own_dates = {**git_dates(ROOT, "content"), **git_dates(ROOT, "frozen")}
     posts = [date for path, date in own_dates.items() if path.startswith("content/blog/posts/")]
     _LASTMOD.update(
         own_dates=own_dates,
         lockrot_dates=git_dates(ROOT / ".lockrot", "."),
         blog_date=max(posts, default=""),
     )
+    absent = _absent(config)
+    if config.get("nav") and absent:
+        config["nav"] = prune_nav(config["nav"], lambda page: page not in absent)
     return config
+
+
+def on_page_markdown(markdown: str, page, config, files) -> str:
+    if page.file.src_uri != "schema.md":
+        return markdown
+    note = schema_note({file.src_uri for file in files})
+    if not note:
+        return markdown
+    # Below the page's title, above everything lockrot wrote.
+    lines = markdown.splitlines(keepends=True)
+    title = next((i for i, line in enumerate(lines) if line.startswith("# ")), -1)
+    return "".join(lines[: title + 1]) + "\n" + note + "".join(lines[title + 1 :])
+
+
+def on_post_build(config):
+    llms = Path(config["site_dir"]) / "llms.txt"
+    absent = _absent(config)
+    if absent and llms.is_file():
+        llms.write_text(llms_without(llms.read_text(encoding="utf-8"), absent), encoding="utf-8")
 
 
 def on_page_content(content: str, page, config, files) -> str:
