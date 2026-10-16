@@ -4,12 +4,22 @@
 from __future__ import annotations
 
 import csv
+import gzip
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
 import build_watch_page as bw
+
+FIXTURES = Path(__file__).parent / "fixtures" / "report-2"
+
+
+def fixture(name):
+    """A document lockrot wrote (see fixtures/report-2/README.md), as a fresh copy per test."""
+    path = FIXTURES / name
+    raw = gzip.decompress(path.read_bytes()) if path.suffix == ".gz" else path.read_bytes()
+    return json.loads(raw)
 
 
 def report(counts=None, checked=10, marked=0, version="0.10.0"):
@@ -473,6 +483,30 @@ class MainTest(unittest.TestCase):
         self.assertIn("+1 line</a>", applications)
         self.assertEqual(["release", "line", "starter"], kinds)
 
+    def test_a_report_2_run_writes_the_page_in_report_2_words(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            caps = tmp / "caps"
+            caps.mkdir()
+            m = manifest("magento2", date="2026-10-19")
+            m["projects"] += starter_manifest(date="2026-10-19")["projects"]
+            (caps / "manifest.json").write_text(json.dumps(m), encoding="utf-8")
+            for name, doc in (("magento2", "magento2-0.14.0.json.gz"), ("new-laravel", "B.json")):
+                (caps / f"{name}.json").write_text(json.dumps({"data": {"report": fixture(doc)}}), encoding="utf-8")
+            projects = tmp / "projects.json"
+            projects.write_text(json.dumps({"starters": [{"name": "new-laravel", "title": "Laravel", "no_lock_in_repository": True}]}), encoding="utf-8")
+            page, history = tmp / "watch.md", tmp / "history.csv"
+
+            bw.main(["build_watch_page.py", "--manifest", str(caps / "manifest.json"), "--capsules", str(caps),
+                     "--history", str(history), "--page", str(page), "--projects", str(projects)])
+            text = page.read_text(encoding="utf-8")
+            written = bw.read_history(history)
+
+        self.assertIn("*Flagged for maintenance*", text)
+        self.assertIn("A flag is an observation", text)
+        self.assertIn("<td>1 project</td><td></td><td>148</td><td>26</td>", text)
+        self.assertEqual(["model1", "model1"], [r["grade_basis"] for r in written])
+
 
 class CompareTest(unittest.TestCase):
     def test_the_previous_run_is_the_newest_one_before_this(self):
@@ -635,6 +669,265 @@ class HistoryTest(unittest.TestCase):
         self.assertEqual("4", written[-1]["silent"])
         # The run's own name, which tells apart three starters built from one package.
         self.assertEqual("one", written[-1]["name"])
+
+
+class ReportSchemaTest(unittest.TestCase):
+    """The guard: a document the page has not been taught to read stops the build before any count."""
+
+    def test_reads_report_1_and_report_2(self):
+        self.assertEqual(1, bw.report_schema(fixture("magento2-0.13.0.json.gz")))
+        self.assertEqual(2, bw.report_schema(fixture("magento2-0.14.0.json.gz")))
+
+    def test_a_report_1_without_its_schema_url_is_read_by_its_number(self):
+        rep = fixture("magento2-0.13.0.json.gz")
+        del rep["$schema"]
+
+        self.assertEqual(1, bw.report_schema(rep))
+
+    def test_stops_on_a_report_schema_it_does_not_know(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        rep["$schema"] = "https://lockrot.dev/schema/report-3.json"
+        rep["lockrot"]["schema"] = 3
+
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"magento2": rep})
+
+        self.assertIn("report schema 3 needs build_watch_page update", str(raised.exception))
+
+    def test_stops_on_an_explain_or_a_baseline_document(self):
+        for name in ("explain-2.json", "baseline-2.json"):
+            with self.subTest(name), self.assertRaises(SystemExit) as raised:
+                bw.run_settings({"doc": fixture(name)})
+            self.assertIn("is not a lockrot report", str(raised.exception))
+
+    def test_stops_when_the_url_and_the_number_disagree(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        rep["lockrot"]["schema"] = 1
+
+        with self.assertRaises(SystemExit):
+            bw.report_schema(rep)
+
+    def test_stops_on_a_score_model_it_does_not_know(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        rep["run"]["score_model"]["id"] = 2
+
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"magento2": rep})
+
+        self.assertIn("score model 2 needs build_watch_page update", str(raised.exception))
+
+    def test_stops_before_any_count_is_read(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        rep["lockrot"]["schema"] = 3
+        rep["$schema"] = "https://lockrot.dev/schema/report-3.json"
+        del rep["counts"]
+
+        with self.assertRaises(SystemExit) as raised:
+            bw.rows(manifest("magento2"), {"magento2": rep})
+
+        self.assertIn("report schema 3", str(raised.exception))
+
+    def test_reads_the_maintenance_flags_from_the_score_model_not_by_position(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        parts = rep["run"]["score_model"]["parts"]
+        rep["run"]["score_model"]["parts"] = list(reversed(parts))
+
+        self.assertEqual(bw.COLUMNS, bw.maintenance_flags(rep))
+
+    def test_stops_when_the_maintenance_flags_are_not_the_columns(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        maintenance = next(p for p in rep["run"]["score_model"]["parts"] if p["id"] == "maintenance")
+        maintenance["flag_ids"] = [*maintenance["flag_ids"], "unmaintained"]
+
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"magento2": rep})
+
+        self.assertIn("unmaintained", str(raised.exception))
+
+    def test_stops_when_lockrot_writes_a_flag_the_history_has_no_column_for(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        rep["run"]["flag_ids"] = [*rep["run"]["flag_ids"], "unlicensed"]
+
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"magento2": rep})
+
+        self.assertIn("unlicensed", str(raised.exception))
+
+    def test_reads_the_run_settings_of_a_report_2(self):
+        settings = bw.run_settings({"magento2": fixture("magento2-0.14.0.json.gz")})
+
+        self.assertEqual("8.4", settings["target_php"])
+        self.assertEqual(3, settings["window"])
+
+
+class Report2RowsTest(unittest.TestCase):
+    """A report-2 document through rows(): the six columns are each flag's `leading` count."""
+
+    def test_magento2_reads_11_flagged_for_maintenance_and_26_graded(self):
+        row = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")})[0]
+
+        self.assertEqual(
+            {"abandoned": 4, "silent": 0, "pinned": 0, "left-behind": 1, "old-promise": 1, "stale": 5},
+            {c: row[c] for c in bw.COLUMNS},
+        )
+        self.assertEqual(11, bw.flagged(row))
+        self.assertEqual(26, row["graded"])
+
+    def test_the_six_columns_continue_the_0_13_series_on_the_same_data(self):
+        before = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.13.0.json.gz")})[0]
+        after = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")})[0]
+
+        self.assertEqual({c: before[c] for c in bw.COLUMNS}, {c: after[c] for c in bw.COLUMNS})
+        self.assertEqual(before["unknown"], after["unknown"])
+        self.assertEqual(before["marked_on_packagist"], after["marked_on_packagist"])
+
+    def test_composer_missed_is_unchanged_on_the_same_data(self):
+        r1, r2 = fixture("magento2-0.13.0.json.gz"), fixture("magento2-0.14.0.json.gz")
+        abandoned = [f["package"] for f in r1["findings"] if f["verdict"] == "abandoned"]
+        audit = view(abandoned=abandoned[:2], advisories=[f["package"] for f in r1["findings"] if f["verdict"] == "stale"][:1])
+
+        missed_013 = bw.composer_missed(r1, audit)
+
+        self.assertEqual(11 - 3, missed_013)
+        self.assertEqual(missed_013, bw.composer_missed(r2, audit))
+
+    def test_composer_missed_reads_lead_and_never_the_verdict(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        # A grade is not a 0.13 verdict: rewriting every grade changes nothing.
+        for finding in rep["findings"]:
+            finding["verdict"] = "critical"
+
+        self.assertEqual(11, bw.composer_missed(rep, view()))
+
+    def test_composer_missed_refuses_findings_that_do_not_add_up_to_the_leading_counts(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+        rep["flags"]["stale"]["leading"] += 1
+
+        with self.assertRaises(SystemExit):
+            bw.composer_missed(rep, view())
+
+    def test_the_advisories_column_is_the_vulnerable_flags_carrying_count(self):
+        rep = fixture("B.json")
+
+        row = bw.rows(manifest("b"), {"b": rep})[0]
+
+        self.assertEqual(rep["flags"]["vulnerable"]["carrying"], row["advisories"])
+        self.assertEqual(1, row["advisories"])
+
+    def test_an_ignored_packagist_marking_still_counts_as_marked(self):
+        rep = fixture("ignored-marking-archived-dagger.json")
+        signals = [s["id"] for f in rep["findings"] for s in f.get("signals", [])]
+
+        row = bw.rows(manifest("x"), {"x": rep})[0]
+
+        self.assertNotIn("S1", signals)
+        self.assertEqual(1, row["marked_on_packagist"])
+
+
+class Report2HistoryTest(unittest.TestCase):
+    def test_a_report_1_row_and_a_report_2_row_side_by_side(self):
+        r1 = bw.rows(manifest("magento2", date="2026-10-12"), {"magento2": fixture("magento2-0.13.0.json.gz")})
+        r2 = bw.rows(manifest("magento2", date="2026-10-19"), {"magento2": fixture("magento2-0.14.0.json.gz")})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "history.csv"
+            bw.write_history(path, r1)
+            bw.write_history(path, r2)
+            with path.open(newline="", encoding="utf-8") as fh:
+                header = next(csv.reader(fh))
+            old, new = bw.read_history(path)
+
+        self.assertEqual(
+            ["date", "lockrot", "kind", "repo", "package", "tag", "version", "commit", "packages",
+             "advisories", "abandoned", "silent", "pinned", "left-behind", "old-promise", "stale",
+             "unknown", "marked_on_packagist", "name", "composer_missed"],
+            header[:20],
+        )
+        self.assertEqual(
+            {"graded": "11", "critical": "0", "high": "6", "medium": "2", "low": "3", "vulnerable": "",
+             "carrying_stale": "", "multi_flag": "", "score_model": "0", "report_schema": "1",
+             "grade_basis": "priority013"},
+            {k: old[k] for k in ("graded", "critical", "high", "medium", "low", "vulnerable", "carrying_stale",
+                                 "multi_flag", "score_model", "report_schema", "grade_basis")},
+        )
+        self.assertEqual(
+            {"graded": "26", "critical": "1", "high": "13", "medium": "6", "low": "6", "vulnerable": "15",
+             "carrying_stale": "6", "multi_flag": "1", "score_model": "1", "report_schema": "2",
+             "grade_basis": "model1"},
+            {k: new[k] for k in ("graded", "critical", "high", "medium", "low", "vulnerable", "carrying_stale",
+                                 "multi_flag", "score_model", "report_schema", "grade_basis")},
+        )
+        self.assertEqual(
+            ["carrying_abandoned", "carrying_silent", "carrying_pinned", "carrying_left-behind",
+             "carrying_old-promise", "carrying_stale", "carrying_vulnerable"],
+            [h for h in header if h.startswith("carrying_")],
+        )
+        self.assertFalse(any("depth" in h for h in header))
+        self.assertNotIn("advisories_basis", header)
+
+    def test_rows_written_before_the_new_columns_read_back_as_report_1(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "history.csv"
+            path.write_text(",".join(bw.HISTORY_FIELDS[:20]) + "\n" + ",".join(history_row("one").get(f, "") for f in bw.HISTORY_FIELDS[:20]) + "\n", encoding="utf-8")
+            bw.write_history(path, bw.rows(manifest("one", date="2026-10-19"), {"one": fixture("B.json")}))
+            old, new = bw.read_history(path)
+
+        self.assertEqual(1, bw.row_schema(old))
+        self.assertEqual(2, bw.row_schema(new))
+
+
+class Report2PageTest(unittest.TestCase):
+    def test_a_report_2_table_says_flagged_for_maintenance_and_shows_graded(self):
+        table = bw.table(bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")}))
+
+        self.assertIn('aria-sort="descending">Flagged for maintenance</th>', table)
+        self.assertIn(">Graded</th>", table)
+        self.assertIn('<td data-sort="26">26</td>', table)
+        self.assertIn('<td data-sort="11" class="lockrot-flagged">11 ', table)
+
+    def test_a_report_1_table_is_the_page_it_was(self):
+        table = bw.table(bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.13.0.json.gz")}))
+
+        self.assertIn('aria-sort="descending">Flagged</th>', table)
+        self.assertNotIn("Graded", table)
+
+    def test_graded_is_not_compared_across_a_score_model_change(self):
+        rows = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")})
+        before = {**history_row("magento2", abandoned=4, left_behind=1, old_promise=1, stale=5),
+                  "graded": "11", "grade_basis": "priority013", "report_schema": "1", "score_model": "0"}
+
+        table = bw.table(rows, {"magento2": before}, "2026-10-12")
+
+        self.assertIn('<td data-sort="26">26</td>', table)
+        self.assertNotIn("+15", table)
+
+    def test_graded_is_compared_on_the_same_score_model(self):
+        rows = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")})
+        before = {**history_row("magento2", abandoned=4, left_behind=1, old_promise=1, stale=5),
+                  "graded": "24", "grade_basis": "model1", "report_schema": "2", "score_model": "1"}
+
+        table = bw.table(rows, {"magento2": before}, "2026-10-12")
+
+        self.assertIn('title="+2 since 2026-10-12">+2</span>', table)
+
+    def test_advisories_are_not_compared_across_the_report_schema_change(self):
+        m = starter_manifest()
+        rows = bw.rows(m, {"new-laravel": fixture("B.json")})
+        before = {**history_row("new-laravel", advisories=4, left_behind=1), "kind": "starter", "version": "v13.10.1"}
+
+        table = bw.starter_table(rows, {"new-laravel": before}, "2026-10-12")
+        body = table[table.index("<tbody>"):table.index("</tbody>")]
+
+        self.assertNotIn(f"{bw.MINUS}3", body)
+        self.assertNotIn(f"{bw.MINUS}3", table[table.index("<tfoot>"):])
+
+    def test_the_prose_names_the_grade_and_the_flags_under_report_2(self):
+        r2 = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")})
+        r1 = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.13.0.json.gz")})
+
+        self.assertIn("*Graded*", bw.flagged_note(r2))
+        self.assertIn("`lead`", bw.flagged_note(r2))
+        self.assertNotIn("Graded", bw.flagged_note(r1))
+        self.assertIn("each package has exactly one", bw.flagged_note(r1))
 
 
 if __name__ == "__main__":
