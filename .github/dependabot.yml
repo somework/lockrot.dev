@@ -5,6 +5,14 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 3
+    # A new release waits a week before a bump is proposed: a compromised action release is
+    # usually caught and pulled within days, and these workflows hold the deploy and push tokens.
+    cooldown:
+      default-days: 7
+    ignore:
+      # Moved by hand with each lockrot release, together with the `version:` it passes: the
+      # action's release follows the lockrot tag, and a bump on its own would run ahead of it.
+      - dependency-name: "somework/lockrot-action"
     groups:
       github-actions:
         patterns:
@@ -15,6 +23,8 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 3
+    cooldown:
+      default-days: 7
     groups:
       pip:
         patterns:
