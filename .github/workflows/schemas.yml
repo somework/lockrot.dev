@@ -1,0 +1,50 @@
+name: Schemas
+# Publish the JSON schemas of a lockrot release before its tag. lockrot's schemas.yml sends
+# `repository_dispatch` with event_type `lockrot-schemas` and the merge commit as
+# client_payload.sha when a release pull request merges into its main. A released document names
+# its schema's URL from the moment the tag exists, and the site follows tags only, so the files
+# have to be online first.
+#
+# The job runs in the `schemas` environment, whose only required reviewer is the maintainer: it
+# waits for that approval, then stores the commit in the repository variable SCHEMAS_REF and runs
+# Deploy, which publishes that commit's resources/*.schema.json beside the tag's (see
+# scripts/fetch-schemas.sh). Before the approval nothing names the commit, so no ordinary deploy
+# can publish a -2 file. `production` keeps no reviewer: every push to main deploys through it.
+#
+# GITHUB_TOKEN cannot write a repository variable. SCHEMAS_VARIABLE_TOKEN is a fine-grained token
+# on this repository with Variables: write, stored as a secret of the `schemas` environment only,
+# so no production job ever holds it. Clearing the variable after the tag's rebuild is a step of
+# its own: `gh variable delete SCHEMAS_REF`, by hand or from a job in this environment.
+on:
+  repository_dispatch:
+    types: [lockrot-schemas]
+permissions:
+  contents: read
+  # `gh workflow run deploy.yml`. A workflow_dispatch event from GITHUB_TOKEN starts a run.
+  actions: write
+concurrency:
+  group: schemas
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: schemas
+    steps:
+      - name: Store the commit in SCHEMAS_REF
+        env:
+          SHA: ${{ github.event.client_payload.sha }}
+          GH_TOKEN: ${{ secrets.SCHEMAS_VARIABLE_TOKEN }}
+        shell: bash
+        run: |
+          set -eu
+          # A full commit sha and nothing else; scripts/fetch-schemas.sh checks it again at build.
+          if ! [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "schemas: client_payload.sha '$SHA' is not a full commit sha" >&2
+            exit 1
+          fi
+          gh variable set SCHEMAS_REF --body "$SHA" --repo "$GITHUB_REPOSITORY"
+          echo "schemas: SCHEMAS_REF=$SHA"
+      - name: Run Deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main --repo "$GITHUB_REPOSITORY"

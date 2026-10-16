@@ -49,6 +49,12 @@ a `silent` package your application calls directly, and the report says so witho
 work it out. [What it reports](verdicts.md) has the full ladder, and every signal `S1` to `S9` with
 the evidence it needs.
 
+From lockrot 0.14.0 on, a report says the same things in other words. The verdict is a grade, from
+`critical` to `low`; the flags are the facts, the six words above and `vulnerable`; `lead` is the
+0.13 word, the flag that leads a package's score; the sum is printed, so each finding shows how its
+score adds up. The reports this site published from 0.13 runs are still drawn by lockrot-report
+0.13.0, the renderer that reads them.
+
 ## What it does not claim
 
 lockrot reads release dates, repository activity and the lock file. It does not read your code, and
