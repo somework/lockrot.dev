@@ -24,6 +24,11 @@ jobs:
       # the site would actually publish.
       - run: python -m unittest discover -s scripts -p 'test_*.py'
       - run: scripts/build.sh
+        env:
+          # Set between a lockrot release-PR merge and the rebuild from its tag, by schemas.yml: the
+          # schema files of that commit, so a released document's $schema never answers 404. Empty
+          # otherwise. See scripts/fetch-schemas.sh.
+          SCHEMAS_REF: ${{ vars.SCHEMAS_REF }}
       # The viewer is deployed separately but assembled from the same lockrot checkout, and it
       # substitutes into markup this repository does not own: a release that reshapes report.html
       # should fail here rather than in a browser.
@@ -37,7 +42,7 @@ jobs:
         with:
           args: --offline --root-dir "${{ github.workspace }}/site" --no-progress "site/**/*.html"
           fail: true
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: site
           path: site

@@ -2,7 +2,8 @@ name: Deploy
 # Four triggers, one build: a push to main (content, theme, blog), a lockrot release (the lockrot
 # PHAR workflow sends `repository_dispatch` with event_type `lockrot-release` after it publishes the
 # release, so the reference pages follow the newest tag), a weekly run that picks up a release whose
-# dispatch never arrived, and a manual run.
+# dispatch never arrived, and a manual run. schemas.yml starts a manual run once the maintainer
+# approves the schemas of a lockrot release-PR merge, before that release is tagged.
 on:
   push:
     branches: [main]
@@ -33,6 +34,11 @@ jobs:
           cache: pip
       - run: pip install --require-hashes -r requirements.txt
       - run: scripts/build.sh
+        env:
+          # Set between a lockrot release-PR merge and the rebuild from its tag, by schemas.yml: the
+          # schema files of that commit, so a released document's $schema never answers 404. Empty
+          # otherwise. See scripts/fetch-schemas.sh.
+          SCHEMAS_REF: ${{ vars.SCHEMAS_REF }}
       # The report viewer, on a host of its own. It is a second Worker because response headers
       # decide it, not taste: see wrangler.viewer.jsonc. Built from the same lockrot checkout the
       # site was built from, so the renderer in it is the one that release ships. Built before

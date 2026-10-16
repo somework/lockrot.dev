@@ -18,3 +18,7 @@ reviews:
     - "!data/reports/**"
     - "!content/assets/data/**"
     - "!content/watch.md"
+    # lockrot's own output and lockrot's own page, kept byte for byte as test data and as the frozen
+    # source of /schema/report-1/; changed only by copying them again.
+    - "!scripts/fixtures/**"
+    - "!frozen/**"

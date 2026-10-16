@@ -22,7 +22,9 @@ before laying `content/` over it. A change to a verdict, an option or a CLI flag
 | `scripts/build.sh serve` | Same assembly, then `mkdocs serve --strict` on http://127.0.0.1:8000 (drafts visible) |
 | `LOCKROT_REF=main scripts/fetch-lockrot.sh` | Re-fetch lockrot at `main` (or any tag) to preview unreleased docs |
 | `rm -rf .lockrot && scripts/build.sh` | Back to the newest release tag |
-| `scripts/check-nav.sh` | Fail if a page in `.lockrot/docs/` is missing from `mkdocs.yml` `nav` |
+| `scripts/check-nav.sh` | Fail if a page in `.lockrot/docs/` (subdirectories included) is missing from `mkdocs.yml` `nav` or `content/llms.txt` |
+| `SCHEMAS_REF=<lockrot sha> scripts/build.sh` | Build as Deploy does between a lockrot release-PR merge and its tag: the tag's docs, plus the schema files of that commit (see "Schemas before the tag") |
+| `python3 scripts/check_schema_live.py [URL]` | Check that `https://lockrot.dev/schema/report-2.json` (or the URL given) answers 200 with its own schema |
 | `python3 -m unittest discover -s scripts -p 'test_*.py'` | Unit tests for the MkDocs hooks and the report and watch scripts (CI runs them before the build) |
 | `gh workflow run rot-watch.yml` | Run the weekly watch now: the releases and fresh installs in `data/watch/projects.json`, then a pull request that merges itself and deploys |
 | `pip-compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in` | Re-lock after editing `requirements.in` (needs `pip install pip-tools`, run under Python 3.12) |
@@ -63,6 +65,7 @@ data/                  # run data, not published as it stands (see "The weekly w
   watch/projects.json  # the projects the weekly run reads, and the target PHP it uses
   reports/<run>/*.json # one capsule per report: the document and its two sentences, no renderer
   reports/<run>/manifest.json  # what each report was read from: repository, release tag, commit
+frozen/v0.13.0/docs/schema.md  # lockrot v0.13.0's schema page, verbatim: the source of /schema/report-1/
 mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
 scripts/               # fetch-lockrot.sh, fetch-renderer.sh, check-nav.sh, build.sh, build-viewer.sh, build_frame.py, mkdocs_hooks.py (MkDocs hooks: the landing
                        # page's Questions section becomes the FAQPage markup, read from the rendered HTML;
@@ -70,7 +73,9 @@ scripts/               # fetch-lockrot.sh, fetch-renderer.sh, check-nav.sh, buil
                        # changed, not the build date) and its unit test test_mkdocs_hooks.py
                        # report_page.py, build_reports.py (a --format=html report, stored and put back
                        # together), watch_plan.py, build_watch_page.py, watch_archive.py (earlier runs,
-                       # out of git) — all with test_*.py beside them
+                       # out of git), fetch-schemas.sh, copy-schemas.sh, schema_pages.py,
+                       # check_schemas_ref.py and check_schema_live.py (see "Schemas before the tag") — all with test_*.py beside
+                       # them. fixtures/report-2/ holds the lockrot documents those tests read
 viewer/                # the report viewer, deployed to viewer.lockrot.dev, not to this site
   app.html app.css app.js  # the page: takes a document, hands it to the frame, owns the address
   frame.html           # the frame page for a released renderer (lockrot 0.12.0+)
@@ -80,8 +85,9 @@ wrangler.jsonc         # Cloudflare Worker "lockrot", static assets from ./site
 wrangler.viewer.jsonc  # Cloudflare Worker "lockrot-viewer", static assets from ./viewer-site
 .github/workflows/     # ci.yml (PRs: build + internal link check), deploy.yml (main, lockrot release,
                        # weekly, manual), links.yml (weekly external link check),
-                       # rot-watch.yml (Monday: the releases and create-project runs in projects.json, opens a self-merging PR)
-.lockrot/ .renderer/ build/ site/ viewer-site/ # generated, git-ignored, safe to delete
+                       # rot-watch.yml (Monday: the releases and create-project runs in projects.json, opens a self-merging PR),
+                       # schemas.yml (lockrot-schemas dispatch: stores SCHEMAS_REF after the maintainer's approval)
+.lockrot/ .renderer/ .renderer-report-1/ .schemas/ build/ site/ viewer-site/ # generated, git-ignored, safe to delete
 ```
 
 ## Writing a post
@@ -122,9 +128,12 @@ they go in — the reference pages there are the source of truth, not memory.
 
 ## Coupling with lockrot, in both directions
 
-- `nav` in `mkdocs.yml` lists every page under `.lockrot/docs/`. A page added there fails
-  `scripts/check-nav.sh` here until it is added to the nav — on purpose, so it is never silently
-  unreachable.
+- `nav` in `mkdocs.yml` lists every page under `.lockrot/docs/`, a nested one by its path below
+  `docs/` (`verdicts/model-1.md`). A page added there fails `scripts/check-nav.sh` here until it is
+  added to the nav — on purpose, so it is never silently unreachable. The nav and `content/llms.txt`
+  also name a few pages that only some builds hold (`OPTIONAL_PAGES` in `scripts/mkdocs_hooks.py`):
+  lockrot 0.14.0's two new pages and the report schema numbers' pages. The hook drops their rows from
+  a build without the page. Any other missing page still fails `--strict`.
 - The landing page `content/index.md` started as a copy of lockrot's `docs/index.md` and now lives
   here; its "Read on" table names the reference pages, keep it in step with the nav.
 - The landing page also states facts of its own — the "Questions" section (rate caps, the 10-line
@@ -165,6 +174,10 @@ What the pieces do:
   (`gh attestation verify`, so the build needs `GH_TOKEN`) and sha256, and checks the page is the
   one lockrot vendored. Older lockrot tags carry the hand-written renderer (four files) instead, and
   `build-viewer.sh` takes the old path for them; that path can go once no supported tag needs it.
+- Each stored capsule is drawn by the renderer that reads its report schema number (the
+  renderer's `manifest.json` `schema.report`), never chosen by date. lockrot-report 0.14 reads
+  report-2 only, so once lockrot vendors it `build-viewer.sh` also fetches lockrot-report 0.13.0
+  into `.renderer-report-1/` for every report-1 capsule, published and archived.
 - The frame, for a released renderer, is `viewer/frame.html`: this site's page, not lockrot's.
   The released `report.html` pins its inline script by hash in its own Content-Security-Policy,
   which would refuse the files the frame loads. `scripts/test_frame_template.py` asserts what the
@@ -327,6 +340,14 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
   a key), and every row carries the lockrot version that produced it. A number moves when a project changes,
   when Packagist changes, or when the tool learns something; a trend that cannot tell those apart
   is not a trend.
+- **The page reads report-1 and report-2.** Under report-2 (lockrot 0.14.0) the verdict is a grade,
+  and the six columns read each maintenance flag's `leading` count, which is the 0.13 verdict count
+  for the same data. `run_settings()` stops before any count on a report schema, a score model or a
+  flag set the script does not know. The history appends the report-2 columns after the 0.13 ones
+  (`HISTORY_FIELDS`). A report-1 row leaves the report-2 facts empty and takes its grades from
+  0.13's priorities (`grade_basis: priority013`). Graded is compared only within one
+  `grade_basis`, the advisories only within one `report_schema`. `rot-watch.yml` runs lockrot 0.13.0
+  until lockrot-action v1.2.0. The move to 0.14 is that version line and the action pin.
 
 ## Deploy
 
@@ -353,6 +374,26 @@ history, so `fetch-lockrot.sh` clones `--filter=blob:none` and keeps the `.git` 
 `--depth 1` clone (3 seconds and 5 MB, and a release that left a page alone no longer moves its
 date), and `ci.yml` and `deploy.yml` check out with `fetch-depth: 0`. When git cannot answer, the
 hook warns and `--strict` fails the build rather than quietly going back to build dates.
+
+### Schemas before the tag
+
+A lockrot document names its schema's URL from the moment its release is tagged, and the site
+follows tags. So a new schema number goes online at the merge of lockrot's release pull request:
+lockrot's `schemas.yml` sends the `lockrot-schemas` dispatch with the merge commit. This repository's
+`schemas.yml` first checks the commit (`scripts/check_schemas_ref.py`: on lockrot's `main`, holding a
+schema numbered 2 or more), then waits in the `schemas` environment for the maintainer's approval,
+stores the commit in the repository variable `SCHEMAS_REF` and runs Deploy. Every build passes
+`vars.SCHEMAS_REF` to `scripts/fetch-schemas.sh`, which refuses a commit off lockrot's `main` and
+fetches only `resources/*.schema.json` of that commit, and
+`copy-schemas.sh` publishes a name the tag does not, so the tag's file wins. Check the URL with
+`scripts/check_schema_live.py` after the approval and again before the tag. After the rebuild from
+the tag, clear the variable by hand (`gh variable delete SCHEMAS_REF`). `deploy.yml` never holds a
+token that can write it. The `schemas` environment holds `SCHEMAS_VARIABLE_TOKEN`, a fine-grained
+token on this repository with Variables: write.
+
+`/schema/report-1/` is built from `frozen/v0.13.0/docs/schema.md` once `report-2.json` is published,
+and `/schema/report-2/` from the tag's `docs/schema.md` once it describes report-2
+(`scripts/schema_pages.py`). `/schema/` then lists each number's page and file.
 
 Secrets on the `production` environment: `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit on the
 account), `CLOUDFLARE_ACCOUNT_ID`. Until the Cloudflare side is switched over, the old Workers

@@ -48,7 +48,7 @@ jobs:
           # runner's address shares with everyone else's.
           ROT_WATCH_TOKEN: ${{ secrets.ROT_WATCH_TOKEN || github.token }}
         run: python scripts/watch_plan.py
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: watch-manifest
           path: data/reports/watch/manifest.json
@@ -86,7 +86,7 @@ jobs:
           base="https://raw.githubusercontent.com/$REPO/$COMMIT"
           curl -sfL --retry 3 -o work/composer.lock "$base/$LOCK"
           curl -sfL --retry 3 -o work/composer.json "$base/${LOCK%composer.lock}composer.json"
-      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.project.target_php }}
           tools: composer:v2
@@ -125,9 +125,11 @@ jobs:
       - uses: somework/lockrot-action@f3d8751d0157ce9384e1f7acc84d6498cfee2e07 # v1.1.0
         with:
           working-directory: work
-          # The newest release, verified against the sha256 published with it. This page says which
-          # version produced a number, so following the tag is the point rather than a risk.
-          version: latest
+          # 0.13.0, verified against the sha256 published with it, until lockrot-action v1.2.0: v1.1.0
+          # writes its job summary from a second run that drops lockrot 0.14's vulnerable-only
+          # findings. The page says which version produced a number, and build_watch_page.py reads
+          # report-2 as well, so moving to 0.14 is a change of this line and the action pin alone.
+          version: 0.13.0
           format: html
           output: ${{ github.workspace }}/report.html
           target-php: ${{ matrix.project.target_php }}
@@ -146,7 +148,7 @@ jobs:
           mkdir -p capsules
           python scripts/report_page.py report.html "capsules/$NAME.json" \
             --composer-audit composer-audit.json --composer-version "$(cat composer-version.txt)"
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: capsule-${{ matrix.project.name }}
           path: capsules/${{ matrix.project.name }}.json
@@ -178,7 +180,7 @@ jobs:
       # The runner's own PHP is whatever the image ships; the resolve has to happen on the PHP the
       # lock is meant for, or a constraint on php itself would resolve differently here than on the
       # reader's machine.
-      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.starter.target_php }}
           tools: composer:v2
@@ -240,7 +242,8 @@ jobs:
       - uses: somework/lockrot-action@f3d8751d0157ce9384e1f7acc84d6498cfee2e07 # v1.1.0
         with:
           working-directory: work
-          version: latest
+          # The same version as the releases above, for the same reason.
+          version: 0.13.0
           format: html
           output: ${{ github.workspace }}/report.html
           target-php: ${{ matrix.starter.target_php }}
@@ -259,7 +262,7 @@ jobs:
           mkdir -p capsules
           python scripts/report_page.py report.html "capsules/$NAME.json" \
             --composer-audit composer-audit.json --composer-version "$(cat composer-version.txt)"
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: capsule-${{ matrix.starter.name }}
           path: capsules/${{ matrix.starter.name }}.json
@@ -283,11 +286,11 @@ jobs:
       # nothing deletes, so a project or an older line the plan no longer names — a line leaving the
       # window — would keep last week's capsule, which no manifest describes and the build refuses.
       - run: rm -rf data/reports/watch
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: watch-manifest
           path: data/reports/watch
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: capsule-*
           merge-multiple: true

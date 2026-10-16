@@ -24,6 +24,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 REPORT_SRC=.lockrot/resources/report
+# The renderer for the stored report-1 capsules once lockrot vendors one that reads report-2 only
+# (lockrot-report 0.14.0 and later show report-1 a "rerun or open with 0.13" screen). 0.13.0 is the
+# last lockrot-report release that reads report-1.
+REPORT_1_RENDERER=v0.13.0
 
 rm -rf viewer-site
 mkdir -p viewer-site/frame
@@ -37,8 +41,17 @@ if [ -f .renderer/REF ]; then
   # filled with each capsule, the page lockrot writes byte for byte.
   cp viewer/frame.html viewer-site/frame/index.html
   cp .renderer/lockrot-report.js .renderer/lockrot-report.css viewer-site/frame/
-  RENDERER=.renderer
+  RENDERERS=(--renderer .renderer)
   RENDERER_NAME="lockrot-report $(cat .renderer/REF)"
+  # Each capsule is drawn by the renderer that reads its report schema number (build_reports.py):
+  # when the vendored one does not read report-1, lockrot-report 0.13.0 draws the report-1 capsules.
+  if ! python3 -c 'import json,sys; sys.exit(1 not in json.load(open(sys.argv[1]))["schema"]["report"])' .renderer/manifest.json; then
+    RENDERER_REF="$REPORT_1_RENDERER" RENDERER_DIR=.renderer-report-1 scripts/fetch-renderer.sh
+    RENDERERS+=(--renderer .renderer-report-1)
+    RENDERER_NAME="$RENDERER_NAME, and lockrot-report $REPORT_1_RENDERER for report-1"
+  else
+    rm -rf .renderer-report-1
+  fi
 else
   # lockrot 0.11.0 and older: the hand-written renderer, four files in the checkout. A checkout
   # older than 0.10.0 has none, and then there is no viewer to build.
@@ -52,24 +65,24 @@ else
   done
   python3 scripts/build_frame.py "$REPORT_SRC/report.html" "$REPORT_SRC/report.css" viewer-site/frame/index.html
   cp "$REPORT_SRC/lib.js" "$REPORT_SRC/report.js" viewer-site/frame/
-  RENDERER=$REPORT_SRC
+  RENDERERS=(--renderer "$REPORT_SRC")
   RENDERER_NAME="the renderer of lockrot $(cat .lockrot/REF 2>/dev/null || echo '?')"
 fi
 cp viewer/frame.js viewer-site/frame/frame.js
 
 # The published reports: one page per project of a data run, built from the capsules in
-# data/reports/ with the renderer chosen above. They sit on this host rather than on lockrot.dev
+# data/reports/ with the renderers chosen above. They sit on this host rather than on lockrot.dev
 # for the same reason the frame does — the renderer draws documents derived from other people's
 # lock files, and lockrot.dev's header rules cannot be narrowed per path. See
 # scripts/build_reports.py and the /reports/* rule in viewer/_headers.
-python3 scripts/build_reports.py --capsules data/reports --renderer "$RENDERER" \
+python3 scripts/build_reports.py --capsules data/reports "${RENDERERS[@]}" \
   --html-out viewer-site/reports
 
 # Every earlier weekly run as well, at reports/watch/<date>/<project>: /watch/ links each run the
 # history names. The capsules come out of git rather than out of the tree, which keeps one week of
 # them; see scripts/watch_archive.py.
 python3 scripts/watch_archive.py --out build/watch-archive
-python3 scripts/build_reports.py --capsules build/watch-archive --renderer "$RENDERER" \
+python3 scripts/build_reports.py --capsules build/watch-archive "${RENDERERS[@]}" \
   --html-out viewer-site/reports/watch
 
 cp viewer/app.html viewer-site/index.html

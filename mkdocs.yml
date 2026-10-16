@@ -17,6 +17,7 @@ site_dir: site
 
 exclude_docs: |
   overrides/
+  /schema-report-*.include.md
 
 theme:
   name: material
@@ -53,17 +54,23 @@ theme:
 nav:
   - Home: index.md
   - What it reports: verdicts.md
+  # The rows below that name verdicts/model-1.md, schema/report-1.md, schema/report-2.md and
+  # changes/0.14.md are dropped from a build without that page (scripts/mkdocs_hooks.py).
+  - Score model 1: verdicts/model-1.md
   - Configuration: configuration.md
   - In CI: ci.md
   - Reading a report: viewer.md
   - Baseline: baseline.md
   - JSON schemas: schema.md
+  - Report schema 1: schema/report-1.md
+  - Report schema 2: schema/report-2.md
   - Run notes: notes.md
   - Compatibility: compatibility.md
   - Install-time summary: install-time.md
   - PHAR and self-update: phar.md
   - Example run: example-run.md
   - Data sources: internals.md
+  - Upgrading to 0.14: changes/0.14.md
   - Changelog: changelog.md
   # Written by scripts/build_watch_page.py from the weekly run, not by hand.
   - Weekly watch: watch.md
@@ -94,7 +101,9 @@ plugins:
   # serves them from this origin: no third-party request before first paint, and the CSP in
   # content/_headers needs no font origins. Lighthouse, mobile: 96 on every run, against 86-98
   # depending on Google's latency without it.
-  - privacy
+  # LOCKROT_PRIVACY=false is for scripts/test_build_site.py, which builds offline; never for a deploy.
+  - privacy:
+      enabled: !ENV [LOCKROT_PRIVACY, true]
   - include-markdown:
       comments: false
   - blog:
