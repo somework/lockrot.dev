@@ -66,7 +66,7 @@ def capsule(path: Path, number: int) -> None:
 def scratch(root: Path, vendored: str) -> None:
     shutil.copytree(REPO / "viewer", root / "viewer")
     (root / "scripts").mkdir()
-    for name in ("build-viewer.sh", "build_reports.py", "report_page.py", "build_frame.py"):
+    for name in ("build-viewer.sh", "build_reports.py", "report_page.py"):
         shutil.copy2(REPO / "scripts" / name, root / "scripts" / name)
     for name, text in (("fetch-renderer.sh", FETCH_STUB), ("watch_archive.py", ARCHIVE_STUB)):
         (root / "scripts" / name).write_text(text, encoding="utf-8")

@@ -8,9 +8,7 @@
  *
  * Which renderer is the frame page's to say, on this file's own <script> tag: `data-renderer`
  * names it (lockrot-report.js, the renderer released from somework/lockrot-report, which lockrot
- * 0.12.0 and later vendor). A frame page without the attribute is the one built from an older
- * lockrot's hand-written renderer: lib.js, then report.js, because report.js reads LockrotLib at
- * its first line.
+ * 0.12.0 and later vendor).
  *
  * The frame is sandboxed without allow-same-origin, so its origin is opaque: it cannot read
  * lockrot.dev's DOM or storage, and its CSP forbids it every kind of network access. That is the
@@ -22,8 +20,7 @@
 
   var rendered = false;
   // Read now: document.currentScript is only set while this file is being evaluated.
-  var named = document.currentScript && document.currentScript.getAttribute("data-renderer");
-  var renderer = named ? [named] : ["lib.js", "report.js"];
+  var renderer = document.currentScript && document.currentScript.getAttribute("data-renderer");
 
   function tell(message) {
     // The parent's origin is not knowable from inside an opaque origin, and "*" is safe in this
@@ -64,10 +61,11 @@
       return;
     }
 
-    renderer
-      .reduce(function (loaded, src) {
-        return loaded.then(function () { return load(src); });
-      }, Promise.resolve())
+    if (!renderer) {
+      fail("the frame page names no renderer in data-renderer");
+      return;
+    }
+    load(renderer)
       .then(function () { tell({ lockrot: "rendered" }); })
       .catch(function (err) { fail(err.message); });
   }
