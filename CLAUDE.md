@@ -67,7 +67,7 @@ data/                  # run data, not published as it stands (see "The weekly w
   reports/<run>/manifest.json  # what each report was read from: repository, release tag, commit
 frozen/v0.13.0/docs/schema.md  # lockrot v0.13.0's schema page, verbatim: the source of /schema/report-1/
 mkdocs.yml             # theme, nav, plugins (privacy, blog, rss, include-markdown); docs_dir is build/docs
-scripts/               # fetch-lockrot.sh, fetch-renderer.sh, check-nav.sh, build.sh, build-viewer.sh, build_frame.py, mkdocs_hooks.py (MkDocs hooks: the landing
+scripts/               # fetch-lockrot.sh, fetch-renderer.sh, check-nav.sh, build.sh, build-viewer.sh, mkdocs_hooks.py (MkDocs hooks: the landing
                        # page's Questions section becomes the FAQPage markup, read from the rendered HTML;
                        # a post's og_image must exist; the sitemap's <lastmod> is the date the page
                        # changed, not the build date) and its unit test test_mkdocs_hooks.py
@@ -172,25 +172,23 @@ What the pieces do:
   (`resources/report/report.html` + `manifest.json`). `scripts/fetch-renderer.sh` downloads the
   release the checked-out lockrot names into `.renderer/`, verifies each file's build provenance
   (`gh attestation verify`, so the build needs `GH_TOKEN`) and sha256, and checks the page is the
-  one lockrot vendored. Older lockrot tags carry the hand-written renderer (four files) instead, and
-  `build-viewer.sh` takes the old path for them; that path can go once no supported tag needs it.
+  one lockrot vendored. A lockrot tag older than 0.12.0 vendors no release, and the viewer build
+  fails on it. No deploy reads such a tag: the site follows the newest one.
 - Each stored capsule is drawn by the renderer that reads its report schema number (the
   renderer's `manifest.json` `schema.report`), never chosen by date. lockrot-report 0.14 reads
   report-2 only, so once lockrot vendors it `build-viewer.sh` also fetches lockrot-report 0.13.0
   into `.renderer-report-1/` for every report-1 capsule, published and archived.
-- The frame, for a released renderer, is `viewer/frame.html`: this site's page, not lockrot's.
+- The frame is `viewer/frame.html`: this site's page, not lockrot's.
   The released `report.html` pins its inline script by hash in its own Content-Security-Policy,
   which would refuse the files the frame loads. `scripts/test_frame_template.py` asserts what the
-  page must carry. For the old renderer, `scripts/build_frame.py` still fills lockrot's
-  `report.html` for a frame, and `scripts/test_build_frame.py` covers it.
+  page must carry.
 - `viewer/frame.js` is the only code in the frame that is not lockrot's. The renderer reads
   `#lockrot-data` when it loads, so the document has to be in the DOM before it runs; frame.js
   writes it, then appends the renderer its own `<script>` tag names in `data-renderer`
-  (`lockrot-report.js`; without the attribute, the old `lib.js` then `report.js`). Another
-  document means reloading the frame.
+  (`lockrot-report.js`). Another document means reloading the frame.
 - `viewer/app.js` owns the address and the input. It treats readiness as the frame's `load` event
   as well as its greeting: the greeting is sent once, and on a warm cache the frame can speak
-  before `app.js` is parsed.
+  before `app.js` is parsed. `scripts/test_viewer_app.py` asserts the rules below on its source.
 
 Rules that are not style choices, from the threat model:
 
@@ -218,8 +216,8 @@ page meant to be found is `/watch/`, which says the same thing in text.
 A released renderer's page carries its own Content-Security-Policy, and a browser enforces the
 intersection with the header's: the `/reports/*` rule's `'unsafe-inline'` narrows to the page's
 hashes. That policy refuses style attributes, so the provenance band is a
-`<div class="lockrot-provenance">` the renderer styles, not an inline-styled div
-(`report_page.band`, which still writes inline styles for the old renderer).
+`<div class="lockrot-provenance">` the renderer styles (`report_page.band`), not an inline-styled
+div.
 
 Cloudflare Web Analytics is on for the zone, and the edge injects its beacon into every HTML
 response of every host, the viewer's included. The viewer page and the published reports let it
@@ -352,9 +350,8 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
 ## Deploy
 
 `deploy.yml` builds both sites, then runs `wrangler deploy` twice — the site, then the viewer with
-`--config wrangler.viewer.jsonc`, skipped when a lockrot older than 0.10.0 left no renderer to
-build one from. Both are built before either goes out, so a viewer build that fails (the archive
-`/watch/` links, say) deploys neither. It runs on: a push to `main`, a `repository_dispatch` with
+`--config wrangler.viewer.jsonc`. Both are built before either goes out, so a viewer build that
+fails (the archive `/watch/` links, say) deploys neither. It runs on: a push to `main`, a `repository_dispatch` with
 `event_type: lockrot-release` (to be sent by lockrot's `phar.yml` after a release), a weekly
 schedule (the safety net for a dispatch that never arrived), or a manual run.
 After `wrangler deploy` the run announces the changed pages to the IndexNow engines — Bing,

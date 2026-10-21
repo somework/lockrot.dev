@@ -43,8 +43,8 @@ jobs:
           python-version-file: .python-version
       - id: plan
         env:
-          # Finding a release is several requests per project — the release, the tag's commit, and
-          # the two files at it — and the token keeps them off the anonymous limit that the
+          # Finding a release is several requests per project — the releases, the tags, and a
+          # listing of the lock's directory at each candidate — and the token keeps them off the anonymous limit that the
           # runner's address shares with everyone else's.
           ROT_WATCH_TOKEN: ${{ secrets.ROT_WATCH_TOKEN || github.token }}
         run: python scripts/watch_plan.py
@@ -86,7 +86,8 @@ jobs:
           base="https://raw.githubusercontent.com/$REPO/$COMMIT"
           curl -sfL --retry 3 -o work/composer.lock "$base/$LOCK"
           curl -sfL --retry 3 -o work/composer.json "$base/${LOCK%composer.lock}composer.json"
-      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+      - &setup-php
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.project.target_php }}
           tools: composer:v2
@@ -104,7 +105,8 @@ jobs:
       # a bitmask of what it found (1 advisories, 2 abandoned), so it is not the failure signal; an
       # answer that is not composer audit's JSON — Packagist's advisory API down, say — is stored as
       # "not measured" with a warning (report_page.py), rather than costing the week its page.
-      - name: Ask composer audit about the same lock
+      - &composer-audit
+        name: Ask composer audit about the same lock
         working-directory: work
         env:
           COMPOSER_NO_INTERACTION: "1"
@@ -140,7 +142,8 @@ jobs:
       # The page carries the renderer, which is the same 110 KB on every one of them. Only the
       # document and the two sentences lockrot wrote about the run are kept; the next build splices
       # the renderer back in. See scripts/report_page.py.
-      - name: Store the report
+      - &store-report
+        name: Store the report
         env:
           NAME: ${{ matrix.project.name }}
         run: |
@@ -148,7 +151,8 @@ jobs:
           mkdir -p capsules
           python scripts/report_page.py report.html "capsules/$NAME.json" \
             --composer-audit composer-audit.json --composer-version "$(cat composer-version.txt)"
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - &upload-capsule
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: capsule-${{ matrix.project.name }}
           path: capsules/${{ matrix.project.name }}.json
@@ -161,6 +165,9 @@ jobs:
   # Nothing from any package is executed: --no-install downloads no dependency, --no-scripts runs no
   # hook the packages declare, and --no-plugins keeps every Composer plugin, including the
   # project's own, from loading. What comes out is a lock file and nothing else.
+  #
+  # The steps both jobs share are written once, in `run`, and repeated here by YAML alias. Both
+  # matrices name their entry `project`, so a shared step reads the same fields in either job.
   starters:
     needs: plan
     if: needs.plan.outputs.starters != '[]'
@@ -169,7 +176,7 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        starter: ${{ fromJSON(needs.plan.outputs.starters) }}
+        project: ${{ fromJSON(needs.plan.outputs.starters) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -180,23 +187,13 @@ jobs:
       # The runner's own PHP is whatever the image ships; the resolve has to happen on the PHP the
       # lock is meant for, or a constraint on php itself would resolve differently here than on the
       # reader's machine.
-      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
-        with:
-          php-version: ${{ matrix.starter.target_php }}
-          tools: composer:v2
-          coverage: none
-          # setup-php would write the workflow's GITHUB_TOKEN into Composer's global auth.json, and
-          # lockrot then uses Composer's credential for api.github.com instead of ROT_WATCH_TOKEN:
-          # every job on the 1,000-an-hour token, and the counts quietly short when it runs out.
-          # lockrot-action passes '' to setup-php for the same reason. The Composer steps get the
-          # token through COMPOSER_AUTH in their own environment instead.
-          github-token: ''
+      - *setup-php
       - name: Create the project
         env:
-          PACKAGE: ${{ matrix.starter.package }}
-          VERSION: ${{ matrix.starter.version }}
+          PACKAGE: ${{ matrix.project.package }}
+          VERSION: ${{ matrix.project.version }}
           # A space-separated list, or empty: `symfony new --webapp` is the skeleton plus a pack.
-          EXTRA: ${{ join(matrix.starter.require, ' ') }}
+          EXTRA: ${{ join(matrix.project.require, ' ') }}
           COMPOSER_NO_INTERACTION: "1"
           # Composer's own GitHub credential, for this step only: the same ROT_WATCH_TOKEN lockrot
           # gets, so a VCS repository on GitHub is never asked anonymously. In the environment of
@@ -214,31 +211,7 @@ jobs:
             # shellcheck disable=SC2086
             composer require --no-install --no-scripts --no-plugins --ignore-platform-reqs $EXTRA
           fi
-      # What Composer's own check says about the same lock, for the page's "Not in composer audit"
-      # column: the packages lockrot flags that this does not name at all. Before lockrot, so it
-      # reads the lock as fetched. --locked reads composer.lock and needs no vendor/; no --no-dev, so
-      # the list is a superset of what lockrot read and the page intersects the two. The exit code is
-      # a bitmask of what it found (1 advisories, 2 abandoned), so it is not the failure signal; an
-      # answer that is not composer audit's JSON — Packagist's advisory API down, say — is stored as
-      # "not measured" with a warning (report_page.py), rather than costing the week its page.
-      - name: Ask composer audit about the same lock
-        working-directory: work
-        env:
-          COMPOSER_NO_INTERACTION: "1"
-          # Composer's own GitHub credential, for this step only: the same ROT_WATCH_TOKEN lockrot
-          # gets, so a VCS repository on GitHub is never asked anonymously. In the environment of
-          # the step, not in auth.json, so the lockrot step does not inherit it — with Composer
-          # holding one, lockrot would send Composer's header in place of its own. --no-plugins
-          # and --no-scripts keep any package's code from running beside it.
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ROT_WATCH_TOKEN || github.token }}"}}'
-        run: |
-          set -euo pipefail
-          # Actions runs this under `bash -e`, so the bitmask exit has to be caught, not just ignored.
-          status=0
-          composer audit --locked --abandoned=report --format=json --no-plugins --no-scripts \
-            > ../composer-audit.json || status=$?
-          echo "composer audit: exit $status"
-          composer --version --no-ansi 2>/dev/null | awk 'NR==1{print $3}' > ../composer-version.txt
+      - *composer-audit
       - uses: somework/lockrot-action@f3d8751d0157ce9384e1f7acc84d6498cfee2e07 # v1.1.0
         with:
           working-directory: work
@@ -246,7 +219,7 @@ jobs:
           version: 0.13.0
           format: html
           output: ${{ github.workspace }}/report.html
-          target-php: ${{ matrix.starter.target_php }}
+          target-php: ${{ matrix.project.target_php }}
           fail-on: none
           # Every checked package, not only the flagged ones. A fresh install is mostly `ok` by
           # construction, and an advisory rides on an otherwise healthy package — without this the
@@ -254,21 +227,14 @@ jobs:
           all: "true"
           github-token: ${{ secrets.ROT_WATCH_TOKEN || github.token }}
           summary: "false"
-      - name: Store the report
-        env:
-          NAME: ${{ matrix.starter.name }}
-        run: |
-          set -euo pipefail
-          mkdir -p capsules
-          python scripts/report_page.py report.html "capsules/$NAME.json" \
-            --composer-audit composer-audit.json --composer-version "$(cat composer-version.txt)"
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: capsule-${{ matrix.starter.name }}
-          path: capsules/${{ matrix.starter.name }}.json
+      - *store-report
+      - *upload-capsule
 
   publish:
     needs: [plan, run, starters]
+    # A skipped `starters` (a projects.json with none) would otherwise skip this job too, and the
+    # week would end green with no page. A failed or cancelled job still stops it.
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     # Every write below is made with ROT_WATCH_PUSH_TOKEN, never with github.token: a branch pushed
     # or a pull request opened with GITHUB_TOKEN triggers no workflow, so CI would never run and

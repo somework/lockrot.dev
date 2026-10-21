@@ -7,7 +7,7 @@ and a page whose numbers change weekly while its file does not would tell every 
 moved since the day it was written. So the prose lives here, the run writes the page, and the
 commit that changes the numbers is the commit that dates them.
 
-The history file is append-only and keyed by (date, repo): a rerun of the same day's run rewrites
+The history file is append-only, one row per (date, name): a rerun of the same day's run replaces
 that day's rows rather than doubling them. Each row carries the lockrot version that produced it,
 because a number can move when a project changes and it can move when the tool learns something,
 and a trend that cannot tell those apart is not a trend.
@@ -199,8 +199,9 @@ there.
 """
 
 
-def read_capsules(directory: Path) -> dict:
-    capsules = {}
+def read_capsules(directory: Path) -> tuple[dict, dict]:
+    """Each project's report, and what composer audit named in its lock where the run asked."""
+    reports, views = {}, {}
     for path in sorted(directory.glob("*.json")):
         # The run's manifest sits beside its capsules and is not one of them.
         if path.name == "manifest.json":
@@ -209,22 +210,12 @@ def read_capsules(directory: Path) -> dict:
         report = capsule.get("data", {}).get("report")
         if report is None:
             raise SystemExit(f"build_watch_page: {path} carries no report")
-        capsules[path.stem] = report
-    if not capsules:
+        reports[path.stem] = report
+        if capsule.get("composer") is not None:
+            views[path.stem] = capsule["composer"]
+    if not reports:
         raise SystemExit(f"build_watch_page: no reports under {directory}")
-    return capsules
-
-
-def read_composer(directory: Path) -> dict:
-    """What composer audit named in each project's lock, for the runs that measured it."""
-    views = {}
-    for path in sorted(directory.glob("*.json")):
-        if path.name == "manifest.json":
-            continue
-        view = json.loads(path.read_text(encoding="utf-8")).get("composer")
-        if view is not None:
-            views[path.stem] = view
-    return views
+    return reports, views
 
 
 def composer_missed(report: dict, view: dict | None) -> int | str:
@@ -1090,9 +1081,9 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv[1:])
 
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    reports = read_capsules(args.capsules)
+    reports, composer = read_capsules(args.capsules)
     settings = run_settings(reports, manifest)
-    rows_ = rows(manifest, reports, read_composer(args.capsules))
+    rows_ = rows(manifest, reports, composer)
     since, previous = previous_run(read_history(args.history), manifest["run"]["date"])
     write_history(args.history, rows_)
 

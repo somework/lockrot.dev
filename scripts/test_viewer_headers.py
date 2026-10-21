@@ -43,7 +43,7 @@ def header(pattern: str, name: str) -> list[str]:
 
 # Paths that stand for each kind of response the host serves.
 PAGES_WITH_A_STRANGERS_DOCUMENT = ["/frame/"]
-EVERYTHING_ELSE = ["/", "/app.js", "/frame/lockrot-report.js", "/frame/lib.js", "/reports/run/project"]
+EVERYTHING_ELSE = ["/", "/app.js", "/frame/lockrot-report.js", "/frame/lockrot-report.css", "/reports/run/project"]
 
 
 class ViewerHeadersTest(unittest.TestCase):

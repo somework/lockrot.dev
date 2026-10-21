@@ -4,9 +4,8 @@
 # ships and not with whatever the renderer's newest release happens to be.
 #
 # lockrot 0.12.0 and later vendor the renderer as resources/report/report.html + manifest.json; the
-# manifest names the version. An older checkout carries the hand-written renderer instead, and this
-# script says so and exits 0 — build-viewer.sh then takes the old path. RENDERER_REF=v1.2.3
-# overrides the version, for a preview or for a second renderer, and RENDERER_DIR the directory
+# manifest names the version. An older checkout vendors no renderer release, and the viewer is not
+# built from one. RENDERER_REF=v1.2.3 overrides the version, for a preview or for a second renderer, and RENDERER_DIR the directory
 # (.renderer by default): build-viewer.sh fetches lockrot-report 0.13.0 into .renderer-report-1 for
 # the stored report-1 capsules, which lockrot-report 0.14 does not read.
 #
@@ -35,8 +34,8 @@ print(value)' "$@"
 REF="${RENDERER_REF:-}"
 if [ -z "$REF" ]; then
   if [ ! -f "$VENDORED" ]; then
-    echo "fetch-renderer: lockrot $(cat .lockrot/REF 2>/dev/null || echo '?') vendors no renderer release; nothing to fetch"
-    exit 0
+    echo "fetch-renderer: lockrot $(cat .lockrot/REF 2>/dev/null || echo '?') vendors no renderer release; the viewer is built from lockrot 0.12.0 on" >&2
+    exit 1
   fi
   REF="v$(manifest_value "$VENDORED" version)"
 fi

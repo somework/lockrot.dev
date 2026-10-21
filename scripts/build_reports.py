@@ -5,9 +5,9 @@
 taken out of it (see scripts/report_page.py). Two things are built from it, by whichever build
 needs them:
 
-  --html-out  the self-contained report page, for the viewer's host. The renderer spliced back in
-              is the one from the lockrot checkout this build is running against, so a page always
-              renders with the release the rest of the site documents — for the report schema
+  --html-out  the self-contained report page, for the viewer's host: the report.html of the
+              renderer release the lockrot checkout vendors, so a page always renders with the
+              release the rest of the site documents — for the report schema
               number that release reads. A capsule of another number gets the renderer that reads
               it: lockrot-report 0.14 reads report-2 only, and every stored report-1 capsule is
               drawn by lockrot-report 0.13.0 (scripts/build-viewer.sh passes both).
@@ -39,34 +39,24 @@ MANIFEST = "manifest.json"
 
 
 def reads(renderer: Path) -> set[int]:
-    """The report schema numbers a renderer reads: its manifest's `schema.report`. The hand-written
-    renderer of lockrot 0.11.0 and older has no manifest, and read report-1."""
+    """The report schema numbers a renderer release reads: its manifest's `schema.report`."""
     manifest = renderer / "manifest.json"
-    if not manifest.is_file():
-        return {1}
-    schema = json.loads(manifest.read_text(encoding="utf-8")).get("schema")
+    schema = json.loads(_read(manifest)).get("schema")
     numbers = schema.get("report") if isinstance(schema, dict) else None
     if not isinstance(numbers, list) or not numbers:
         raise SystemExit(f"build_reports: {manifest} names no report schema it reads")
     return set(numbers)
 
 
-def _renderers(renderers: list[Path]) -> dict[int, tuple[str, str | None, str | None]]:
-    """Each report schema number, with the template and sources of the one renderer that reads it."""
-    by_number: dict[int, tuple[str, str | None, str | None]] = {}
+def _renderers(renderers: list[Path]) -> dict[int, str]:
+    """Each report schema number, with the report.html of the one renderer that reads it."""
+    by_number: dict[int, str] = {}
     for renderer in renderers:
         template = _read(renderer / "report.html")
-        css = js = None
-        if report_page.JS in template:
-            # The hand-written renderer of lockrot 0.11.0 and older, spliced in at build time.
-            # report.js reads LockrotLib at the top, so the DOM-free half comes first — the order
-            # HtmlFormatter::SCRIPTS fixed. A released renderer's report.html carries both inline.
-            css = _read(renderer / "report.css")
-            js = _read(renderer / "lib.js") + "\n" + _read(renderer / "report.js")
         for number in reads(renderer):
             if number in by_number:
                 raise SystemExit(f"build_reports: two renderers read report schema {number}; pass one")
-            by_number[number] = (template, css, js)
+            by_number[number] = template
     return by_number
 
 
@@ -99,10 +89,7 @@ def build(capsules: Path, renderers: list[Path], html_out: Path | None, json_out
             # bool is an int to Python, and true would otherwise get the report-1 renderer.
             if type(number) is not int or number not in by_number:
                 raise SystemExit(f"build_reports: no renderer given reads report schema {number} ({capsule_file})")
-            template, css, js = by_number[number]
-            page = report_page.render(
-                capsule, template, css, js, None if known is None else known[slug]
-            )
+            page = report_page.render(capsule, by_number[number], None if known is None else known[slug])
             _write(html_out / run / f"{slug}.html", page)
 
         if json_out is not None:
@@ -161,9 +148,8 @@ def _write(path: Path, text: str) -> None:
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--capsules", type=Path, default=Path("data/reports"))
-    # A renderer release (.renderer/, scripts/fetch-renderer.sh) or an older lockrot's
-    # hand-written one (.lockrot/resources/report/); report.html says which. Once per renderer: each
-    # capsule is drawn by the one that reads its report schema number.
+    # A renderer release (.renderer/, scripts/fetch-renderer.sh). Once per renderer: each capsule is
+    # drawn by the one that reads its report schema number.
     parser.add_argument("--renderer", type=Path, action="append")
     parser.add_argument("--html-out", type=Path)
     parser.add_argument("--json-out", type=Path)
@@ -172,7 +158,7 @@ def main(argv: list[str]) -> int:
     if args.html_out is None and args.json_out is None:
         raise SystemExit("build_reports: nothing to do; pass --html-out or --json-out")
 
-    renderers = args.renderer or [Path(".lockrot/resources/report")]
+    renderers = args.renderer or [Path(".renderer")]
     return build(args.capsules, renderers, args.html_out, args.json_out)
 
 

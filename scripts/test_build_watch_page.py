@@ -449,6 +449,28 @@ class FixesTest(unittest.TestCase):
         self.assertEqual("TYPO3's distribution", bw.lockless(projects, [{"name": "new-typo3"}]))
 
 
+class ReadCapsulesTest(unittest.TestCase):
+    def test_reads_each_report_and_what_composer_audit_named_beside_it(self):
+        view = {"version": "2.10.3", "abandoned": ["a/old"], "advisories": []}
+        with tempfile.TemporaryDirectory() as tmp:
+            caps = Path(tmp)
+            (caps / "manifest.json").write_text(json.dumps({"run": {}}), encoding="utf-8")
+            (caps / "one.json").write_text(json.dumps({"data": {"report": {"n": 1}}, "composer": view}), encoding="utf-8")
+            (caps / "two.json").write_text(json.dumps({"data": {"report": {"n": 2}}}), encoding="utf-8")
+
+            reports, composer = bw.read_capsules(caps)
+
+        self.assertEqual({"one": {"n": 1}, "two": {"n": 2}}, reports)
+        self.assertEqual({"one": view}, composer)
+
+    def test_refuses_a_capsule_without_a_report(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "one.json").write_text(json.dumps({"data": {}}), encoding="utf-8")
+
+            with self.assertRaises(SystemExit):
+                bw.read_capsules(Path(tmp))
+
+
 class MainTest(unittest.TestCase):
     """main(), end to end over files: what the unit tests above cannot see is the wiring."""
 

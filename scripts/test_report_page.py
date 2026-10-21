@@ -8,23 +8,20 @@ import unittest
 
 import report_page as rp
 
+# The released renderer's template (somework/lockrot-report): script and stylesheet inline already,
+# pinned by the page's own Content-Security-Policy, so only three placeholders are left.
 TEMPLATE = (
-    "<!doctype html>\n<title>{{TITLE}}</title>\n"
+    "<!doctype html>\n<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'\">\n"
+    "<title>{{TITLE}}</title>\n"
     '<meta name="description" content="{{DESCRIPTION}}">\n'
-    "<style>{{CSS}}</style>\n"
+    "<body>\n"
     '<script id="lockrot-data" type="application/json">{{DATA}}</script>\n'
-    "<script>\n{{JS}}\n</script>\n"
+    "<style>/* inline */</style>\n<script>/* inline */</script>\n"
 )
 
 
 def page(title="t", description="d", payload='{"report":{"findings":[]}}'):
-    return (
-        TEMPLATE.replace(rp.TITLE, title)
-        .replace(rp.DESCRIPTION, description)
-        .replace(rp.CSS, "body{}")
-        .replace(rp.DATA, payload)
-        .replace(rp.JS, "void 0;")
-    )
+    return TEMPLATE.replace(rp.TITLE, title).replace(rp.DESCRIPTION, description).replace(rp.DATA, payload)
 
 
 class ExtractTest(unittest.TestCase):
@@ -65,29 +62,29 @@ class RenderTest(unittest.TestCase):
     def test_puts_the_page_back_together(self):
         capsule = rp.extract(page())
 
-        out = rp.render(capsule, TEMPLATE, "body{}", "void 0;")
+        out = rp.render(capsule, TEMPLATE)
 
         self.assertNotIn("{{", out)
         self.assertIn("<title>t</title>", out)
-        self.assertIn("body{}", out)
+        self.assertIn("<script>/* inline */</script>", out)
         self.assertEqual(capsule["data"], json.loads(rp._PAYLOAD_TAG.findall(out)[0]))
 
     def test_asks_a_crawler_to_leave_the_page_alone_once(self):
-        out = rp.render(rp.extract(page()), TEMPLATE, "", "")
+        out = rp.render(rp.extract(page()), TEMPLATE)
 
         self.assertEqual(1, out.count(rp.ROBOTS))
         self.assertLess(out.index(rp.ROBOTS), out.index("<title>"))
 
     def test_refuses_a_template_that_lost_a_placeholder(self):
         with self.assertRaises(SystemExit):
-            rp.render(rp.extract(page()), TEMPLATE.replace(rp.DATA, ""), "", "")
+            rp.render(rp.extract(page()), TEMPLATE.replace(rp.DATA, ""))
 
     def test_refuses_a_capsule_that_lost_a_part(self):
         capsule = rp.extract(page())
         del capsule["description"]
 
         with self.assertRaises(SystemExit):
-            rp.render(capsule, TEMPLATE, "", "")
+            rp.render(capsule, TEMPLATE)
 
 
 PROVENANCE = {
@@ -144,41 +141,22 @@ class BandTest(unittest.TestCase):
             rp.band({"command": "composer create-project x", "date": "2026-09-22"})
 
     def test_the_band_sits_above_the_report(self):
-        out = rp.render(rp.extract(page()), TEMPLATE + "<body>\n", "", "", PROVENANCE)
+        out = rp.render(rp.extract(page()), TEMPLATE, PROVENANCE)
 
-        self.assertIn("<body>\n<div style=", out)
+        self.assertIn("<body>\n<div ", out)
         self.assertEqual(1, out.count("This report was produced by"))
 
     def test_no_band_without_provenance(self):
-        out = rp.render(rp.extract(page()), TEMPLATE + "<body>\n", "", "")
+        out = rp.render(rp.extract(page()), TEMPLATE)
 
         self.assertNotIn("This report was produced by", out)
 
 
-# The released renderer's template (somework/lockrot-report): script and stylesheet inline already,
-# pinned by the page's own Content-Security-Policy, so only three placeholders are left.
-RELEASED = (
-    "<!doctype html>\n<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'\">\n"
-    "<title>{{TITLE}}</title>\n"
-    '<meta name="description" content="{{DESCRIPTION}}">\n'
-    "<body>\n"
-    '<script id="lockrot-data" type="application/json">{{DATA}}</script>\n'
-    "<style>/* inline */</style>\n<script>/* inline */</script>\n"
-)
-
-
 class ReleasedRendererTest(unittest.TestCase):
-    def test_fills_the_three_placeholders_and_needs_no_renderer_sources(self):
-        out = rp.render(rp.extract(page(title="lockrot: 1 of 2")), RELEASED, None, None)
-
-        self.assertIn("<title>lockrot: 1 of 2</title>", out)
-        self.assertIn('{"report":{"findings":[]}}', out)
-        self.assertNotIn("{{", out)
-
     def test_the_band_is_a_class_the_page_styles_not_an_inline_style(self):
         # The page's policy refuses style attributes; an inline-styled band would render unstyled
         # and log a violation on every published report.
-        out = rp.render(rp.extract(page()), RELEASED, None, None, PROVENANCE)
+        out = rp.render(rp.extract(page()), TEMPLATE, PROVENANCE)
 
         self.assertIn('<body>\n<div class="lockrot-provenance">', out)
         self.assertNotIn("style=", out)
@@ -186,13 +164,13 @@ class ReleasedRendererTest(unittest.TestCase):
     def test_braces_in_the_renderer_s_own_code_are_not_a_placeholder(self):
         # The released page carries its stylesheet inline, comments included, and one of them
         # quotes JSX: style={{flexGrow}}.
-        template = RELEASED.replace("/* inline */</style>", "/* style={{flexGrow}} */</style>")
-        out = rp.render(rp.extract(page()), template, None, None)
+        template = TEMPLATE.replace("/* inline */</style>", "/* style={{flexGrow}} */</style>")
+        out = rp.render(rp.extract(page()), template)
 
         self.assertIn("style={{flexGrow}}", out)
 
     def test_the_pages_own_policy_lets_the_analytics_beacon_in(self):
-        out = rp.render(rp.extract(page()), RELEASED, None, None)
+        out = rp.render(rp.extract(page()), TEMPLATE)
         policy = rp.POLICY_TAG.findall(out)[0]
 
         self.assertIn("default-src 'none'", policy)
@@ -200,23 +178,20 @@ class ReleasedRendererTest(unittest.TestCase):
         self.assertIn("connect-src https://cloudflareinsights.com", policy)
 
     def test_a_directive_keeps_what_it_had_and_loses_only_none(self):
-        template = RELEASED.replace(
+        template = TEMPLATE.replace(
             "default-src 'none'", "default-src 'none'; script-src 'sha256-abc='; connect-src 'none'"
         )
-        policy = rp.POLICY_TAG.findall(rp.render(rp.extract(page()), template, None, None))[0]
+        policy = rp.POLICY_TAG.findall(rp.render(rp.extract(page()), template))[0]
 
         self.assertIn("script-src 'sha256-abc=' https://static.cloudflareinsights.com", policy)
         self.assertIn("connect-src https://cloudflareinsights.com", policy)
         self.assertNotIn("connect-src 'none'", policy)
 
-    def test_the_old_renderer_has_no_policy_of_its_own_to_touch(self):
-        out = rp.render(rp.extract(page()), TEMPLATE, "", "")
+    def test_refuses_lockrot_0_11_s_template_that_splices_the_renderer_in(self):
+        old = TEMPLATE.replace("<script>/* inline */</script>", "<script>\n{{JS}}\n</script>")
 
-        self.assertNotIn("Content-Security-Policy", out)
-
-    def test_a_splicing_template_without_renderer_sources_is_refused(self):
         with self.assertRaises(SystemExit):
-            rp.render(rp.extract(page()), TEMPLATE, None, None)
+            rp.render(rp.extract(page()), old)
 
 
 class ComposerViewTest(unittest.TestCase):
@@ -247,13 +222,7 @@ class ComposerMainTest(unittest.TestCase):
     def test_an_unreadable_audit_stores_the_report_as_not_measured(self):
         import tempfile
         from pathlib import Path
-        page = rp.render(
-            {"title": "t", "description": "d", "data": {"report": {}}},
-            "<html><head><title>{{TITLE}}</title><meta name=\"description\" content=\"{{DESCRIPTION}}\"></head>"
-            "<body><style>{{CSS}}</style><script>{{JS}}</script>"
-            '<script id="lockrot-data" type="application/json">{{DATA}}</script></body></html>',
-            "", "",
-        )
+        page = rp.render({"title": "t", "description": "d", "data": {"report": {}}}, TEMPLATE)
         with tempfile.TemporaryDirectory() as tmp:
             report, capsule, audit = Path(tmp, "r.html"), Path(tmp, "c.json"), Path(tmp, "a.json")
             report.write_text(page, encoding="utf-8")

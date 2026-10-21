@@ -22,8 +22,7 @@ TEMPLATE = (
 
 def renderer(root: Path, version: str, reads: list[int] | None) -> Path:
     """A released renderer's two files that matter here: its page, and the manifest naming the
-    report schema numbers it reads. None leaves the manifest out, as the hand-written renderer of
-    lockrot 0.11.0 and older did."""
+    report schema numbers it reads. None leaves the manifest out."""
     root.mkdir(parents=True)
     (root / "report.html").write_text(TEMPLATE.replace("{version}", version), encoding="utf-8")
     if reads is not None:
@@ -61,12 +60,10 @@ class RendererChoiceTest(unittest.TestCase):
 
         self.assertIn("<!-- renderer 0.14.0 -->", page)
 
-    def test_a_renderer_without_a_manifest_reads_report_1(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            tmp = Path(tmp)
-            capsule(tmp / "caps", "old", 1)
-
-            self.assertEqual({1}, build_reports.reads(renderer(tmp / "r011", "0.11.0", None)))
+    def test_stops_on_a_renderer_without_a_manifest(self):
+        # lockrot 0.11.0's hand-written renderer had none; the site no longer builds from it.
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaises(SystemExit):
+            build_reports.reads(renderer(Path(tmp) / "r011", "0.11.0", None))
 
     def test_stops_on_a_manifest_that_names_no_report_schema_list(self):
         for schema in ({"report": 2}, [2], {"report": []}, None):
@@ -116,6 +113,52 @@ class RendererChoiceTest(unittest.TestCase):
             build_reports.build(tmp / "caps", [], None, tmp / "json")
 
             self.assertEqual(2, json.loads((tmp / "json/run/new.json").read_text())["lockrot"]["schema"])
+
+
+def manifest(root: Path, *names: str) -> None:
+    projects = [
+        {"kind": "release", "name": n, "repo": f"acme/{n}", "tag": "1.0.0", "commit": "6b9bd67bef2dbfcb71446960dc5616e3552d4532"}
+        for n in names
+    ]
+    (root / "run" / build_reports.MANIFEST).write_text(
+        json.dumps({"run": {"date": "2026-10-01"}, "projects": projects}), encoding="utf-8"
+    )
+
+
+class ProvenanceTest(unittest.TestCase):
+    def test_refuses_a_report_its_run_manifest_does_not_describe(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            capsule(tmp / "caps", "alpha", 2)
+            capsule(tmp / "caps", "beta", 2)
+            manifest(tmp / "caps", "alpha")
+
+            with self.assertRaises(SystemExit) as raised:
+                build_reports.build(tmp / "caps", [renderer(tmp / "r", "0.14.0", [2])], tmp / "out", None)
+
+        self.assertIn("beta", str(raised.exception))
+
+    def test_every_page_of_a_described_run_says_what_it_was_read_from(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            capsule(tmp / "caps", "alpha", 2)
+            manifest(tmp / "caps", "alpha")
+
+            build_reports.build(tmp / "caps", [renderer(tmp / "r", "0.14.0", [2])], tmp / "out", None)
+            page = (tmp / "out/run/alpha.html").read_text(encoding="utf-8")
+
+        self.assertIn(">acme/alpha</a>", page)
+        self.assertIn("2026-10-01", page)
+
+    def test_a_run_without_a_manifest_builds_without_a_band(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            capsule(tmp / "caps", "alpha", 2)
+
+            build_reports.build(tmp / "caps", [renderer(tmp / "r", "0.14.0", [2])], tmp / "out", None)
+            page = (tmp / "out/run/alpha.html").read_text(encoding="utf-8")
+
+        self.assertNotIn("This report was produced by", page)
 
 
 if __name__ == "__main__":
