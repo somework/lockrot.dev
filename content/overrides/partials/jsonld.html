@@ -45,7 +45,7 @@
     },
     app
   ] -%}
-  {#- The "Questions" section, lifted from the rendered page by scripts/faq_hook.py, so the FAQ
+  {#- The "Questions" section, lifted from the rendered page by scripts/mkdocs_hooks.py, so the FAQ
       in the markup is always the one on the page. -#}
   {%- if page.meta.faq -%}
     {%- set ns = namespace(items=[]) -%}
