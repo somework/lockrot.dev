@@ -265,11 +265,15 @@ def lines(found: list[dict]) -> dict[str, list[dict]]:
 
 
 def has_files(repo: str, sha: str, lock: str, token: str | None) -> bool:
-    manifest = lock[: -len("composer.lock")] + "composer.json"
-    return all(
-        get(f"/repos/{repo}/contents/{path}?ref={sha}", token) is not None
-        for path in (lock, manifest)
-    )
+    """Whether the lock and the composer.json beside it are both files at `sha`.
+
+    One listing of the lock's directory, not one request per file: a file's own answer carries its
+    whole content, and a lock runs to most of a megabyte.
+    """
+    directory, _, name = lock.rpartition("/")
+    entries = get(f"/repos/{repo}/contents{'/' + directory if directory else ''}?ref={sha}", token)
+    files = {entry.get("name") for entry in entries or [] if entry.get("type") == "file"}
+    return {name, "composer.json"} <= files
 
 
 def pick(project: dict, members: list[dict], token: str | None) -> tuple[dict | None, list[str]]:

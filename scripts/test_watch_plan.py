@@ -197,6 +197,48 @@ def http_error(code):
     return wp.urllib.error.HTTPError("https://api.github.com/x", code, "x", {}, None)
 
 
+def listing(*names):
+    return [{"name": name, "type": "file"} for name in names]
+
+
+class HasFilesTest(unittest.TestCase):
+    def test_finds_both_files_in_one_listing_of_the_lock_s_directory(self):
+        asked = []
+
+        def get(path, token):
+            asked.append(path)
+            return listing("README.md", "composer.json", "composer.lock")
+
+        with mock.patch.object(wp, "get", get):
+            self.assertTrue(wp.has_files("acme/app", "sha", "composer.lock", "t"))
+
+        self.assertEqual(["/repos/acme/app/contents?ref=sha"], asked)
+
+    def test_lists_the_subdirectory_a_lock_lives_in(self):
+        responses = {"/repos/acme/app/contents/app?ref=sha": listing("composer.json", "composer.lock")}
+
+        with mock.patch.object(wp, "get", api(responses)):
+            self.assertTrue(wp.has_files("acme/app", "sha", "app/composer.lock", "t"))
+
+    def test_a_release_without_its_composer_json_does_not_count(self):
+        responses = {"/repos/acme/app/contents?ref=sha": listing("composer.lock")}
+
+        with mock.patch.object(wp, "get", api(responses)):
+            self.assertFalse(wp.has_files("acme/app", "sha", "composer.lock", "t"))
+
+    def test_a_directory_named_like_the_lock_is_not_the_lock(self):
+        responses = {"/repos/acme/app/contents?ref=sha": [
+            {"name": "composer.lock", "type": "dir"}, {"name": "composer.json", "type": "file"},
+        ]}
+
+        with mock.patch.object(wp, "get", api(responses)):
+            self.assertFalse(wp.has_files("acme/app", "sha", "composer.lock", "t"))
+
+    def test_a_missing_directory_does_not_count(self):
+        with mock.patch.object(wp, "get", api({})):
+            self.assertFalse(wp.has_files("acme/app", "sha", "app/composer.lock", "t"))
+
+
 class Response:
     def __init__(self, body):
         self.body = body
