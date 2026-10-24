@@ -98,7 +98,12 @@ knowing, rarely worth acting on. Every finding carries the evidence behind it, t
 read, and the chain of requirements that pulled the package in — what `composer why` shows for one
 package, for every finding at once: every direct requirement it is reachable from, not only the
 shortest one, and each direct requirement says what it pulls in.
-[What it reports](verdicts.md) has all nine verdicts and the priority rules.
+[What it reports](verdicts.md) has every flag, the score and the verdicts.
+
+From lockrot 0.14.0 on, a report has eight flags: these six words, `capped` and `vulnerable`.
+`capped` says that the installed release's `require.php` stops below the newest PHP minor that the
+project allows. `vulnerable` says that a counted security advisory affects the installed version.
+The verdict is a grade. The flags are the facts. `lead` is the 0.13 word. The sum is printed.
 
 ## "Composer already warns me about abandoned packages"
 
@@ -201,7 +206,7 @@ anything else, add an entry with a reason to `extra.lockrot.ignore` —
 
 | Page | What is on it |
 |---|---|
-| [What it reports](verdicts.md) | The nine verdicts, the signals behind them, and how priority is assigned |
+| [What it reports](verdicts.md) | The flags, the signals behind them, the score that adds them up, and the verdicts |
 | [Configuration](configuration.md) | `extra.lockrot`, every option, and the command-line flags |
 | [In CI](ci.md) | GitHub Actions, GitLab CI, SARIF, PR comments |
 | [Reading a report](viewer.md) | What a report says, and the viewer that opens one |

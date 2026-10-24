@@ -8,7 +8,7 @@ Install: `composer require --dev somework/lockrot`, or download https://lockrot.
 
 ## Reference
 
-- [Verdicts and priority](https://lockrot.dev/verdicts/): the nine verdicts (abandoned, silent, pinned, left-behind, old-promise, stale, unknown, finished, ok), the signals behind them, how priority is assigned, how security advisories with no fix expected raise it, and the `require ^X to follow` constraint a left-behind finding names from 0.8.0
+- [Verdicts and priority](https://lockrot.dev/verdicts/): the eight flags (abandoned, silent, pinned, left-behind, old-promise, stale, capped, vulnerable), the signals behind them, the score that adds them up and the verdict, which is its grade (critical, high, medium, low) or unknown, finished or ok. The verdict is a grade. The flags are the facts. `lead` is the 0.13 word. The sum is printed. Also why a security advisory that no release fixes counts twice, and the `require ^X to follow` constraint a left-behind finding names from 0.8.0
 - [Score model 1](https://lockrot.dev/verdicts/model-1/): the rules that grade a finding in lockrot 0.14.0 and later, in the order they apply, each with its parameters and an example; every report-2 links its rules here
 - [Configuration](https://lockrot.dev/configuration/): every `extra.lockrot` key, environment overrides, CLI options, caching, the allowlist, and `--explain=vendor/package` (from 0.8.0), which prints why one package got its verdict: every signal's raw data, the repository's release branches with their dates, the thresholds
 - [In CI](https://lockrot.dev/ci/): the GitHub Action, exit codes, and the github, sarif, gitlab, markdown and json formats
