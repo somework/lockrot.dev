@@ -103,7 +103,8 @@ shortest one, and each direct requirement says what it pulls in.
 From lockrot 0.14.0 on, a report has eight flags: these six words, `capped` and `vulnerable`.
 `capped` says that the installed release's `require.php` stops below the newest PHP minor that the
 project allows. `vulnerable` says that a counted security advisory affects the installed version.
-The verdict is a grade. The flags are the facts. `lead` is the 0.13 word. The sum is printed.
+The verdict is a grade. The flags are the facts. `lead` is the 0.13 word, or `capped`, which 0.13
+did not have. Each finding prints the sum behind its score.
 
 ## "Composer already warns me about abandoned packages"
 
