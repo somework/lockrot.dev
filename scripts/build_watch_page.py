@@ -490,16 +490,21 @@ def flagged(row: dict) -> int:
     return sum(int(row.get(c) or 0) for c in COLUMNS)
 
 
+def counted_capped(row: dict) -> bool:
+    """Whether a run's row or a history row comes from a run that measured `capped`."""
+    return row.get("capped") not in (None, "")
+
+
 def same_flags(row: dict, before: dict | None) -> bool:
     """Whether the previous run's row counted the same flags: Flagged and what composer audit
     misses add `capped` up when the run measured it, so they are not compared across that."""
-    return before is None or (row.get("capped", "") == "") == ((before.get("capped") or "") == "")
+    return before is None or counted_capped(row) == counted_capped(before)
 
 
 def columns(rows_: list[dict]) -> list[str]:
     """The columns a table prints: `capped` only when the run measured it. One run is one lockrot
     (run_settings()), so its rows agree."""
-    return COLUMNS if rows_ and all(r["capped"] != "" for r in rows_) else VERDICTS
+    return COLUMNS if rows_ and all(counted_capped(r) for r in rows_) else VERDICTS
 
 
 def share(part: int, whole: int) -> str:
@@ -808,7 +813,14 @@ def since_line(rows_: list[dict], previous: dict, since: str | None) -> str:
         b = sum(int(r[column]) for r in common)
         if a != b:
             moved.append(f"`{column}` {a} → {b}")
-    parts.append(("; ".join(moved) + ".") if moved else "no total moved.")
+    if moved:
+        parts.append("; ".join(moved) + ".")
+    else:
+        parts.append("no total moved." if flags_held else "no total that both runs counted moved.")
+    if not flags_held:
+        parts.append(
+            "Flagged and *Not in `composer audit`* are not compared: only one of the two runs counted `capped`."
+        )
 
     released = sorted(
         r["name"] for r in rows_
@@ -1045,6 +1057,10 @@ def run_settings(reports: dict, manifest: dict | None = None) -> dict:
                 f"build_watch_page: lockrot writes the flags {report['run'].get('flag_ids')}, the history "
                 f"has carrying_ columns for {FLAGS}; give the history the new flag before publishing it"
             )
+        if report_schema(report) == 2:
+            uncounted = [flag for flag in report["run"]["flag_ids"] if flag not in report.get("flags", {})]
+            if uncounted:
+                raise SystemExit(f"build_watch_page: the report of {name} names the flags but has no counts for {uncounted}")
         sets[name] = len(flags)
     if len(set(sets.values())) > 1:
         # A column one report counts and another does not would make every total short.

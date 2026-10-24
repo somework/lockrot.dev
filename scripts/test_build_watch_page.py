@@ -1040,15 +1040,19 @@ class CappedRunTest(unittest.TestCase):
         self.assertIn("carrying_ columns", str(raised.exception))
 
     def test_a_report_1_that_flags_capped_is_refused(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(SystemExit) as raised:
             bw.run_settings({"one": with_run(flagged=list(bw.COLUMNS))})
+
+        self.assertIn("the page has columns for", str(raised.exception))
 
     def test_a_report_whose_flag_ids_name_capped_without_its_counts_is_refused(self):
         rep = fixture(CAPPED)
         del rep["flags"]["capped"]
 
-        with self.assertRaises(KeyError):
-            bw.rows(manifest("mautic"), {"mautic": rep})
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"mautic": rep})
+
+        self.assertIn("no counts for ['capped']", str(raised.exception))
 
     def test_composer_missed_counts_a_package_that_capped_leads(self):
         self.assertEqual(1, bw.composer_missed(fixture(CAPPED), view()))
@@ -1101,8 +1105,12 @@ class CappedPageTest(unittest.TestCase):
         unmeasured = bw.since_line(rows, {"mautic": {**history_row("mautic"), "capped": ""}}, "2026-10-19")
         measured = bw.since_line(rows, {"mautic": {**history_row("mautic"), "capped": "3"}}, "2026-10-19")
 
-        self.assertIn("across the 1 application: no total moved.", unmeasured)
-        self.assertNotIn("capped", unmeasured)
+        self.assertIn("across the 1 application: no total that both runs counted moved.", unmeasured)
+        self.assertIn(
+            "Flagged and *Not in `composer audit`* are not compared: only one of the two runs counted `capped`.",
+            unmeasured,
+        )
+        self.assertNotIn("`capped` 0", unmeasured)
         self.assertIn("flagged 3 → 1; `capped` 3 → 1.", measured)
 
     def test_flagged_is_not_compared_with_a_run_that_did_not_measure_capped(self):
@@ -1114,7 +1122,7 @@ class CappedPageTest(unittest.TestCase):
 
         self.assertNotIn("lockrot-delta", table)
         self.assertNotIn("flagged", line)
-        self.assertNotIn("composer audit", line)
+        self.assertNotIn("not in `composer audit`", line)
 
     def test_flagged_is_not_compared_with_a_run_that_measured_capped_when_this_one_did_not(self):
         rows = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")}, {"magento2": view()})
@@ -1126,7 +1134,16 @@ class CappedPageTest(unittest.TestCase):
         line = bw.since_line(rows, {"magento2": before}, "2026-10-19")
 
         self.assertNotIn("lockrot-delta", table)
-        self.assertIn("across the 1 application: no total moved.", line)
+        self.assertIn("across the 1 application: no total that both runs counted moved.", line)
+        self.assertIn("only one of the two runs counted `capped`.", line)
+
+    def test_a_previous_count_of_zero_capped_is_measured(self):
+        rows = bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)})
+        before = {**history_row("mautic"), "packages": "128", "capped": 0}
+
+        table = bw.table(rows, {"mautic": before}, "2026-10-19")
+
+        self.assertIn('lockrot-share">1%</span> <span class="lockrot-delta lockrot-delta-up" title="+1 since 2026-10-19">', table)
 
     def test_the_note_counts_the_flags_the_run_measures(self):
         capped = bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)})
