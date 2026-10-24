@@ -69,13 +69,13 @@ Requires PHP 7.4 or newer and Composer 2.2 or newer.
                    release 2023-02-24 (3.7 years ago); last push 2023-02-24 (3.7 years ago)
       pulls in 1 flagged package: doctrine/annotations (abandoned)</pre>
 
-The first 19 lines of a real run against wallabag's 200-package lock file, at 120 columns: three of
-its 58 graded findings — [read the whole report](example-run.md).
+The first 19 lines of a real run against wallabag's 200-package lock file, at 120 columns. They hold
+three of its 58 graded findings — [read the whole report](example-run.md).
 { .lockrot-caption }
 
-A whole run on a smaller project, 156 packages, from the command to the summary block and the footer:
+A run on a smaller project, 156 packages, from the command to the summary block and the footer:
 
-![lockrot in a terminal: findings grouped by grade, each with its flags, its score and a do: line, then the summary block with the counts by grade and by flag, and the "Data as of" footer](assets/lockrot-demo.gif){ .lockrot-demo width="1214" height="889" loading="lazy" }
+![lockrot in a terminal: the command, then the last findings, each with its flags, its score and a do: line, then the summary block with the counts by grade and by flag, and the "Data as of" footer](assets/lockrot-demo.gif){ .lockrot-demo width="1214" height="889" loading="lazy" }
 
 ## What it looks for
 
@@ -83,33 +83,37 @@ A whole run on a smaller project, 156 packages, from the command to the summary 
   maintainer set by hand, or the repository is archived on GitHub or GitLab.
 - **`silent`** — five years with no stable release *and* five years with no push to the repository,
   on the default thresholds. Nobody announced anything; the package simply stopped.
-- **`pinned`** — your lock file holds a branch snapshot (`dev-master`, `dev-main`) or a commit hash
-  instead of a released version, so the thing you installed has no version number anyone else can
-  ask for.
-- **`old-promise`** — the release predates the PHP version you are upgrading to, and its
-  `require.php` constraint is open-ended (`>=7.2`), so Composer accepted it on a PHP nobody released
-  it against. `composer check-platform-reqs` is satisfied too: `>=7.2` is true on 8.4.
+- **`pinned`** — your lock file holds a branch snapshot (`dev-master`, `dev-main`, `2.x-dev`)
+  instead of a released version. The thing you installed then has no version number anyone else can
+  ask for. A package with no tagged release at all is `pinned` too.
+- **`old-promise`** — the release predates the GA of your target PHP's major (8.0 for any 8.x).
+  Its `require.php` constraint is open-ended (`>=7.2`), so Composer accepted it on a PHP nobody
+  released it against. `composer check-platform-reqs` is satisfied too: `>=7.2` is true on 8.4.
 - **`left-behind`** — the release branch you installed from has had no release for years while a
   higher branch of the same package keeps shipping. `composer outdated --major-only` says a newer
   major exists; this says the branch you are on gets no fixes, and its `do:` line names the
   constraint that follows the fixes (`require doctrine/event-manager ^2.1`), written as
   `composer require` writes it.
-- **`capped`** — the installed release's `require.php` stops below the newest PHP minor that the
-  project allows: the newest released minor that `composer.json`'s `require.php` admits, else the
-  lock's `platform.php`.
+- **`capped`** — from 0.14.0 on: the installed release's `require.php` stops below the newest PHP
+  minor that the project allows. That minor is the newest released one that the project's php
+  admits: `composer.json`'s `require.php`, else the lock's `platform.php`, else any.
 
-Two more flags complete the eight. `stale` catches a package that is old on one of those fronts but
-not both — worth knowing, rarely worth acting on. `vulnerable` says that a counted security advisory
-affects the installed version.
+Two more flags complete the eight. `stale` catches a package with no release or no push for three
+years by default, short of `silent` — worth knowing, rarely worth acting on. `vulnerable` says that
+a counted security advisory affects the installed version.
 
-The flags are the facts. The verdict is a grade: the flags add up to a score, and the score's band
-is `critical`, `high`, `medium` or `low`. `lead` is the flag that leads the score: the 0.13 verdict
-word, or `capped`, which 0.13 did not have. Every finding prints the sum behind its score and the
-evidence behind each flag. It also prints the date the data was read and the chain of requirements
-that pulled the package in: what `composer why` shows for one package, for every finding at once.
-The chain names every direct requirement the package is reachable from, not only the shortest one,
-and each direct requirement says what it pulls in. [What it reports](verdicts.md) has every flag,
-the score and the verdicts.
+From 0.14.0 on, the flags are the facts and the verdict is a grade. The flags add up to a score, and
+the score's band is `critical`, `high`, `medium` or `low`. A score of 0 reads `unknown`, `finished`
+or `ok`, a word that says why. `lead` is the first counted maintenance flag, which heads the score
+line: the 0.13 verdict word, or `capped`, which 0.13 did not have. It is null when only `vulnerable`
+counts.
+
+Every finding prints the sum behind its score and the evidence behind each flag. It also prints the
+date the data was read and the chain of requirements that pulled the package in. That is what
+`composer why` shows for one package, for every finding at once. It names every direct requirement
+that the package is reachable from, not only the shortest chain. The table names three and counts
+the rest, and each direct requirement says what it pulls in. [What it reports](verdicts.md) has
+every flag, the score and the verdicts.
 
 ## "Composer already warns me about abandoned packages"
 
@@ -128,10 +132,10 @@ landed, when the repository was last pushed to, whether your lock file is holdin
 rather than a version, and whether a release made an open-ended PHP promise it was never tested
 against. It reads `composer.lock` and `composer.json`, and it writes to neither.
 
-`composer audit` reports the vulnerability. lockrot flags the package `vulnerable`, adds the
-advisory to its score, says which release fixes it and what holds that release, and names the move.
-An advisory that no release fixes, or whose fix the target PHP does not run, counts twice: the
-vulnerability is the same, the chance of a patch is not.
+`composer audit` reports the vulnerability. From 0.14.0 on, lockrot flags the package `vulnerable`
+and adds the advisory to its score. It says which release fixes the advisory and what holds that
+release, and names the move. An advisory that no release fixes, or whose fix the target PHP does not
+run, counts twice.
 
 ## In CI
 
@@ -155,8 +159,8 @@ mean.
 
 ### Does it change `composer.json` or `composer.lock`?
 
-No. It reads both and writes to neither. It writes only the files you ask for: a
-[baseline](baseline.md) with `--generate-baseline`, and a report with
+No. It reads both and writes to neither. Outside its cache under Composer's `cache-dir`, it writes
+only the files you ask for: a [baseline](baseline.md) with `--generate-baseline`, and a report with
 [`--output`](configuration.md#writing-reports-to-files).
 
 ### Can it break `composer install`?
@@ -168,9 +172,9 @@ off for a project, and `LOCKROT_DISABLE=1` silences lockrot for one command.
 
 ### Do I need a GitHub token?
 
-No, but it sees more with one. Anonymously GitHub allows 60 requests an hour, so lockrot checks
-repository activity only for packages whose releases already look stale, at most 50 per host per
-run, and reports how many the cap affected. With `GITHUB_TOKEN` set, or Composer's own
+No, but it sees more with one. Without a token, lockrot checks repository activity only for
+packages whose releases already look stale, at most 50 per host per run. It reports how many the
+cap affected. With `GITHUB_TOKEN` set, or Composer's own
 `github-oauth`, every package is checked.
 [Data sources](internals.md#repository-hosts-and-credentials) has the GitLab and
 Bitbucket rules.
@@ -182,7 +186,8 @@ through Composer's own repository layer, with Composer's authentication and prox
 
 ### Does it work offline, and what happens when the network fails?
 
-`--offline` serves everything from Composer's cache and lockrot's own. A network failure never
+`--offline` reads metadata from Composer's cache and repository activity from lockrot's own, and
+checks no advisories. A network failure never
 turns into a non-zero exit code on its own: the check that could not run is reported as a note.
 `--strict-network` makes it exit `1` instead.
 
@@ -194,11 +199,12 @@ fails only on findings that are new or have got worse.
 ### Why is this package flagged — or why is it not?
 
 `composer lockrot --explain=vendor/package` prints that one package with everything it was decided
-on. It prints the verdict, the flags and the score with each step of the sum, the move and what
-holds it, and how the package is reached. It prints every signal with its raw data and the dates
+on. It prints the verdict, the flags and the score with each step of the sum. It prints the move,
+what holds it, and how the package is reached. It prints every signal with its raw data and the dates
 behind it, and the `composer.lock` entry. It prints the release branches the repository lists with
-their dates, the repository activity, and the thresholds the run measured against. `composer why`
-answers who requires it; this answers why lockrot judged it so. Exit `0`, it does not gate —
+their dates, the repository activity, and the thresholds the run measured against.
+
+`composer why` answers who requires it; this answers why lockrot judged it so. Exit `0`, it does not gate —
 [Explaining one package](configuration.md#explaining-one-package).
 
 ### A package is finished, not abandoned. How do I say so?
