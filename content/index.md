@@ -50,30 +50,32 @@ Requires PHP 7.4 or newer and Composer 2.2 or newer.
 ## What a run looks like
 
 <pre class="lockrot-term"><span class="b">critical (3)</span>
-  <span class="r">abandoned</span>    sensio/framework-extra-bundle v6.2.10  direct
-               marked abandoned by its repository, replacement: Symfony; repository archived on GitHub; last release
-               2023-02-24 (3.6 years ago); last push 2023-02-24 (3.6 years ago); released 2023-02-24, before PHP 8.4 GA
-               (2024-11-21); php constraint &quot;&gt;=7.2.5&quot; has no upper bound; pulls in 1 flagged package:
-               doctrine/annotations (abandoned)
-  <span class="r">silent</span>       javibravo/simpleue 2.1.0  direct
-               last release 2017-11-15 (8.8 years ago); last push 2017-11-18 (8.8 years ago); released 2017-11-15,
-               before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=5.5&quot; has no upper bound
-  <span class="r">silent</span>       mnapoli/piwik-twig-extension 3.0.0  direct
-               last release 2020-04-24 (6.4 years ago); last push 2020-04-28 (6.4 years ago); released 2020-04-24,
-               before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=7.0&quot; has no upper bound
+  javibravo/simpleue 2.1.0  direct  ·  <span class="r">silent · old-promise</span>
+      36 = silent 32 + old-promise 4 [¼ of 16]
+      do: find a maintained alternative: nothing released for 8.9 years
+      silent       last release 2017-11-15 (8.9 years ago); last push 2017-11-18 (8.9 years ago)
+      old-promise  released 2017-11-15 for PHP 5 (php &quot;&gt;=5.5&quot;), before PHP 8 existed (8.0 GA 2020-11-26); admits 8.4
+                   untested
+  mnapoli/piwik-twig-extension 3.0.0  direct  ·  <span class="r">silent · old-promise</span>
+      36 = silent 32 + old-promise 4 [¼ of 16]
+      do: find a maintained alternative: nothing released for 6.5 years
+      silent       last release 2020-04-24 (6.5 years ago); last push 2020-04-28 (6.5 years ago)
+      old-promise  released 2020-04-24 for PHP 7 (php &quot;&gt;=7.0&quot;), before PHP 8 existed (8.0 GA 2020-11-26); admits 8.4
+                   untested
+  sensio/framework-extra-bundle v6.2.10  direct  ·  <span class="r">abandoned</span>
+      32 = abandoned 32
+      do: replace it: its registry suggests &quot;Symfony&quot;
+      abandoned    marked abandoned by its registry, replacement: Symfony; its repository is archived on GitHub; last
+                   release 2023-02-24 (3.7 years ago); last push 2023-02-24 (3.7 years ago)
+      pulls in 1 flagged package: doctrine/annotations (abandoned)</pre>
 
-<span class="b">high (64)</span>
-  <span class="r">abandoned</span>    behat/transliterator v1.5.0  via stof/doctrine-extensions-bundle › gedmo/doctrine-extensions
-               marked abandoned by its repository; repository archived on GitHub; last release 2022-03-30 (4.5 years
-               ago); released 2022-03-30, before PHP 8.4 GA (2024-11-21); php constraint &quot;&gt;=7.2&quot; has no upper bound</pre>
-
-The first 17 lines of a real run against wallabag's 200-package lock file, at 120 columns. Four of
-its 83 findings — [read the whole report](example-run.md).
+The first 19 lines of a real run against wallabag's 200-package lock file, at 120 columns: three of
+its 58 graded findings — [read the whole report](example-run.md).
 { .lockrot-caption }
 
 A whole run on a smaller project, 156 packages, from the command to the summary block and the footer:
 
-![lockrot in a terminal: one critical and four high findings — three of them left-behind, each with the constraint to require — then the medium and low rows, the summary counts by verdict and priority and the "Data as of" footer](assets/lockrot-demo.gif){ .lockrot-demo width="1214" height="983" loading="lazy" }
+![lockrot in a terminal: findings grouped by grade, each with its flags, its score and a do: line, then the summary block with the counts by grade and by flag, and the "Data as of" footer](assets/lockrot-demo.gif){ .lockrot-demo width="1214" height="889" loading="lazy" }
 
 ## What it looks for
 
@@ -89,22 +91,25 @@ A whole run on a smaller project, 156 packages, from the command to the summary 
   it against. `composer check-platform-reqs` is satisfied too: `>=7.2` is true on 8.4.
 - **`left-behind`** — the release branch you installed from has had no release for years while a
   higher branch of the same package keeps shipping. `composer outdated --major-only` says a newer
-  major exists; this says the branch you are on gets no fixes, and from 0.8.0 on names the
-  constraint that follows the fixes (`require ^7.2 to follow`), written as `composer require`
-  writes it.
+  major exists; this says the branch you are on gets no fixes, and its `do:` line names the
+  constraint that follows the fixes (`require doctrine/event-manager ^2.1`), written as
+  `composer require` writes it.
+- **`capped`** — the installed release's `require.php` stops below the newest PHP minor that the
+  project allows: the newest released minor that `composer.json`'s `require.php` admits, else the
+  lock's `platform.php`.
 
-A sixth verdict, `stale`, catches a package that is old on one of those fronts but not both — worth
-knowing, rarely worth acting on. Every finding carries the evidence behind it, the date the data was
-read, and the chain of requirements that pulled the package in — what `composer why` shows for one
-package, for every finding at once: every direct requirement it is reachable from, not only the
-shortest one, and each direct requirement says what it pulls in.
-[What it reports](verdicts.md) has every flag, the score and the verdicts.
+Two more flags complete the eight. `stale` catches a package that is old on one of those fronts but
+not both — worth knowing, rarely worth acting on. `vulnerable` says that a counted security advisory
+affects the installed version.
 
-From lockrot 0.14.0 on, a report has eight flags: these six words, `capped` and `vulnerable`.
-`capped` says that the installed release's `require.php` stops below the newest PHP minor that the
-project allows. `vulnerable` says that a counted security advisory affects the installed version.
-The verdict is a grade. The flags are the facts. `lead` is the 0.13 word, or `capped`, which 0.13
-did not have. Each finding prints the sum behind its score.
+The flags are the facts. The verdict is a grade: the flags add up to a score, and the score's band
+is `critical`, `high`, `medium` or `low`. `lead` is the flag that leads the score: the 0.13 verdict
+word, or `capped`, which 0.13 did not have. Every finding prints the sum behind its score and the
+evidence behind each flag. It also prints the date the data was read and the chain of requirements
+that pulled the package in: what `composer why` shows for one package, for every finding at once.
+The chain names every direct requirement the package is reachable from, not only the shortest one,
+and each direct requirement says what it pulls in. [What it reports](verdicts.md) has every flag,
+the score and the verdicts.
 
 ## "Composer already warns me about abandoned packages"
 
@@ -123,12 +128,10 @@ landed, when the repository was last pushed to, whether your lock file is holdin
 rather than a version, and whether a release made an open-ended PHP promise it was never tested
 against. It reads `composer.lock` and `composer.json`, and it writes to neither.
 
-The security advisories `composer audit` reports are on lockrot's findings too, fetched through the
-same Composer advisory API. From 0.7.0 on, an advisory on an `abandoned`, `silent` or `left-behind`
-package that no listed release fixes reads `no fix expected` and raises the priority one step: the
-vulnerability is the same, the chance of a patch is not. From 0.8.0 on, when the abandoned package's
-repository names a replacement, the line says where the fix lands instead — `no fix expected;
-migrate to symfony/mailer`.
+`composer audit` reports the vulnerability. lockrot flags the package `vulnerable`, adds the
+advisory to its score, says which release fixes it and what holds that release, and names the move.
+An advisory that no release fixes, or whose fix the target PHP does not run, counts twice: the
+vulnerability is the same, the chance of a patch is not.
 
 ## In CI
 
@@ -145,15 +148,16 @@ what you have is the JSON instead, the [report viewer](https://viewer.lockrot.de
 same way: paste it, or drop either file in. Nothing is uploaded — the rendering happens in your
 browser, in a sandbox with no way to reach the network — and it is on a host of its own rather than
 this one, because a page that draws documents written by strangers does not belong on the domain
-that hands out the archive. [Reading a report](viewer.md) is what the verdicts and the priorities
-in one mean.
+that hands out the archive. [Reading a report](viewer.md) is what the flags and the grades in one
+mean.
 
 ## Questions
 
 ### Does it change `composer.json` or `composer.lock`?
 
-No. It reads both and writes to neither. The only file it ever writes is the
-[baseline](baseline.md), and only when you pass `--generate-baseline`.
+No. It reads both and writes to neither. It writes only the files you ask for: a
+[baseline](baseline.md) with `--generate-baseline`, and a report with
+[`--output`](configuration.md#writing-reports-to-files).
 
 ### Can it break `composer install`?
 
@@ -189,18 +193,20 @@ fails only on findings that are new or have got worse.
 
 ### Why is this package flagged — or why is it not?
 
-From 0.8.0 on, `composer lockrot --explain=vendor/package` prints that one package with everything
-it was decided on: the verdict and priority, how the package is reached, every signal with its raw
-data and the dates behind it, the `composer.lock` entry, the release branches the repository lists
-with their dates, the repository activity, and the thresholds the run measured against. `composer why`
+`composer lockrot --explain=vendor/package` prints that one package with everything it was decided
+on. It prints the verdict, the flags and the score with each step of the sum, the move and what
+holds it, and how the package is reached. It prints every signal with its raw data and the dates
+behind it, and the `composer.lock` entry. It prints the release branches the repository lists with
+their dates, the repository activity, and the thresholds the run measured against. `composer why`
 answers who requires it; this answers why lockrot judged it so. Exit `0`, it does not gate —
 [Explaining one package](configuration.md#explaining-one-package).
 
 ### A package is finished, not abandoned. How do I say so?
 
 Interface packages, frozen polyfills and metapackages are not rot. `psr/*`, `fig/*`,
-`symfony/polyfill-*` and a few more are on the built-in allowlist and report `finished`; for
-anything else, add an entry with a reason to `extra.lockrot.ignore` —
+`symfony/polyfill-*` and a few more are on the built-in allowlist: it accepts their maintenance flags,
+and a package with nothing else that counts reads `finished`. For anything else, add an entry with a
+reason to `extra.lockrot.ignore` —
 [the allowlist](configuration.md#the-allowlist).
 
 ## Read on
