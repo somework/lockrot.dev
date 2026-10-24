@@ -23,3 +23,11 @@ its 0.14 counterpart can be compared on one set of data:
 |---|---|
 | `magento2-0.13.0.json.gz` | the v0.13.0 PHAR, sha256 `935883f2d2f52ce0f801f9ede846ee5eb42565aa5fd57b47137a82db8c611b1f` (report-1) |
 | `magento2-0.14.0.json.gz` | `bin/lockrot` of commit `1cf33bc1` (report-2). The branch had not yet set its version, so the document says `"version": "0.13.0"` beside `"schema": 2` |
+
+From lockrot `integration/0.14-php-window` at commit `0cfbd1c4`, whose report-2 flag set carries
+`capped` (S11) after `stale`:
+
+| File | Source in that commit |
+|---|---|
+| `capped-local-dagger.json` | `tests/fixtures/contract/report-2/capped-local-dagger.json`: `capped` leads a package |
+| `stale-capped.json` | `tests/fixtures/contract/report-2/stale-capped.json`: `capped` beside a `stale` lead |

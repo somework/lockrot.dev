@@ -23,7 +23,7 @@ def fixture(name):
 
 
 def report(counts=None, checked=10, marked=0, version="0.10.0"):
-    counts = {**{c: 0 for c in bw.COLUMNS}, "unknown": 0, "finished": 0, "ok": 0, **(counts or {})}
+    counts = {**{c: 0 for c in bw.VERDICTS}, "unknown": 0, "finished": 0, "ok": 0, **(counts or {})}
     findings = [
         {"package": f"vendor/p{i}", "signals": [{"id": "S1"}]} for i in range(marked)
     ]
@@ -91,7 +91,7 @@ def history_row(name, date="2026-09-15", tag="v1.2.3", lockrot="0.10.0", **count
     row.update(
         date=date, lockrot=lockrot, kind="release", repo=f"acme/{name}", tag=tag,
         commit="c0ffee1234567890", packages="10", name=name,
-        **{c: "0" for c in bw.COUNTED}, unknown="0", marked_on_packagist="0",
+        **{c: "0" for c in ("advisories", *bw.VERDICTS)}, unknown="0", marked_on_packagist="0",
     )
     row.update({k.replace("_", "-"): str(v) for k, v in counts.items()})
     return row
@@ -268,7 +268,7 @@ def with_run(target="8.4", release=5, push=5, flagged=None):
     rep["run"] = {
         "target_php": target,
         "thresholds": {"release-high-years": release, "push-high-years": push, "release-warn-years": 3},
-        "flagged_verdicts": list(bw.COLUMNS) if flagged is None else flagged,
+        "flagged_verdicts": list(bw.VERDICTS) if flagged is None else flagged,
     }
     return rep
 
@@ -313,7 +313,7 @@ class SettingsTest(unittest.TestCase):
 
     def test_refuses_a_lockrot_that_flags_a_verdict_the_page_has_no_column_for(self):
         with self.assertRaises(SystemExit) as raised:
-            bw.run_settings({"one": with_run(flagged=[*bw.COLUMNS, "unmaintained"])})
+            bw.run_settings({"one": with_run(flagged=[*bw.VERDICTS, "unmaintained"])})
 
         self.assertIn("unmaintained", str(raised.exception))
 
@@ -779,7 +779,7 @@ class ReportSchemaTest(unittest.TestCase):
         parts = rep["run"]["score_model"]["parts"]
         rep["run"]["score_model"]["parts"] = list(reversed(parts))
 
-        self.assertEqual(bw.COLUMNS, bw.maintenance_flags(rep))
+        self.assertEqual(bw.VERDICTS, bw.maintenance_flags(rep))
 
     def test_stops_when_the_maintenance_flags_are_not_the_columns(self):
         rep = fixture("magento2-0.14.0.json.gz")
@@ -815,7 +815,7 @@ class Report2RowsTest(unittest.TestCase):
 
         self.assertEqual(
             {"abandoned": 4, "silent": 0, "pinned": 0, "left-behind": 1, "old-promise": 1, "stale": 5},
-            {c: row[c] for c in bw.COLUMNS},
+            {c: row[c] for c in bw.VERDICTS},
         )
         self.assertEqual(11, bw.flagged(row))
         self.assertEqual(26, row["graded"])
@@ -824,7 +824,7 @@ class Report2RowsTest(unittest.TestCase):
         before = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.13.0.json.gz")})[0]
         after = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")})[0]
 
-        self.assertEqual({c: before[c] for c in bw.COLUMNS}, {c: after[c] for c in bw.COLUMNS})
+        self.assertEqual({c: before[c] for c in bw.VERDICTS}, {c: after[c] for c in bw.VERDICTS})
         self.assertEqual(before["unknown"], after["unknown"])
         self.assertEqual(before["marked_on_packagist"], after["marked_on_packagist"])
 
@@ -905,7 +905,7 @@ class Report2HistoryTest(unittest.TestCase):
         )
         self.assertEqual(
             ["carrying_abandoned", "carrying_silent", "carrying_pinned", "carrying_left-behind",
-             "carrying_old-promise", "carrying_stale", "carrying_vulnerable"],
+             "carrying_old-promise", "carrying_stale", "carrying_vulnerable", "carrying_capped"],
             [h for h in header if h.startswith("carrying_")],
         )
         self.assertFalse(any("depth" in h for h in header))
@@ -975,6 +975,189 @@ class Report2PageTest(unittest.TestCase):
         self.assertIn("`lead`", bw.flagged_note(r2))
         self.assertNotIn("Graded", bw.flagged_note(r1))
         self.assertIn("each package has exactly one", bw.flagged_note(r1))
+
+
+# lockrot 0.14.0's flag set with `capped` (S11) after `stale`: mautic/core-lib is led by capped alone.
+CAPPED = "capped-local-dagger.json"
+
+
+class CappedRunTest(unittest.TestCase):
+    """Both flag sets are read, so the site can merge before or after lockrot (ruling O-9)."""
+
+    def test_reads_a_run_whose_flags_carry_capped_after_stale(self):
+        rep = fixture(CAPPED)
+
+        settings = bw.run_settings({"mautic": rep})
+        row = bw.rows(manifest("mautic"), {"mautic": rep})[0]
+
+        self.assertEqual("8.4", settings["target_php"])
+        self.assertEqual((1, 1, 1), (row["capped"], row["carrying_capped"], bw.flagged(row)))
+
+    def test_reads_a_run_whose_flags_have_no_capped_and_leaves_its_cells_empty(self):
+        rep = fixture("magento2-0.14.0.json.gz")
+
+        bw.run_settings({"magento2": rep})
+        row = bw.rows(manifest("magento2"), {"magento2": rep})[0]
+
+        self.assertEqual(("", ""), (row["capped"], row["carrying_capped"]))
+        self.assertEqual(11, bw.flagged(row))
+
+    def test_a_report_1_row_has_no_capped_count(self):
+        row = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.13.0.json.gz")})[0]
+
+        self.assertEqual(("", ""), (row["capped"], row["carrying_capped"]))
+
+    def test_a_package_capped_carries_but_does_not_lead_counts_only_as_carried(self):
+        row = bw.rows(manifest("x"), {"x": fixture("stale-capped.json")})[0]
+
+        self.assertEqual((0, 1, 1), (row["capped"], row["carrying_capped"], row["stale"]))
+
+    def test_stops_on_a_run_that_mixes_the_two_flag_sets(self):
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"magento2": fixture("magento2-0.14.0.json.gz"), "mautic": fixture(CAPPED)})
+
+        self.assertIn("magento2", str(raised.exception))
+        self.assertIn("mautic", str(raised.exception))
+
+    def test_stops_when_capped_is_not_after_stale(self):
+        rep = fixture(CAPPED)
+        maintenance = next(p for p in rep["run"]["score_model"]["parts"] if p["id"] == "maintenance")
+        order = ["abandoned", "silent", "pinned", "left-behind", "old-promise", "capped", "stale"]
+        maintenance["flag_ids"] = order
+        rep["run"]["flag_ids"] = [*order, "vulnerable"]
+
+        with self.assertRaises(SystemExit):
+            bw.run_settings({"mautic": rep})
+
+    def test_stops_when_the_flag_ids_and_the_maintenance_flags_disagree_on_capped(self):
+        rep = fixture(CAPPED)
+        rep["run"]["flag_ids"] = [f for f in rep["run"]["flag_ids"] if f != "capped"]
+
+        with self.assertRaises(SystemExit) as raised:
+            bw.run_settings({"mautic": rep})
+
+        self.assertIn("carrying_ columns", str(raised.exception))
+
+    def test_composer_missed_counts_a_package_that_capped_leads(self):
+        self.assertEqual(1, bw.composer_missed(fixture(CAPPED), view()))
+
+
+class CappedPageTest(unittest.TestCase):
+    def test_the_capped_column_follows_stale_when_the_run_measures_it(self):
+        table = bw.table(bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)}))
+
+        self.assertIn(
+            '<code>stale</code></th><th class="lockrot-num" data-sort-method="number" data-sort-reverse>'
+            "<code>capped</code></th></tr></thead>",
+            table,
+        )
+        self.assertTrue(table.split("</tr></tbody>")[0].endswith('<td data-sort="1">1</td>'))
+
+    def test_a_run_without_capped_has_no_capped_column(self):
+        for doc in ("magento2-0.14.0.json.gz", "magento2-0.13.0.json.gz"):
+            with self.subTest(doc):
+                table = bw.table(bw.rows(manifest("magento2"), {"magento2": fixture(doc)}))
+                self.assertNotIn("capped", table)
+
+    def test_the_starter_table_carries_the_capped_column_too(self):
+        table = bw.starter_table(bw.rows(starter_manifest(), {"new-laravel": fixture(CAPPED)}))
+
+        self.assertIn("<code>capped</code></th></tr></thead>", table)
+
+    def test_capped_is_not_compared_with_a_run_that_did_not_measure_it(self):
+        rows = bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)})
+        before = {**history_row("mautic"), "capped": ""}
+
+        table = bw.table(rows, {"mautic": before}, "2026-10-19")
+        body = table[table.index("<tbody>"):table.index("</tbody>")]
+        foot = table[table.index("<tfoot>"):]
+
+        self.assertTrue(body.endswith('<td data-sort="1">1</td></tr>'), body[-80:])
+        self.assertTrue(foot.endswith("<td>1</td></tr></tfoot></table></div>"), foot[-80:])
+
+    def test_capped_is_compared_with_a_run_that_measured_it(self):
+        rows = bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)})
+        before = {**history_row("mautic"), "capped": "3"}
+
+        table = bw.table(rows, {"mautic": before}, "2026-10-19")
+
+        self.assertIn(f'<td data-sort="1">1 <span class="lockrot-delta lockrot-delta-down" title="{bw.MINUS}2 since 2026-10-19">', table)
+
+    def test_the_summary_names_capped_only_when_both_runs_measured_it(self):
+        rows = bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)})
+
+        unmeasured = bw.since_line(rows, {"mautic": {**history_row("mautic"), "capped": ""}}, "2026-10-19")
+        measured = bw.since_line(rows, {"mautic": {**history_row("mautic"), "capped": "3"}}, "2026-10-19")
+
+        self.assertIn("across the 1 application: flagged 0 → 1.", unmeasured)
+        self.assertNotIn("capped", unmeasured)
+        self.assertIn("flagged 3 → 1; `capped` 3 → 1.", measured)
+
+    def test_the_note_counts_the_flags_the_run_measures(self):
+        capped = bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)})
+        without = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")})
+
+        self.assertIn("one of the seven flags to its right", bw.flagged_note(capped))
+        self.assertIn("one of the six flags to its right", bw.flagged_note(without))
+
+
+class CappedHistoryTest(unittest.TestCase):
+    def test_rows_written_before_capped_read_an_empty_cell_and_keep_every_value(self):
+        old_fields = [f for f in bw.HISTORY_FIELDS if f not in ("capped", "carrying_capped")]
+        old = {**{f: "" for f in old_fields}, **history_row("mautic", date="2026-10-19", stale=4),
+               "graded": "7", "carrying_stale": "5", "report_schema": "2", "grade_basis": "model1"}
+        old = {f: old[f] for f in old_fields}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "history.csv"
+            with path.open("w", newline="", encoding="utf-8") as fh:
+                writer = csv.DictWriter(fh, fieldnames=old_fields, lineterminator="\n")
+                writer.writeheader()
+                writer.writerow(old)
+
+            bw.write_history(path, bw.rows(manifest("mautic", date="2026-10-26"), {"mautic": fixture(CAPPED)}))
+            kept, new = bw.read_history(path)
+
+        self.assertEqual(old, {f: kept[f] for f in old_fields})
+        self.assertEqual(("", ""), (kept["capped"], kept["carrying_capped"]))
+        self.assertEqual(("1", "1"), (new["capped"], new["carrying_capped"]))
+
+    def test_a_run_without_capped_writes_empty_cells_not_zero(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "history.csv"
+            bw.write_history(path, bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")}))
+            (row,) = bw.read_history(path)
+
+        self.assertEqual(("", ""), (row["capped"], row["carrying_capped"]))
+
+    def test_the_new_columns_are_appended_after_every_existing_one(self):
+        self.assertEqual(["capped", "carrying_capped"], bw.HISTORY_FIELDS[-2:])
+        self.assertEqual("grade_basis", bw.HISTORY_FIELDS[-3])
+
+
+class CappedMainTest(unittest.TestCase):
+    def test_builds_the_page_from_a_lockrot_document_that_carries_capped(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            caps = tmp / "caps"
+            caps.mkdir()
+            m = manifest("mautic", date="2026-10-26")
+            m["projects"] += starter_manifest(date="2026-10-26")["projects"]
+            (caps / "manifest.json").write_text(json.dumps(m), encoding="utf-8")
+            for name in ("mautic", "new-laravel"):
+                (caps / f"{name}.json").write_text(json.dumps({"data": {"report": fixture(CAPPED)}}), encoding="utf-8")
+            projects = tmp / "projects.json"
+            projects.write_text(json.dumps({"starters": [{"name": "new-laravel", "title": "Laravel", "no_lock_in_repository": True}]}), encoding="utf-8")
+            page, history = tmp / "watch.md", tmp / "history.csv"
+
+            bw.main(["build_watch_page.py", "--manifest", str(caps / "manifest.json"), "--capsules", str(caps),
+                     "--history", str(history), "--page", str(page), "--projects", str(projects)])
+            text = page.read_text(encoding="utf-8")
+            written = bw.read_history(history)
+
+        self.assertIn("one of the seven flags to its right", text)
+        self.assertEqual(2, text.count("<code>capped</code></th>"))
+        self.assertIn('<td data-sort="1" class="lockrot-flagged">1 ', text)
+        self.assertEqual([("1", "1"), ("1", "1")], [(r["capped"], r["carrying_capped"]) for r in written])
 
 
 if __name__ == "__main__":
