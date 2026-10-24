@@ -17,7 +17,7 @@ that draws documents written by other people should not sit on the domain that h
 archive.
 
 The viewer draws report-2, the document of lockrot 0.14.0 and later. For a report-1 document, from
-lockrot 0.13 or older, rerun lockrot, or open the document with
+lockrot 0.13 or older, rerun lockrot 0.14, or open the document with
 [lockrot-report](https://github.com/somework/lockrot-report) 0.13.
 
 ## What a report is

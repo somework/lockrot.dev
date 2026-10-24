@@ -69,11 +69,11 @@ Requires PHP 7.4 or newer and Composer 2.2 or newer.
                    release 2023-02-24 (3.7 years ago); last push 2023-02-24 (3.7 years ago)
       pulls in 1 flagged package: doctrine/annotations (abandoned)</pre>
 
-The first 19 lines of a real run against wallabag's 200-package lock file, at 120 columns. They hold
-three of its 58 graded findings — [read the whole report](example-run.md).
+The first lines of a real run against wallabag's lock file, at 120 columns —
+[read the whole report](example-run.md).
 { .lockrot-caption }
 
-A run on a smaller project, 156 packages, from the command to the summary block and the footer:
+A run on a smaller project, from the command to the summary block and the footer:
 
 ![lockrot in a terminal: the command, then the last findings, each with its flags, its score and a do: line, then the summary block with the counts by grade and by flag, and the "Data as of" footer](assets/lockrot-demo.gif){ .lockrot-demo width="1214" height="889" loading="lazy" }
 
@@ -226,7 +226,7 @@ reason to `extra.lockrot.ignore` —
 | [Baseline](baseline.md) | Accept today's findings, fail on new and worsened ones |
 | [Install-time summary](install-time.md) | What the plugin prints during `install`/`update`, and how to silence it |
 | [PHAR and self-update](phar.md) | Verified and signed download, PHIVE, `self-update`, the global-plugin alternative |
-| [Example run](example-run.md) | The full 200-package report the sample above is cut from |
+| [Example run](example-run.md) | The full report the sample above is cut from |
 | [Data sources](internals.md) | Composer repositories, the GitHub, GitLab and Bitbucket APIs, caching, `--offline` |
 | [Changelog](changelog.md) | What changed, release by release |
 | [Weekly watch](watch.md) | What lockrot finds in the newest release of widely used PHP applications, and in projects created from scratch that morning — and how much of it `composer audit` names |
