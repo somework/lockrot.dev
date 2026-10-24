@@ -309,8 +309,9 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
   Composer's global auth.json, and lockrot then sends Composer's credential instead of
   `ROT_WATCH_TOKEN` (lockrot's internals.md: a request with two headers is refused, so Composer's
   wins). The Composer steps — `create-project`, `composer audit` — get the same `ROT_WATCH_TOKEN`
-  through `COMPOSER_AUTH` in their own step environment, which the lockrot step never inherits. *Flagged* is lockrot's own number (`Verdict::flagged()`, every verdict from
-  `stale` up), the six columns added, and the rows are printed in its order.
+  through `COMPOSER_AUTH` in their own step environment, which the lockrot step never inherits. *Flagged* is lockrot's own number, the columns added: under report-1
+  `Verdict::flagged()`, every verdict from `stale` up, and under report-2 every package that a
+  maintenance flag leads. The rows are printed in its order.
 - **Every earlier run stays published.** The capsules in `data/reports/watch/` are one week deep;
   `scripts/watch_archive.py` reads every run the history names back out of git (the newest commit
   that changed anything in the run directory, keyed by the date in its manifest) and
@@ -339,9 +340,14 @@ releases and starters in `data/watch/projects.json` and rewrites `/watch/`. What
   when Packagist changes, or when the tool learns something; a trend that cannot tell those apart
   is not a trend.
 - **The page reads report-1 and report-2.** Under report-2 (lockrot 0.14.0) the verdict is a grade,
-  and the six columns read each maintenance flag's `leading` count, which is the 0.13 verdict count
-  for the same data. `run_settings()` stops before any count on a report schema, a score model or a
-  flag set the script does not know. The history appends the report-2 columns after the 0.13 ones
+  and the six 0.13 columns read each maintenance flag's `leading` count, which is the 0.13 verdict
+  count for the same data. lockrot 0.14.0 adds `capped` after `stale`. The page reads the flag set
+  with it and without it, so the order of the two repositories' merges does not matter. A `capped`
+  column shows only when the run measured it, and a history row of a run that did not leaves
+  `capped` and `carrying_capped` empty. Flagged and *Not in `composer audit`* are not compared
+  across the two sets.
+  `run_settings()` stops before any count on a report schema, a score model or a flag set the
+  script does not know, and on a run whose reports mix the two sets. The history appends the report-2 columns after the 0.13 ones
   (`HISTORY_FIELDS`). A report-1 row leaves the report-2 facts empty and takes its grades from
   0.13's priorities (`grade_basis: priority013`). Graded is compared only within one
   `grade_basis`, the advisories only within one `report_schema`. `rot-watch.yml` runs lockrot 0.13.0
