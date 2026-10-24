@@ -316,8 +316,8 @@ def leading(report: dict) -> dict:
     carry."""
     if report_schema(report) == 1:
         return {column: report["counts"][column] if column in VERDICTS else "" for column in COLUMNS}
-    flags = report["flags"]
-    return {column: flags[column]["leading"] if column in flags else "" for column in COLUMNS}
+    carried = maintenance_flags(report)
+    return {column: report["flags"][column]["leading"] if column in carried else "" for column in COLUMNS}
 
 
 def grades(report: dict) -> dict:
@@ -340,7 +340,7 @@ def grades(report: dict) -> dict:
         # The number at the top of the report: every graded finding, advisories included.
         "graded": report["packages_flagged"],
         "vulnerable": report["flags"]["vulnerable"]["carrying"],
-        **{f"carrying_{flag}": report["flags"][flag]["carrying"] if flag in report["flags"] else "" for flag in FLAGS},
+        **{f"carrying_{flag}": report["flags"][flag]["carrying"] if flag in report["run"]["flag_ids"] else "" for flag in FLAGS},
         **{g: report["counts"][g] for g in GRADES},
         "multi_flag": report["packages_multi_flag"],
         "score_model": model,
@@ -481,12 +481,19 @@ def count_cell(
 
 
 def flagged(row: dict) -> int:
-    """The packages lockrot flags: one verdict per package, so the columns add up without
-    counting anything twice. It is lockrot's own number — `Verdict::flagged()` is every verdict from
-    `stale` up, and a report's title reads "101 of 210 packages flagged" — and it leaves out
-    `unknown`, `finished` and `ok`. Works on a run's row and on a history row alike, written before
-    the `capped` column or after."""
+    """The packages lockrot flags: one verdict, or one `lead`, per package, so the columns add up
+    without counting anything twice. It is lockrot's own number — 0.13's `Verdict::flagged()` is
+    every verdict from `stale` up, and a report's title reads "101 of 210 packages flagged" — and it
+    leaves out `unknown`, `finished` and `ok`. Under report-2 it is every package a maintenance flag
+    leads, `capped` included. Works on a run's row and on a history row alike, written before the
+    `capped` column or after."""
     return sum(int(row.get(c) or 0) for c in COLUMNS)
+
+
+def same_flags(row: dict, before: dict | None) -> bool:
+    """Whether the previous run's row counted the same flags: Flagged and what composer audit
+    misses add `capped` up when the run measured it, so they are not compared across that."""
+    return before is None or (row.get("capped", "") == "") == ((before.get("capped") or "") == "")
 
 
 def columns(rows_: list[dict]) -> list[str]:
@@ -504,7 +511,7 @@ def flagged_cell(row: dict, before: dict | None, since: str | None) -> str:
     are different projects."""
     value = flagged(row)
     tone = "lockrot-flagged lockrot-zero" if value == 0 else "lockrot-flagged"
-    moved = delta(value, flagged(before) if before else None, since)
+    moved = delta(value, flagged(before) if before and same_flags(row, before) else None, since)
     return f'<td data-sort="{value}" class="{tone}">{value} {share(value, int(row["packages"]))}{moved}</td>'
 
 
@@ -515,7 +522,7 @@ def missed_cell(row: dict, before: dict | None, since: str | None) -> str:
     if value == "":
         return '<td data-sort="-1" class="lockrot-missed lockrot-zero" title="Not measured in this run">—</td>'
     tone = "lockrot-missed lockrot-zero" if value == 0 else "lockrot-missed"
-    moved = delta(value, (before or {}).get("composer_missed"), since)
+    moved = delta(value, (before or {}).get("composer_missed") if same_flags(row, before) else None, since)
     return f'<td data-sort="{value}" class="{tone}">{value} {share(value, flagged(row))}{moved}</td>'
 
 
@@ -636,6 +643,7 @@ def totals(rows_: list[dict], previous: dict, since: str | None, label: str, cou
     not a change in any project.
     """
     comparable = all(r["name"] in previous for r in rows_)
+    flags_held = comparable and all(same_flags(r, previous[r["name"]]) for r in rows_)
 
     def before(column: str) -> int | None:
         if not comparable:
@@ -650,11 +658,11 @@ def totals(rows_: list[dict], previous: dict, since: str | None, label: str, cou
         graded = sum(int(r["graded"]) for r in rows_)
         cells.append(f"<td>{graded}{delta(graded, before('graded'), since)}</td>")
     total = sum(flagged(r) for r in rows_)
-    total_before = sum(flagged(previous[r["name"]]) for r in rows_) if comparable else None
+    total_before = sum(flagged(previous[r["name"]]) for r in rows_) if flags_held else None
     cells.append(f'<td class="lockrot-flagged">{total} {share(total, packages)}{delta(total, total_before, since)}</td>')
     if all(r["composer_missed"] != "" for r in rows_):
         missed = sum(int(r["composer_missed"]) for r in rows_)
-        measured_before = comparable and all(previous[r["name"]].get("composer_missed") for r in rows_)
+        measured_before = flags_held and all(previous[r["name"]].get("composer_missed") for r in rows_)
         missed_before = (
             sum(int(previous[r["name"]]["composer_missed"]) for r in rows_) if measured_before else None
         )
@@ -731,7 +739,6 @@ def starter_table(rows_: list[dict], previous: dict | None = None, since: str | 
     """
     previous = comparable(rows_, previous or {})
     report_2 = is_report_2(rows_)
-    # The verdicts and the advisories.
     counted = ["advisories", *columns(rows_)]
     body = []
     for row in order(rows_):
@@ -784,10 +791,11 @@ def since_line(rows_: list[dict], previous: dict, since: str | None) -> str:
         else f"the {len(common)} of {plural(len(releases), 'application')} read on the same line both times"
     )
     parts = [f"Compared with the run of {since}, across {scope}:"]
+    flags_held = all(same_flags(r, same[r["name"]]) for r in common)
     was, now_flagged = sum(flagged(same[r["name"]]) for r in common), sum(flagged(r) for r in common)
-    moved = [f"flagged {was} → {now_flagged}"] if was != now_flagged else []
+    moved = [f"flagged {was} → {now_flagged}"] if flags_held and was != now_flagged else []
     measured = [r for r in common if r["composer_missed"] != "" and same[r["name"]].get("composer_missed")]
-    if common and len(measured) == len(common):
+    if flags_held and common and len(measured) == len(common):
         a = sum(int(same[r["name"]]["composer_missed"]) for r in measured)
         b = sum(int(r["composer_missed"]) for r in measured)
         if a != b:
@@ -1012,9 +1020,9 @@ def run_settings(reports: dict, manifest: dict | None = None) -> dict:
     that differ named.
 
     Every report passes report_schema() first, before any count is read. lockrot's own list of what
-    it flags for maintenance, which no project can change, has to be the page's columns in order:
-    Flagged adds those columns up, and a release that flags one more verdict would otherwise make
-    every total on the page quietly short. A report-2's flags have to be the history's carrying_
+    it flags for maintenance, which no project can change, has to be one of the column sets the page
+    knows, in order, and the same set in every report: Flagged adds those columns up, and a release
+    that flags one more verdict would otherwise make every total on the page quietly short. A report-2's flags have to be the history's carrying_
     columns for the same reason. The plan's window for older lines has to be lockrot's default
     `release-warn-years`, which is what most reports carry.
     """
@@ -1026,10 +1034,11 @@ def run_settings(reports: dict, manifest: dict | None = None) -> dict:
     sets = {}
     for name, report in reports.items():
         flags = maintenance_flags(report)
-        if flags not in (MAINTENANCE_SETS if report_schema(report) == 2 else (VERDICTS,)):
+        accepted = MAINTENANCE_SETS if report_schema(report) == 2 else (VERDICTS,)
+        if flags not in accepted:
             raise SystemExit(
                 f"build_watch_page: lockrot flags {flags}, the page has columns "
-                f"for {COLUMNS}; give the page the new verdict before publishing it"
+                f"for {' or '.join(map(str, accepted))}; give the page the new verdict before publishing it"
             )
         if report_schema(report) == 2 and report["run"].get("flag_ids") != [*flags, "vulnerable"]:
             raise SystemExit(

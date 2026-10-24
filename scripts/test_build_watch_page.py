@@ -982,7 +982,7 @@ CAPPED = "capped-local-dagger.json"
 
 
 class CappedRunTest(unittest.TestCase):
-    """Both flag sets are read, so the site can merge before or after lockrot (ruling O-9)."""
+    """Both flag sets are read, so the site can merge before or after lockrot."""
 
     def test_reads_a_run_whose_flags_carry_capped_after_stale(self):
         rep = fixture(CAPPED)
@@ -1016,6 +1016,7 @@ class CappedRunTest(unittest.TestCase):
         with self.assertRaises(SystemExit) as raised:
             bw.run_settings({"magento2": fixture("magento2-0.14.0.json.gz"), "mautic": fixture(CAPPED)})
 
+        self.assertIn("different flag sets", str(raised.exception))
         self.assertIn("magento2", str(raised.exception))
         self.assertIn("mautic", str(raised.exception))
 
@@ -1037,6 +1038,17 @@ class CappedRunTest(unittest.TestCase):
             bw.run_settings({"mautic": rep})
 
         self.assertIn("carrying_ columns", str(raised.exception))
+
+    def test_a_report_1_that_flags_capped_is_refused(self):
+        with self.assertRaises(SystemExit):
+            bw.run_settings({"one": with_run(flagged=list(bw.COLUMNS))})
+
+    def test_a_report_whose_flag_ids_name_capped_without_its_counts_is_refused(self):
+        rep = fixture(CAPPED)
+        del rep["flags"]["capped"]
+
+        with self.assertRaises(KeyError):
+            bw.rows(manifest("mautic"), {"mautic": rep})
 
     def test_composer_missed_counts_a_package_that_capped_leads(self):
         self.assertEqual(1, bw.composer_missed(fixture(CAPPED), view()))
@@ -1089,9 +1101,32 @@ class CappedPageTest(unittest.TestCase):
         unmeasured = bw.since_line(rows, {"mautic": {**history_row("mautic"), "capped": ""}}, "2026-10-19")
         measured = bw.since_line(rows, {"mautic": {**history_row("mautic"), "capped": "3"}}, "2026-10-19")
 
-        self.assertIn("across the 1 application: flagged 0 → 1.", unmeasured)
+        self.assertIn("across the 1 application: no total moved.", unmeasured)
         self.assertNotIn("capped", unmeasured)
         self.assertIn("flagged 3 → 1; `capped` 3 → 1.", measured)
+
+    def test_flagged_is_not_compared_with_a_run_that_did_not_measure_capped(self):
+        rows = bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)}, {"mautic": view()})
+        before = {**history_row("mautic"), "packages": "128", "capped": "", "composer_missed": "0"}
+
+        table = bw.table(rows, {"mautic": before}, "2026-10-19")
+        line = bw.since_line(rows, {"mautic": before}, "2026-10-19")
+
+        self.assertNotIn("lockrot-delta", table)
+        self.assertNotIn("flagged", line)
+        self.assertNotIn("composer audit", line)
+
+    def test_flagged_is_not_compared_with_a_run_that_measured_capped_when_this_one_did_not(self):
+        rows = bw.rows(manifest("magento2"), {"magento2": fixture("magento2-0.14.0.json.gz")}, {"magento2": view()})
+        before = {**history_row("magento2", abandoned=4, left_behind=1, old_promise=1, stale=5),
+                  "packages": "148", "capped": "5", "composer_missed": "16", "graded": "26", "grade_basis": "model1",
+                  "report_schema": "2", "score_model": "1"}
+
+        table = bw.table(rows, {"magento2": before}, "2026-10-19")
+        line = bw.since_line(rows, {"magento2": before}, "2026-10-19")
+
+        self.assertNotIn("lockrot-delta", table)
+        self.assertIn("across the 1 application: no total moved.", line)
 
     def test_the_note_counts_the_flags_the_run_measures(self):
         capped = bw.rows(manifest("mautic"), {"mautic": fixture(CAPPED)})
